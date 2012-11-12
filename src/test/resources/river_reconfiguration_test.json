@@ -1,0 +1,19 @@
+{
+    "type" : "sysinfo",
+    "es_connection" : {
+        "type" : "local",
+        "url"  : "https://issues.jboss.org"
+    },
+    "es_info" : {
+	    "health" : {
+	        "index"  : "my_index_1",
+	        "type"   : "my_type_1",
+	        "period" : "1m"
+	    },
+	    "state" : {
+	        "index"  : "my_index_1",
+	        "type"   : "my_type_1",
+	        "period" : "1m"
+	    }
+    }
+}
