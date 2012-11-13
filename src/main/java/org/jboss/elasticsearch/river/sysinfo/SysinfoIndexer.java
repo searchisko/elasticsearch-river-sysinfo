@@ -18,7 +18,7 @@ public class SysinfoIndexer implements Runnable {
 
   private static final ESLogger logger = Loggers.getLogger(SysinfoIndexer.class);
 
-  protected boolean closed = false;
+  protected boolean closed = true;
 
   protected SourceClient sourceClient;
   protected Client targetClient;
@@ -78,6 +78,7 @@ public class SysinfoIndexer implements Runnable {
       }
     } finally {
       logger.info("Sysinfo river indexing task stopped");
+      closed = true;
     }
   }
 
