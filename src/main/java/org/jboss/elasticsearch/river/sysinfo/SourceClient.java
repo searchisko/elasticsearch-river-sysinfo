@@ -5,6 +5,8 @@
  */
 package org.jboss.elasticsearch.river.sysinfo;
 
+import java.io.IOException;
+
 /**
  * Abstraction interface used to read status info from ES cluster over distinct protocols.
  * 
@@ -17,7 +19,9 @@ public interface SourceClient {
    * 
    * @param infoType type of information to read
    * @return read information
+   * @throws IOException
+   * @throws InterruptedException
    */
-  public String readSysinfoValue(SysinfoType infoType);
+  public String readSysinfoValue(SysinfoType infoType) throws IOException, InterruptedException;
 
 }

@@ -19,8 +19,9 @@ public class SysinfoTypeTest {
   @Test
   public void parseConfiguration() {
 
-    Assert.assertEquals(SysinfoType.HEALTH, SysinfoType.parseConfiguration("health"));
-    Assert.assertEquals(SysinfoType.STATE, SysinfoType.parseConfiguration("state"));
+    for (SysinfoType t : SysinfoType.values()) {
+      Assert.assertEquals(t, SysinfoType.parseConfiguration(t.getName()));
+    }
 
     try {
       SysinfoType.parseConfiguration("nonsense");

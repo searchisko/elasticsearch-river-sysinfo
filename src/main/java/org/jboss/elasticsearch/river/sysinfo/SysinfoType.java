@@ -9,6 +9,8 @@ import org.elasticsearch.common.settings.SettingsException;
 
 /**
  * Enum with names of distinct ElasticSearch system info types which can be stored into ES index using this river.
+ * <p>
+ * After new type is added here do not forget to add necessary implementation into {@link SourceClientBase}.
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */
