@@ -72,17 +72,29 @@ public class SysinfoIndexerTest {
 
     // case - run changes closed status at begin, exception do not finish it, but finishes correctly when indexer is
     // stopped
-    Mockito.when(scMock.readSysinfoValue(SysinfoType.HEALTH)).thenThrow(new RuntimeException("mocked exception"));
-    Thread t = new Thread(tested);
-    t.start();
-    while (tested.closed) {
-      Thread.sleep(10);
+    {
+      Mockito.when(scMock.readSysinfoValue(SysinfoType.HEALTH)).thenThrow(new RuntimeException("mocked exception"));
+      Thread t = new Thread(tested);
+      t.start();
+      while (tested.closed) {
+        Thread.sleep(10);
+      }
+      Thread.sleep(70);
+      Assert.assertFalse(tested.closed);
+      tested.stop();
+      Thread.sleep(50);
+      Assert.assertTrue(tested.closed);
     }
-    Thread.sleep(70);
-    Assert.assertFalse(tested.closed);
-    tested.stop();
-    Thread.sleep(50);
-    Assert.assertTrue(tested.closed);
+
+    // case - InteruuptedException finishes indexer correctly
+    {
+      Mockito.reset(scMock, tcMock);
+      Mockito.when(scMock.readSysinfoValue(SysinfoType.HEALTH)).thenThrow(new InterruptedException("mocked exception"));
+      Thread t = new Thread(tested);
+      t.start();
+      Thread.sleep(200);
+      Assert.assertTrue(tested.closed);
+    }
 
   }
 

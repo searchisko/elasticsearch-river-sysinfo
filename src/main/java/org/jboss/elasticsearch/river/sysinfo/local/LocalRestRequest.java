@@ -13,7 +13,7 @@ import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.support.AbstractRestRequest;
 
 /**
- * Implementation of {@link RestRequest} used for local calls inside JVM.
+ * Implementation of {@link RestRequest} used for {@link SourceClientLocal}.
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */

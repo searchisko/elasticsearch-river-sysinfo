@@ -19,7 +19,7 @@ import org.jboss.elasticsearch.river.sysinfo.SourceClient;
 import org.jboss.elasticsearch.river.sysinfo.SourceClientBase;
 
 /**
- * {@link SourceClient} implementation for 'local' mode - get data from ES cluster where river runs.
+ * {@link SourceClient} implementation using {@link Client} instance.
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */

@@ -24,6 +24,14 @@ public class SourceClientBaseTest {
     Tested tested = new Tested();
     Assert.assertEquals("SI", tested.readSysinfoValue(SysinfoType.STATE));
     Assert.assertEquals("HI", tested.readSysinfoValue(SysinfoType.HEALTH));
+
+    try {
+      tested.readSysinfoValue(null);
+      Assert.fail("IllegalArgumentException must be thrown");
+    } catch (IllegalArgumentException e) {
+      // OK
+    }
+
   }
 
   private class Tested extends SourceClientBase {

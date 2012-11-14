@@ -12,7 +12,7 @@ import org.elasticsearch.rest.RestResponse;
 import org.elasticsearch.rest.RestStatus;
 
 /**
- * Implementation of {@link RestChannel} used for local calls inside JVM.
+ * Implementation of {@link RestChannel} used for {@link SourceClientLocal}.
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */
@@ -27,6 +27,13 @@ public class LocalRestChannel implements RestChannel {
     this.response = response;
   }
 
+  /**
+   * Wait until response is set or timeout, and then return response content or throw exception in case of error.
+   * 
+   * @return content of response in success case.
+   * @throws IOException in case of error response.
+   * @throws InterruptedException
+   */
   public String getResponseContent() throws IOException, InterruptedException {
     long start = System.currentTimeMillis();
     while (response == null) {
@@ -37,7 +44,7 @@ public class LocalRestChannel implements RestChannel {
     if (response.status() != RestStatus.OK) {
       throw new IOException("response status is " + response.status() + " and content " + response.content());
     }
-    return new String(response.content());
+    return (new String(response.content(), "UTF-8")).trim();
   }
 
 }
