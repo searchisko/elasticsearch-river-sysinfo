@@ -3,7 +3,7 @@
  * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @authors tag. All rights reserved.
  */
-package org.jboss.elasticsearch.river.sysinfo.local;
+package org.jboss.elasticsearch.river.sysinfo.esclient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +13,18 @@ import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.support.AbstractRestRequest;
 
 /**
- * Implementation of {@link RestRequest} used for {@link SourceClientLocal}.
+ * Implementation of {@link RestRequest} used for {@link SourceClientESClient}.
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */
 public class LocalRestRequest extends AbstractRestRequest {
 
   Map<String, String> params = new HashMap<String, String>();
+
+  public LocalRestRequest(Map<String, String> params) {
+    if (params != null)
+      this.params = params;
+  }
 
   @Override
   public Method method() {

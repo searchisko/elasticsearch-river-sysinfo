@@ -3,12 +3,13 @@
  * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @authors tag. All rights reserved.
  */
-package org.jboss.elasticsearch.river.sysinfo.local;
+package org.jboss.elasticsearch.river.sysinfo.esclient;
 
 import java.io.IOException;
 
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.rest.StringRestResponse;
+import org.jboss.elasticsearch.river.sysinfo.esclient.LocalRestChannel;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -5,6 +5,8 @@
  */
 package org.jboss.elasticsearch.river.sysinfo;
 
+import java.util.Map;
+
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
@@ -26,15 +28,28 @@ public class SysinfoIndexer implements Runnable {
   protected String indexName;
   protected String typeName;
   protected long indexingPeriod = 0;
+  protected Map<String, String> params;
 
+  /**
+   * Indexer constructor.
+   * 
+   * @param sourceClient used to get informations from. Can be local or remote etc.
+   * @param targetClient used to store informations into
+   * @param infoType type of information indexed by this indexer
+   * @param indexName name of index to store information into
+   * @param typeName type of document in index o store information into
+   * @param indexingPeriod indexing period [ms]
+   * @param params additional parameters from info obtaining - possible content depends on infoType
+   */
   public SysinfoIndexer(SourceClient sourceClient, Client targetClient, SysinfoType infoType, String indexName,
-      String typeName, long indexingPeriod) {
+      String typeName, long indexingPeriod, Map<String, String> params) {
     this.sourceClient = sourceClient;
     this.targetClient = targetClient;
     this.infoType = infoType;
     this.indexName = indexName;
     this.typeName = typeName;
     this.indexingPeriod = indexingPeriod;
+    this.params = params;
   }
 
   /**
@@ -93,7 +108,7 @@ public class SysinfoIndexer implements Runnable {
    * @throws InterruptedException id interrupted
    */
   protected void processLoopTask() throws Exception, InterruptedException {
-    String content = sourceClient.readSysinfoValue(infoType);
+    String content = sourceClient.readSysinfoValue(infoType, params);
     targetClient.prepareIndex(indexName, typeName).setSource(content).execute().actionGet();
   }
 

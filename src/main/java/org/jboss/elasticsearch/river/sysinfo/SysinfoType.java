@@ -16,7 +16,14 @@ import org.elasticsearch.common.settings.SettingsException;
  */
 public enum SysinfoType {
 
-  HEALTH("health"), STATE("state");
+  /**
+   * http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html
+   */
+  CLUSTER_HEALTH("cluster_health"),
+  /**
+   * http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html
+   */
+  CLUSTER_STATE("cluster_state");
 
   private String name;
 
@@ -40,12 +47,10 @@ public enum SysinfoType {
       throw new SettingsException("unsupported name for indexed information type: " + value);
     }
 
-    if (HEALTH.getName().equalsIgnoreCase(value)) {
-      return HEALTH;
-    } else if (STATE.getName().equalsIgnoreCase(value)) {
-      return STATE;
-    } else {
-      throw new SettingsException("unsupported name for indexed information type: " + value);
+    for (SysinfoType t : values()) {
+      if (t.getName().equalsIgnoreCase(value))
+        return t;
     }
+    throw new SettingsException("unsupported name for indexed information type: " + value);
   }
 }

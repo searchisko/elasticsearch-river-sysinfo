@@ -5,6 +5,9 @@
  */
 package org.jboss.elasticsearch.river.sysinfo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.Assert;
 
 import org.elasticsearch.action.ListenableActionFuture;
@@ -24,14 +27,17 @@ public class SysinfoIndexerTest {
   public void constructor() {
     SourceClient scMock = Mockito.mock(SourceClient.class);
     Client tcMock = Mockito.mock(Client.class);
-    SysinfoIndexer tested = new SysinfoIndexer(scMock, tcMock, SysinfoType.HEALTH, "my index", "my type", 125);
+    Map<String, String> settings = new HashMap<String, String>();
+    SysinfoIndexer tested = new SysinfoIndexer(scMock, tcMock, SysinfoType.CLUSTER_HEALTH, "my index", "my type", 125,
+        settings);
 
     Assert.assertEquals(scMock, tested.sourceClient);
     Assert.assertEquals(tcMock, tested.targetClient);
-    Assert.assertEquals(SysinfoType.HEALTH, tested.infoType);
+    Assert.assertEquals(SysinfoType.CLUSTER_HEALTH, tested.infoType);
     Assert.assertEquals("my index", tested.indexName);
     Assert.assertEquals("my type", tested.typeName);
     Assert.assertEquals(125, tested.indexingPeriod);
+    Assert.assertEquals(settings, tested.params);
     Assert.assertEquals(true, tested.closed);
 
   }
@@ -42,10 +48,12 @@ public class SysinfoIndexerTest {
 
     SourceClient scMock = Mockito.mock(SourceClient.class);
     Client tcMock = Mockito.mock(Client.class);
+    Map<String, String> paramsMock = new HashMap<String, String>();
 
     SysinfoIndexer tested = new SysinfoIndexer(scMock, tcMock);
-    tested.infoType = SysinfoType.HEALTH;
-    Mockito.when(scMock.readSysinfoValue(SysinfoType.HEALTH)).thenReturn("{test : test 2}");
+    tested.infoType = SysinfoType.CLUSTER_HEALTH;
+    tested.params = paramsMock;
+    Mockito.when(scMock.readSysinfoValue(SysinfoType.CLUSTER_HEALTH, paramsMock)).thenReturn("{test : test 2}");
 
     IndexRequestBuilder irbMock = Mockito.mock(IndexRequestBuilder.class);
     Mockito.when(tcMock.prepareIndex(tested.indexName, tested.typeName)).thenReturn(irbMock);
@@ -55,7 +63,7 @@ public class SysinfoIndexerTest {
 
     tested.processLoopTask();
 
-    Mockito.verify(scMock).readSysinfoValue(SysinfoType.HEALTH);
+    Mockito.verify(scMock).readSysinfoValue(SysinfoType.CLUSTER_HEALTH, paramsMock);
     Mockito.verify(tcMock).prepareIndex(tested.indexName, tested.typeName);
     Mockito.verify(irbMock).setSource("{test : test 2}");
     Mockito.verify(irbMock).execute();
@@ -67,13 +75,14 @@ public class SysinfoIndexerTest {
     SourceClient scMock = Mockito.mock(SourceClient.class);
     Client tcMock = Mockito.mock(Client.class);
     SysinfoIndexer tested = new SysinfoIndexer(scMock, tcMock);
-    tested.infoType = SysinfoType.HEALTH;
+    tested.infoType = SysinfoType.CLUSTER_HEALTH;
     tested.indexingPeriod = 50;
 
     // case - run changes closed status at begin, exception do not finish it, but finishes correctly when indexer is
     // stopped
     {
-      Mockito.when(scMock.readSysinfoValue(SysinfoType.HEALTH)).thenThrow(new RuntimeException("mocked exception"));
+      Mockito.when(scMock.readSysinfoValue(SysinfoType.CLUSTER_HEALTH, null)).thenThrow(
+          new RuntimeException("mocked exception"));
       Thread t = new Thread(tested);
       t.start();
       while (tested.closed) {
@@ -89,7 +98,8 @@ public class SysinfoIndexerTest {
     // case - InteruuptedException finishes indexer correctly
     {
       Mockito.reset(scMock, tcMock);
-      Mockito.when(scMock.readSysinfoValue(SysinfoType.HEALTH)).thenThrow(new InterruptedException("mocked exception"));
+      Mockito.when(scMock.readSysinfoValue(SysinfoType.CLUSTER_HEALTH, null)).thenThrow(
+          new InterruptedException("mocked exception"));
       Thread t = new Thread(tested);
       t.start();
       Thread.sleep(200);
