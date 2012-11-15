@@ -12,11 +12,15 @@ import java.util.Map;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.settings.SettingsException;
 import org.elasticsearch.common.util.concurrent.EsExecutors;
+import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.river.AbstractRiverComponent;
 import org.elasticsearch.river.River;
 import org.elasticsearch.river.RiverName;
 import org.elasticsearch.river.RiverSettings;
+import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESClient;
+import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESTransportClient;
 
 /**
  * System Info River implementation class.
@@ -34,6 +38,11 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
    * Flag set to true if this river is stopped from ElasticSearch server.
    */
   protected volatile boolean closed = true;
+
+  /**
+   * Source client used by this river.
+   */
+  protected SourceClient sourceClient;
 
   /**
    * List of configured indexers.
@@ -75,12 +84,32 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
    * 
    * @param settings used for configuration.
    */
+  @SuppressWarnings("unchecked")
   protected void configure(Map<String, Object> settings) {
 
     if (!closed)
       throw new IllegalStateException("Sysinfo River must be stopped to configure it!");
 
-    // TODO read configuration
+    if (settings.containsKey("es_connection")) {
+      Map<String, Object> sourceClientSettings = (Map<String, Object>) settings.get("es_connection");
+      String type = XContentMapValues.nodeStringValue(sourceClientSettings.get("type"), null);
+      if (Utils.isEmpty(type)) {
+        throw new SettingsException("es_connection/type element of configuration structure not found or empty");
+      }
+      if ("local".equalsIgnoreCase(type)) {
+        sourceClient = new SourceClientESClient(client);
+      } else if ("remote".equalsIgnoreCase(type)) {
+        sourceClient = new SourceClientESTransportClient(sourceClientSettings);
+      } else if ("rest".equalsIgnoreCase(type)) {
+        // TODO create SourceClientREST
+      } else {
+        throw new SettingsException("es_connection/type value " + type + " is invalid. Use one of local, remote, rest");
+      }
+    } else {
+      throw new SettingsException("'es_connection' element of river configuration structure not found");
+    }
+
+    // TODO read indexers configuration
   }
 
   @Override
@@ -88,6 +117,7 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
     if (!closed)
       throw new IllegalStateException("Can't start already running river");
     logger.info("starting Sysinfo River");
+    sourceClient.start();
     closed = false;
     for (SysinfoIndexer indexer : indexers) {
       Thread t = acquireThread("sysinfo_river_" + indexer.infoType.getName(), indexer);
@@ -101,21 +131,29 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
   public synchronized void close() {
     logger.info("closing Sysinfo River on this node");
     closed = true;
-    for (SysinfoIndexer indexer : indexers) {
-      indexer.stop();
-    }
-    // let threads some time to finish
     try {
-      Thread.sleep(200);
-    } catch (InterruptedException e) {
-      // nothing to do
+      for (SysinfoIndexer indexer : indexers) {
+        try {
+          indexer.close();
+        } catch (Throwable t) {
+          logger.warn("Exception during {} indexer closing: {}", indexer.infoType, t.getMessage());
+        }
+      }
+      // let threads some time to finish
+      try {
+        Thread.sleep(200);
+      } catch (InterruptedException e) {
+        // nothing to do
+      }
+      // and interrupt them if not finished yet
+      for (Thread pi : indexerThreads) {
+        pi.interrupt();
+      }
+      indexerThreads.clear();
+    } finally {
+      sourceClient.close();
+      logger.info("Sysinfo River closed");
     }
-    // and interrupt them if not finished yet
-    for (Thread pi : indexerThreads) {
-      pi.interrupt();
-    }
-    indexerThreads.clear();
-    logger.info("Sysinfo River closed");
   }
 
   protected Thread acquireThread(String threadName, Runnable runnable) {

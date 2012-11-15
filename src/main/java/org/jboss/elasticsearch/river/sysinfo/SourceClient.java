@@ -28,4 +28,14 @@ public interface SourceClient {
   public String readSysinfoValue(SysinfoType infoType, Map<String, String> params) throws IOException,
       InterruptedException;
 
+  /**
+   * Start client to be used.
+   */
+  public void start();
+
+  /**
+   * Close client at at the end of use.
+   */
+  public void close();
+
 }

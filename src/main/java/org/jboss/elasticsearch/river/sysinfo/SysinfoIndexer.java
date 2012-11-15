@@ -97,7 +97,10 @@ public class SysinfoIndexer implements Runnable {
     }
   }
 
-  public void stop() {
+  /**
+   * Close indexer at the end of use.
+   */
+  public void close() {
     closed = true;
   }
 

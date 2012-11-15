@@ -57,6 +57,14 @@ public class SourceClientBaseTest {
       return name;
     }
 
+    @Override
+    public void start() {
+    }
+
+    @Override
+    public void close() {
+    }
+
   }
 
 }

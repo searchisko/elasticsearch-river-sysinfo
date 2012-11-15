@@ -30,69 +30,89 @@ public class SysinfoRiverTest {
   @Test
   public void start() throws Exception {
     SysinfoRiver tested = prepareRiverInstanceForTest(null);
+    SourceClient scMock = tested.sourceClient;
 
     // case - exception if started already
-    tested.closed = false;
-    try {
-      tested.start();
-      Assert.fail("IllegalStateException must be thrown");
-    } catch (IllegalStateException e) {
-      // OK
-      Assert.assertFalse(tested.closed);
-      Assert.assertEquals(0, tested.indexerThreads.size());
+    {
+      tested.closed = false;
+      try {
+        tested.start();
+        Assert.fail("IllegalStateException must be thrown");
+      } catch (IllegalStateException e) {
+        // OK
+        Assert.assertFalse(tested.closed);
+        Assert.assertEquals(0, tested.indexerThreads.size());
+        Mockito.verifyZeroInteractions(scMock);
+      }
     }
 
     // case - no exception if indexers list is empty
-    tested.closed = true;
-    tested.start();
-    Assert.assertFalse(tested.closed);
-    Assert.assertEquals(0, tested.indexerThreads.size());
+    {
+      Mockito.reset(scMock);
+      tested.closed = true;
+      tested.start();
+      Assert.assertFalse(tested.closed);
+      Assert.assertEquals(0, tested.indexerThreads.size());
+      Mockito.verify(scMock).start();
+    }
 
     // case - check threads created and started for indexers
-    tested.closed = true;
-    tested.indexers.add(indexerMock(SysinfoType.CLUSTER_HEALTH));
-    tested.indexers.add(indexerMock(SysinfoType.CLUSTER_STATE));
-    tested.start();
-    Assert.assertFalse(tested.closed);
-    Assert.assertEquals(2, tested.indexerThreads.size());
-    // give threads chance to run so we can do next assertion on this method
-    try {
-      Thread.sleep(100);
-    } catch (InterruptedException e) {
-      // nothing to do
-    }
-    for (SysinfoIndexer i : tested.indexers) {
-      Mockito.verify(i).run();
+    {
+      Mockito.reset(scMock);
+      tested.closed = true;
+      tested.indexers.add(indexerMock(SysinfoType.CLUSTER_HEALTH));
+      tested.indexers.add(indexerMock(SysinfoType.CLUSTER_STATE));
+      tested.start();
+      Assert.assertFalse(tested.closed);
+      Assert.assertEquals(2, tested.indexerThreads.size());
+      Mockito.verify(scMock).start();
+      // give threads chance to run so we can do next assertion on this method
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        // nothing to do
+      }
+      for (SysinfoIndexer i : tested.indexers) {
+        Mockito.verify(i).run();
+      }
+
     }
   }
 
   @Test
   public void close() throws Exception {
     SysinfoRiver tested = prepareRiverInstanceForTest(null);
+    SourceClient scMock = tested.sourceClient;
 
     // case - no errors on empty indexers list and unstarted river
-    tested.close();
-    Assert.assertTrue(tested.closed);
-
-    // case - successfull close
-    tested.closed = false;
-    tested.indexers.add(indexerMock(SysinfoType.CLUSTER_HEALTH));
-    tested.indexers.add(indexerMock(SysinfoType.CLUSTER_STATE));
-    List<Thread> t = new ArrayList<Thread>();
-    t.add(Mockito.mock(Thread.class));
-    t.add(Mockito.mock(Thread.class));
-    tested.indexerThreads.addAll(t);
-
-    tested.close();
-    Assert.assertTrue(tested.closed);
-    Assert.assertEquals(0, tested.indexerThreads.size());
-    for (SysinfoIndexer i : tested.indexers) {
-      Mockito.verify(i).stop();
-    }
-    for (Thread i : t) {
-      Mockito.verify(i).interrupt();
+    {
+      tested.close();
+      Assert.assertTrue(tested.closed);
+      Mockito.verify(scMock).close();
     }
 
+    // case - successful close
+    {
+      Mockito.reset(scMock);
+      tested.closed = false;
+      tested.indexers.add(indexerMock(SysinfoType.CLUSTER_HEALTH));
+      tested.indexers.add(indexerMock(SysinfoType.CLUSTER_STATE));
+      List<Thread> t = new ArrayList<Thread>();
+      t.add(Mockito.mock(Thread.class));
+      t.add(Mockito.mock(Thread.class));
+      tested.indexerThreads.addAll(t);
+
+      tested.close();
+      Assert.assertTrue(tested.closed);
+      Assert.assertEquals(0, tested.indexerThreads.size());
+      Mockito.verify(scMock).close();
+      for (SysinfoIndexer i : tested.indexers) {
+        Mockito.verify(i).close();
+      }
+      for (Thread i : t) {
+        Mockito.verify(i).interrupt();
+      }
+    }
   }
 
   /**
@@ -129,6 +149,7 @@ public class SysinfoRiverTest {
       ret = new SysinfoRiver(new RiverName("sysinfo", "my_sysinfo_river"), rs);
       ret.client = clientMock;
     }
+    ret.sourceClient = Mockito.mock(SourceClient.class);
     return ret;
 
   }

@@ -71,7 +71,7 @@ public class SysinfoIndexerTest {
   }
 
   @Test
-  public void runAndStop() throws Exception {
+  public void runAndClose() throws Exception {
     SourceClient scMock = Mockito.mock(SourceClient.class);
     Client tcMock = Mockito.mock(Client.class);
     SysinfoIndexer tested = new SysinfoIndexer(scMock, tcMock);
@@ -90,7 +90,7 @@ public class SysinfoIndexerTest {
       }
       Thread.sleep(70);
       Assert.assertFalse(tested.closed);
-      tested.stop();
+      tested.close();
       Thread.sleep(50);
       Assert.assertTrue(tested.closed);
     }

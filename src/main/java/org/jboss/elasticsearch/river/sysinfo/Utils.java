@@ -52,6 +52,16 @@ public class Utils {
   }
 
   /**
+   * Check if passed in value is null, or empty if it's String.
+   * 
+   * @param src value
+   * @return <code>true</code> if value is null or empty String
+   */
+  public static boolean isEmpty(Object src) {
+    return (src == null || (src instanceof String && isEmpty((String) src)));
+  }
+
+  /**
    * Parse time value from river settings/config map. Value must be number, which is normally in milliseconds, but you
    * can postfix it by one of next letters to set units
    * <ul>

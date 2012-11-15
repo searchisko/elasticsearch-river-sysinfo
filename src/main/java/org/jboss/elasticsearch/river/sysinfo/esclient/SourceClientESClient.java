@@ -21,7 +21,15 @@ import org.jboss.elasticsearch.river.sysinfo.SourceClient;
 import org.jboss.elasticsearch.river.sysinfo.SourceClientBase;
 
 /**
- * {@link SourceClient} implementation using {@link Client} instance.
+ * {@link SourceClient} implementation using passed in {@link Client} instance.
+ * <p>
+ * Use next section in river configuration if you want to process informations from local ES cluster:
+ * 
+ * <pre>
+ * "es_connection" : {
+ *   "type" : "local"
+ * }
+ * </pre>
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */
@@ -64,6 +72,14 @@ public class SourceClientESClient extends SourceClientBase {
     String res = channel.getResponseContent();
     logger.debug("performRestRequestLocally response {}", res);
     return res;
+  }
+
+  @Override
+  public void start() {
+  }
+
+  @Override
+  public void close() {
   }
 
 }
