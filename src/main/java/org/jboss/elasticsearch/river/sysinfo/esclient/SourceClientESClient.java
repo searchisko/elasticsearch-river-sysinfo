@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.rest.RestController;
@@ -24,6 +26,8 @@ import org.jboss.elasticsearch.river.sysinfo.SourceClientBase;
  * @author Vlastimil Elias (velias at redhat dot com)
  */
 public class SourceClientESClient extends SourceClientBase {
+
+  private static final ESLogger logger = Loggers.getLogger(SourceClientESClient.class);
 
   protected Client client;
 
@@ -43,11 +47,13 @@ public class SourceClientESClient extends SourceClientBase {
 
   @Override
   protected String readClusterStateInfo(Map<String, String> params) throws IOException, InterruptedException {
+    logger.debug("readClusterStateInfo with params {}", params);
     return performRestRequestLocally(stateAction, params);
   }
 
   @Override
   protected String readClusterHealthInfo(Map<String, String> params) throws IOException, InterruptedException {
+    logger.debug("readClusterHealthInfo with params {}", params);
     return performRestRequestLocally(healthAction, params);
   }
 
@@ -55,7 +61,9 @@ public class SourceClientESClient extends SourceClientBase {
       InterruptedException {
     LocalRestChannel channel = new LocalRestChannel();
     handler.handleRequest(new LocalRestRequest(params), channel);
-    return channel.getResponseContent();
+    String res = channel.getResponseContent();
+    logger.debug("performRestRequestLocally response {}", res);
+    return res;
   }
 
 }

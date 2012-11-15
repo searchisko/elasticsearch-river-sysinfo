@@ -8,7 +8,6 @@ package org.jboss.elasticsearch.river.sysinfo.esclient;
 import junit.framework.Assert;
 
 import org.elasticsearch.client.Client;
-import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESClient;
 import org.jboss.elasticsearch.river.sysinfo.testtools.ESRealClientTestBase;
 import org.junit.Test;
 
@@ -28,7 +27,6 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 
       String info = tested.readClusterStateInfo(null);
       Assert.assertTrue(info.contains("{\"cluster_name\":\"elasticsearch\","));
-      System.out.println(info);
 
     } finally {
       finalizeESClientForUnitTest();
@@ -44,7 +42,6 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 
       String info = tested.readClusterHealthInfo(null);
       Assert.assertTrue(info.contains("{\"cluster_name\":\"elasticsearch\","));
-      System.out.println(info);
 
     } finally {
       finalizeESClientForUnitTest();

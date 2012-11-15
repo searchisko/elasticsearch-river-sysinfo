@@ -95,4 +95,9 @@ public class LocalRestRequest extends AbstractRestRequest {
     return this;
   }
 
+  @Override
+  public String toString() {
+    return "LocalRestRequest [params=" + params + "]";
+  }
+
 }

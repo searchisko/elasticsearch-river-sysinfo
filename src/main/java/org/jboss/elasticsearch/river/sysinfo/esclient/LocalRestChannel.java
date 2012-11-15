@@ -47,4 +47,9 @@ public class LocalRestChannel implements RestChannel {
     return (new String(response.content(), "UTF-8")).trim();
   }
 
+  @Override
+  public String toString() {
+    return "LocalRestChannel [TIMEOUT=" + TIMEOUT + "ms, response=" + response + "]";
+  }
+
 }
