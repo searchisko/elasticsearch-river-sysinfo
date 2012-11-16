@@ -14,8 +14,11 @@ import java.util.Map;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.SettingsException;
 import org.elasticsearch.river.RiverName;
 import org.elasticsearch.river.RiverSettings;
+import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESClient;
+import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESTransportClient;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,6 +29,90 @@ import org.mockito.Mockito;
  * @author Vlastimil Elias (velias at redhat dot com)
  */
 public class SysinfoRiverTest {
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void configure_sourceClient() throws Exception {
+
+    // case - local es_commection
+    {
+      Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
+      SysinfoRiver tested = prepareRiverInstanceForTest(null);
+      tested.configure(settings);
+      Assert.assertEquals(SourceClientESClient.class, tested.sourceClient.getClass());
+    }
+
+    // case - remote es_commection
+    {
+      Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_remote.json");
+      SysinfoRiver tested = prepareRiverInstanceForTest(null);
+      tested.configure(settings);
+      Assert.assertEquals(SourceClientESTransportClient.class, tested.sourceClient.getClass());
+      Assert.assertEquals(2, ((SourceClientESTransportClient) tested.sourceClient).getTransportAddresses().length);
+    }
+
+    // TODO case - REST es_commection
+
+    // case - invalid es_commection
+    {
+      try {
+        Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
+        ((Map<String, Object>) settings.get("es_connection")).put("type", "nonsense");
+        SysinfoRiver tested = prepareRiverInstanceForTest(null);
+        tested.configure(settings);
+        Assert.fail("SettingsException must be thrown");
+      } catch (SettingsException e) {
+        // OK
+      }
+    }
+  }
+
+  @Test
+  public void configure_indexers() throws Exception {
+
+    // case - missing indexers
+    {
+      try {
+        Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
+        settings.remove("indexers");
+        SysinfoRiver tested = prepareRiverInstanceForTest(null);
+        tested.configure(settings);
+        Assert.fail("SettingsException must be thrown");
+      } catch (SettingsException e) {
+        // OK
+      }
+    }
+
+    // case - empty indexers
+    {
+      try {
+        Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
+        ((List<?>) settings.get("indexers")).clear();
+        SysinfoRiver tested = prepareRiverInstanceForTest(null);
+        tested.configure(settings);
+        Assert.fail("SettingsException must be thrown");
+      } catch (SettingsException e) {
+        // OK
+      }
+    }
+
+    // case - OK read
+    {
+      Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
+      SysinfoRiver tested = prepareRiverInstanceForTest(null);
+      tested.configure(settings);
+      Assert.assertEquals(2, tested.indexers.size());
+      SysinfoIndexer idxr = tested.indexers.get(0);
+      Assert.assertEquals(tested.sourceClient, idxr.sourceClient);
+      Assert.assertEquals(tested.client, idxr.targetClient);
+      Assert.assertEquals(SysinfoType.CLUSTER_HEALTH, idxr.infoType);
+      Assert.assertEquals("my_index_1", idxr.indexName);
+      Assert.assertEquals("my_type_1", idxr.typeName);
+      Assert.assertEquals(60 * 1000, idxr.indexingPeriod);
+      Assert.assertNotNull(idxr.params);
+    }
+
+  }
 
   @Test
   public void start() throws Exception {

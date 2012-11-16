@@ -49,14 +49,14 @@ public enum SysinfoType {
    * @throws SettingsException for bad value
    */
   public static SysinfoType parseConfiguration(String value) throws SettingsException {
-    if (value == null) {
-      throw new SettingsException("unsupported name for indexed information type: " + value);
+    if (Utils.isEmpty(value)) {
+      throw new SettingsException("indexers/info_type must be defined");
     }
     for (SysinfoType t : values()) {
       if (t.getName().equalsIgnoreCase(value))
         return t;
     }
-    throw new SettingsException("unsupported name for indexed information type: " + value);
+    throw new SettingsException("indexers/info_type contains unsupported name: " + value);
   }
 
 }

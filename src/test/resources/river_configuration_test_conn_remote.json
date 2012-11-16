@@ -1,10 +1,13 @@
 {
     "type" : "sysinfo",
     "es_connection" : {
-        "type" : "local",
-        "url"  : "https://issues.jboss.org"
+        "type"      : "remote",
+        "addresses" : [
+          {"host": "host1", "port" : "9300"},
+          {"host": "host2", "port" : "9300"}
+        ]
     },
-    "indexer" : [
+    "indexers" : [
 	    {
 	        "info_type"   : "cluster_health",
 	        "index_name"  : "my_index_1",

@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.inject.Inject;
@@ -24,6 +25,35 @@ import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESTransportCli
 
 /**
  * System Info River implementation class.
+ * <p>
+ * Example of river configuration:
+ * 
+ * <pre>
+ * {
+ *     "type" : "sysinfo",
+ *     "es_connection" : {
+ *         "type" : "local"
+ *     },
+ *     "indexers" : [
+ *       {
+ *           "info_type"   : "cluster_health",
+ *           "index_name"  : "my_index_1",
+ *           "index_type"  : "my_type_1",
+ *           "period"      : "1m",
+ *           "params" : {
+ *               "level" : "shards"
+ *           }
+ *       },
+ *       {
+ *           "info_type"   : "cluster_state",
+ *           "index_name"  : "my_index_1",
+ *           "index_type"  : "my_type_1",
+ *           "period"      : "1m"
+ *       }
+ *     ]
+ * }
+ * 
+ * </pre>
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */
@@ -109,7 +139,28 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
       throw new SettingsException("'es_connection' element of river configuration structure not found");
     }
 
-    // TODO read indexers configuration
+    List<Map<String, Object>> is = (List<Map<String, Object>>) settings.get("indexers");
+    if (is != null && !is.isEmpty()) {
+      for (Map<String, Object> ic : is) {
+        SysinfoType infoType = SysinfoType.parseConfiguration((String) ic.get("info_type"));
+        String indexName = configMandatoryString(ic, "index_name");
+        String typeName = configMandatoryString(ic, "index_type");
+        long indexingPeriod = Utils.parseTimeValue(ic, "period", 30, TimeUnit.SECONDS);
+        Map<String, String> params = (Map<String, String>) ic.get("params");
+        indexers.add(new SysinfoIndexer(sourceClient, client, infoType, indexName, typeName, indexingPeriod, params));
+      }
+    } else {
+      throw new SettingsException("'indexers' element of river configuration structure not found or is empty");
+    }
+  }
+
+  private String configMandatoryString(Map<String, Object> settings, String key) {
+    String s = (String) settings.get(key);
+    if (Utils.isEmpty(s)) {
+      throw new SettingsException("'indexers/" + key
+          + "' element of river configuration structure not found or is empty");
+    }
+    return s;
   }
 
   @Override

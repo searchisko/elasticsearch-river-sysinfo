@@ -1,0 +1,23 @@
+{
+    "type" : "sysinfo",
+    "es_connection" : {
+        "type" : "local"
+    },
+    "indexers" : [
+	    {
+	        "info_type"   : "cluster_health",
+	        "index_name"  : "my_index_1",
+	        "index_type"  : "my_type_1",
+	        "period"      : "1m",
+	        "params" : {
+	            "level" : "shards"
+	        }
+	    },
+	    {
+	        "info_type"   : "cluster_state",
+	        "index_name"  : "my_index_1",
+	        "index_type"  : "my_type_1",
+	        "period"      : "1m"
+	    }
+    ]
+}

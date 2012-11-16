@@ -55,8 +55,8 @@ public class SourceClientESTransportClientTest {
       adr1.put("host", "host1");
       adr1.put("port", "9320");
       SourceClientESTransportClient tested = new SourceClientESTransportClient(sourceClientSettings);
-      Assert.assertEquals(1, tested.trAdd.length);
-      assertInetSocketTransportAddress(tested.trAdd[0], "host1", 9320);
+      Assert.assertEquals(1, tested.transportAddresses.length);
+      assertInetSocketTransportAddress(tested.transportAddresses[0], "host1", 9320);
       Assert.assertNotNull(tested.settingsConf);
       Assert.assertTrue(tested.settingsConf.isEmpty());
     }
@@ -73,9 +73,9 @@ public class SourceClientESTransportClientTest {
       settings.put("param2", "value2");
 
       SourceClientESTransportClient tested = new SourceClientESTransportClient(sourceClientSettings);
-      Assert.assertEquals(2, tested.trAdd.length);
-      assertInetSocketTransportAddress(tested.trAdd[0], "host1", 9320);
-      assertInetSocketTransportAddress(tested.trAdd[1], "host2", 9321);
+      Assert.assertEquals(2, tested.transportAddresses.length);
+      assertInetSocketTransportAddress(tested.transportAddresses[0], "host1", 9320);
+      assertInetSocketTransportAddress(tested.transportAddresses[1], "host2", 9321);
       Assert.assertNotNull(tested.settingsConf);
       Assert.assertEquals("value1", tested.settingsConf.get("param1"));
       Assert.assertEquals("value2", tested.settingsConf.get("param2"));

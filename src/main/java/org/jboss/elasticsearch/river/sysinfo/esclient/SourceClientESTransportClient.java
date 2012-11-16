@@ -49,8 +49,8 @@ public class SourceClientESTransportClient extends SourceClientESClient {
 
   private static final ESLogger logger = Loggers.getLogger(SourceClientESTransportClient.class);
 
-  TransportAddress[] trAdd;
-  Map<String, String> settingsConf;
+  protected TransportAddress[] transportAddresses;
+  protected Map<String, String> settingsConf;
 
   /**
    * Create and configure client.
@@ -65,7 +65,7 @@ public class SourceClientESTransportClient extends SourceClientESClient {
     if (adr == null || adr.isEmpty()) {
       throw new SettingsException("es_connection/addresses element of configuration structure not found or is empty");
     }
-    trAdd = new TransportAddress[adr.size()];
+    transportAddresses = new TransportAddress[adr.size()];
     int i = 0;
     for (Map<String, Object> a : adr) {
       if (Utils.isEmpty(a.get("host"))) {
@@ -76,7 +76,7 @@ public class SourceClientESTransportClient extends SourceClientESClient {
         throw new SettingsException(
             "es_connection/addresses/port element of configuration structure not found or is empty");
       }
-      trAdd[i++] = new InetSocketTransportAddress((String) a.get("host"), Utils.nodeIntegerValue(a.get("port")));
+      transportAddresses[i++] = new InetSocketTransportAddress((String) a.get("host"), Utils.nodeIntegerValue(a.get("port")));
     }
 
     settingsConf = (Map<String, String>) sourceClientSettings.get("settings");
@@ -99,7 +99,7 @@ public class SourceClientESTransportClient extends SourceClientESClient {
       return;
     }
     TransportClient tclient = new TransportClient(ImmutableSettings.settingsBuilder().put(settingsConf).build());
-    tclient.addTransportAddresses(trAdd);
+    tclient.addTransportAddresses(transportAddresses);
     client = tclient;
   }
 
@@ -112,6 +112,14 @@ public class SourceClientESTransportClient extends SourceClientESClient {
         client = null;
       }
     }
+  }
+
+  public TransportAddress[] getTransportAddresses() {
+    return transportAddresses;
+  }
+
+  public Map<String, String> getSettingsConf() {
+    return settingsConf;
   }
 
 }
