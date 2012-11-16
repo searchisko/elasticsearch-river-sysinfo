@@ -42,9 +42,12 @@ public class LocalRestChannel implements RestChannel {
       Thread.sleep(50);
     }
     if (response.status() != RestStatus.OK) {
-      throw new IOException("response status is " + response.status() + " and content " + response.content());
+      String c = "";
+      if (response.content() != null)
+        c = new String(response.content(), 0, response.contentLength(), "UTF-8");
+      throw new IOException("response status is " + response.status() + " and content " + c.trim());
     }
-    return (new String(response.content(), "UTF-8")).trim();
+    return (new String(response.content(), 0, response.contentLength(), "UTF-8")).trim();
   }
 
   @Override

@@ -13,6 +13,7 @@ import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.SettingsFilter;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 import org.elasticsearch.rest.action.admin.cluster.health.RestClusterHealthAction;
@@ -50,7 +51,7 @@ public class SourceClientESClient extends SourceClientBase {
     Settings settings = ImmutableSettings.Builder.EMPTY_SETTINGS;
     RestController controller = new RestController(settings);
     healthAction = new RestClusterHealthAction(settings, client, controller);
-    stateAction = new RestClusterStateAction(settings, client, controller, null);
+    stateAction = new RestClusterStateAction(settings, client, controller, new SettingsFilter(settings));
   }
 
   @Override

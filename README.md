@@ -4,7 +4,7 @@ System info River for ElasticSearch
 System info river component for [ElasticSearch](http://www.elasticsearch.org) collects in defined intervals system informations from ElasticSearch cluster, and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote cluster REST protocol may be used too to decrease different ES versions impedance.
 
-*THIS PLUGIN IS IN EARLY ALPHA PHASE OF DEVELOPMENT NOW!!!*
+*THIS RIVER IS IN BETA PHASE OF DEVELOPMENT NOW, main features here and working, new features will be added now (other information types and REST support)*
 
 In order to install the plugin into ElasticSearch, simply run: `bin/plugin -install jbossorg/elasticsearch-river-sysinfo/1.0.0`
 
@@ -35,8 +35,8 @@ Creation of the System info river can be done using:
 	          }
 	      },{
 	          "info_type"   : "cluster_state",
-	          "index_name"  : "my_index_1",
-	          "index_type"  : "my_type_1",
+	          "index_name"  : "my_index_2",
+	          "index_type"  : "my_type_2",
 	          "period"      : "1m"
 	      }
 	    ]
@@ -97,7 +97,7 @@ Indexer configuration is:
 Options are:
 	
 * `info_type` mandatory type of information collected by this indexer. See table below for list of all available types.
-* `index_name` mandatory name of index used to store information.
+* `index_name` mandatory name of index used to store information. Note that this river can produce big amount of data over time, so consider use of [rolling index](http://github.com/elasticsearch/elasticsearch/issues/1500) here.
 * `index_type` mandatory [type](http://www.elasticsearch.org/guide/appendix/glossary.html#type) used to stored information into search index. You should define [Mapping](http://www.elasticsearch.org/guide/reference/mapping/) for this type. You should enable [Automatic Timestamp Field](http://www.elasticsearch.org/guide/reference/mapping/timestamp-field.html) in this mapping to have consistent timestamps available in stored data.
 * `period` mandatory period of information collecting in milliseconds. You can use postfixes appended to the number to define units: `s` for seconds, `m` for minutes, `h` for hours, `d` for days and `w` for weeks. So for example value `5h` means five fours, `2w` means two weeks.
 * `params` optional map of additional parameters to narrow down collected information. Available parameters depend on `info_type`, and can be found as 'Request parameters' in relevant API doc for each type. Some additional parameters are described in note, see table below.    

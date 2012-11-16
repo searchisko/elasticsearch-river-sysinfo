@@ -58,7 +58,7 @@ public class LocalRestRequest extends AbstractRestRequest {
 
   @Override
   public String header(String name) {
-    return null;
+    return "";
   }
 
   @Override
