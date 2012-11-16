@@ -34,7 +34,7 @@ public class SysinfoRiverTest {
   @Test
   public void configure_sourceClient() throws Exception {
 
-    // case - local es_commection
+    // case - local es_connection
     {
       Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
       SysinfoRiver tested = prepareRiverInstanceForTest(null);
@@ -42,7 +42,7 @@ public class SysinfoRiverTest {
       Assert.assertEquals(SourceClientESClient.class, tested.sourceClient.getClass());
     }
 
-    // case - remote es_commection
+    // case - remote es_connection
     {
       Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_remote.json");
       SysinfoRiver tested = prepareRiverInstanceForTest(null);
@@ -51,9 +51,9 @@ public class SysinfoRiverTest {
       Assert.assertEquals(2, ((SourceClientESTransportClient) tested.sourceClient).getTransportAddresses().length);
     }
 
-    // TODO case - REST es_commection
+    // TODO case - REST es_connection
 
-    // case - invalid es_commection
+    // case - invalid es_connection
     {
       try {
         Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
