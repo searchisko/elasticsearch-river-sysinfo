@@ -118,6 +118,8 @@ Available information types:
 	| indices_status      | http://www.elasticsearch.org/guide/reference/api/admin-indices-status.html      | `index` param with csv list of indices to get status for, optional             |
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 	| indices_stats       | http://www.elasticsearch.org/guide/reference/api/admin-indices-stats.html       | `index` param with csv list of indices to get statistics for, optional         |
+	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+	| indices_segments    | http://www.elasticsearch.org/guide/reference/api/admin-indices-segments.html    | `index` param with csv list of indices to get statistics for, optional         |
 	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 License

@@ -20,6 +20,7 @@ import org.elasticsearch.rest.action.admin.cluster.health.RestClusterHealthActio
 import org.elasticsearch.rest.action.admin.cluster.node.info.RestNodesInfoAction;
 import org.elasticsearch.rest.action.admin.cluster.node.stats.RestNodesStatsAction;
 import org.elasticsearch.rest.action.admin.cluster.state.RestClusterStateAction;
+import org.elasticsearch.rest.action.admin.indices.segments.RestIndicesSegmentsAction;
 import org.elasticsearch.rest.action.admin.indices.stats.RestIndicesStatsAction;
 import org.elasticsearch.rest.action.admin.indices.status.RestIndicesStatusAction;
 import org.jboss.elasticsearch.river.sysinfo.SourceClient;
@@ -50,6 +51,7 @@ public class SourceClientESClient extends SourceClientBase {
   private RestNodesStatsAction nodesStatsAction;
   private RestIndicesStatusAction indicesStatusAction;
   private RestIndicesStatsAction indicesStatsAction;
+  private RestIndicesSegmentsAction indicesSegmentsAction;
 
   /**
    * @param client ES cluster to be used for calls
@@ -65,6 +67,7 @@ public class SourceClientESClient extends SourceClientBase {
     nodesStatsAction = new RestNodesStatsAction(settings, client, controller);
     indicesStatusAction = new RestIndicesStatusAction(settings, client, controller, settingsFilter);
     indicesStatsAction = new RestIndicesStatsAction(settings, client, controller);
+    indicesSegmentsAction = new RestIndicesSegmentsAction(settings, client, controller);
   }
 
   @Override
@@ -101,6 +104,12 @@ public class SourceClientESClient extends SourceClientBase {
   protected String readIndicesStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
     logger.debug("readIndicesStatsInfo with params {}", params);
     return performRestRequestLocally(indicesStatsAction, params);
+  }
+
+  @Override
+  protected String readIndicesSegmentsInfo(Map<String, String> params) throws IOException, InterruptedException {
+    logger.debug("readIndicesSegmentsInfo with params {}", params);
+    return performRestRequestLocally(indicesSegmentsAction, params);
   }
 
   private String performRestRequestLocally(RestHandler handler, Map<String, String> params) throws IOException,

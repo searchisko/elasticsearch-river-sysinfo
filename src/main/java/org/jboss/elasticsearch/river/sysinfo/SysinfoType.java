@@ -40,7 +40,11 @@ public enum SysinfoType {
   /**
    * http://www.elasticsearch.org/guide/reference/api/admin-indices-stats.html
    */
-  INDICES_STATS("indices_stats");
+  INDICES_STATS("indices_stats"),
+  /**
+   * http://www.elasticsearch.org/guide/reference/api/admin-indices-segments.html
+   */
+  INDICES_SEGMENTS("indices_segments");
 
   private String name;
 

@@ -33,6 +33,8 @@ public abstract class SourceClientBase implements SourceClient {
       return readIndicesStatusInfo(params);
     case INDICES_STATS:
       return readIndicesStatsInfo(params);
+    case INDICES_SEGMENTS:
+      return readIndicesSegmentsInfo(params);
     default:
       throw new UnsupportedOperationException("Unsupported information type: " + infoType);
     }
@@ -51,5 +53,8 @@ public abstract class SourceClientBase implements SourceClient {
   protected abstract String readIndicesStatusInfo(Map<String, String> params) throws IOException, InterruptedException;
 
   protected abstract String readIndicesStatsInfo(Map<String, String> params) throws IOException, InterruptedException;
+
+  protected abstract String readIndicesSegmentsInfo(Map<String, String> params) throws IOException,
+      InterruptedException;
 
 }

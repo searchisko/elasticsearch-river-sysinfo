@@ -132,6 +132,30 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
     }
   }
 
+  @Test
+  public synchronized void readIndicesSegmentsInfo() throws Exception {
+    try {
+      Client client = prepareESClientForUnitTest();
+
+      SourceClientESClient tested = new SourceClientESClient(client);
+
+      String info = tested.readIndicesSegmentsInfo(null);
+      assertStartsWith("{\"ok\":true,\"_shards\":{\"total\":0,\"successful\":0,\"failed\":0},\"indices\":{}}", info);
+
+      Map<String, String> params = new HashMap<String, String>();
+      params.put("index", "test");
+      info = tested.readIndicesSegmentsInfo(params);
+      Assert.fail("IOException must be thrown due missing index");
+    } catch (IOException e) {
+      Assert
+          .assertEquals(
+              "response status is NOT_FOUND with content {\"error\":\"IndexMissingException[[test] missing]\",\"status\":404}",
+              e.getMessage());
+    } finally {
+      finalizeESClientForUnitTest();
+    }
+  }
+
   protected void assertStartsWith(String expected, String actual) {
     if (expected == null && actual == null)
       return;

@@ -32,6 +32,7 @@ public class SourceClientBaseTest {
     Assert.assertEquals("NS_noparams", tested.readSysinfoValue(SysinfoType.CLUSTER_NODES_STATS, null));
     Assert.assertEquals("IS", tested.readSysinfoValue(SysinfoType.INDICES_STATUS, params));
     Assert.assertEquals("IST", tested.readSysinfoValue(SysinfoType.INDICES_STATS, params));
+    Assert.assertEquals("ISEG", tested.readSysinfoValue(SysinfoType.INDICES_SEGMENTS, params));
 
     try {
       tested.readSysinfoValue(null, null);
@@ -87,6 +88,11 @@ public class SourceClientBaseTest {
     @Override
     protected String readIndicesStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
       return ret("IST", params);
+    }
+
+    @Override
+    protected String readIndicesSegmentsInfo(Map<String, String> params) throws IOException, InterruptedException {
+      return ret("ISEG", params);
     }
   }
 
