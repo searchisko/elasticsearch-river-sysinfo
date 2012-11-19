@@ -81,7 +81,7 @@ You can use this connection mode in case of compatibility or networking problems
 
 ## Configuration of indexers
 Second significant part of the river configuration is list of `indexers`. Each indexer defines what information will be collected in which interval, and where will be stored in ES indexes.
-Information is stored to the ES indexes in cluster where river runs.
+Information is stored to the ES indexes in cluster where river runs. Structure of stored information is exactly same as returned from ElasticSearch API call.
 Indexer configuration is:
 
 	{
@@ -98,19 +98,22 @@ Options are:
 	
 * `info_type` mandatory type of information collected by this indexer. See table below for list of all available types.
 * `index_name` mandatory name of index used to store information. Note that this river can produce big amount of data over time, so consider use of [rolling index](http://github.com/elasticsearch/elasticsearch/issues/1500) here.
-* `index_type` mandatory [type](http://www.elasticsearch.org/guide/appendix/glossary.html#type) used to stored information into search index. You should define [Mapping](http://www.elasticsearch.org/guide/reference/mapping/) for this type. You should enable [Automatic Timestamp Field](http://www.elasticsearch.org/guide/reference/mapping/timestamp-field.html) in this mapping to have consistent timestamps available in stored data.
+* `index_type` mandatory [type](http://www.elasticsearch.org/guide/appendix/glossary.html#type) used to stored information into search index. You should define [Mapping](http://www.elasticsearch.org/guide/reference/mapping/) for this type. You should enable [Automatic Timestamp Field](http://www.elasticsearch.org/guide/reference/mapping/timestamp-field.html) in this mapping to have consistent timestamp available in stored data.
 * `period` mandatory period of information collecting in milliseconds. You can use postfixes appended to the number to define units: `s` for seconds, `m` for minutes, `h` for hours, `d` for days and `w` for weeks. So for example value `5h` means five fours, `2w` means two weeks.
-* `params` optional map of additional parameters to narrow down collected information. Available parameters depend on `info_type`, and can be found as 'Request parameters' in relevant API doc for each type. Some additional parameters are described in note, see table below.    
+* `params` optional map of additional parameters to narrow down collected information. Available parameters depend on `info_type`, and can be found as 'Request parameters' in relevant ES API doc for each type. Some additional parameters (passed as URL parts in API doc) are described in note, see table below.
 
 Available information types:
 
-	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	| info_type       | relevant API doc                                                            | note                                                                           |  
-	| --------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | 
-	| cluster_health  | http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html  | `index` param for csv list if indices to get just the specified indices health |
-	| --------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-	| cluster_state   | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html   |                                                                                |
-	| --------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	| info_type          | relevant ES API doc                                                            | note                                                                           |  
+	|--------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------| 
+	| cluster_health     | http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html     | `index` param for csv list of indices to get just the specified indices health |
+	|--------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+	| cluster_state      | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html      |                                                                                |
+	|--------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+	| cluster_nodes_info | http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-info.html | `nodeId` param to specify csv list of nodes to get info for named ones only    |
+	|--------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+	
 
 License
 -------

@@ -17,6 +17,7 @@ import org.elasticsearch.common.settings.SettingsFilter;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 import org.elasticsearch.rest.action.admin.cluster.health.RestClusterHealthAction;
+import org.elasticsearch.rest.action.admin.cluster.node.info.RestNodesInfoAction;
 import org.elasticsearch.rest.action.admin.cluster.state.RestClusterStateAction;
 import org.jboss.elasticsearch.river.sysinfo.SourceClient;
 import org.jboss.elasticsearch.river.sysinfo.SourceClientBase;
@@ -42,6 +43,7 @@ public class SourceClientESClient extends SourceClientBase {
 
   private RestClusterHealthAction healthAction;
   private RestClusterStateAction stateAction;
+  private RestNodesInfoAction nodesInfoAction;
 
   /**
    * @param client ES cluster to be used for calls
@@ -49,9 +51,11 @@ public class SourceClientESClient extends SourceClientBase {
   public SourceClientESClient(Client client) {
     this.client = client;
     Settings settings = ImmutableSettings.Builder.EMPTY_SETTINGS;
+    SettingsFilter settingsFilter = new SettingsFilter(settings);
     RestController controller = new RestController(settings);
     healthAction = new RestClusterHealthAction(settings, client, controller);
-    stateAction = new RestClusterStateAction(settings, client, controller, new SettingsFilter(settings));
+    stateAction = new RestClusterStateAction(settings, client, controller, settingsFilter);
+    nodesInfoAction = new RestNodesInfoAction(settings, client, controller, settingsFilter);
   }
 
   @Override
@@ -64,6 +68,12 @@ public class SourceClientESClient extends SourceClientBase {
   protected String readClusterHealthInfo(Map<String, String> params) throws IOException, InterruptedException {
     logger.debug("readClusterHealthInfo with params {}", params);
     return performRestRequestLocally(healthAction, params);
+  }
+
+  @Override
+  protected String readClusterNodesInfoInfo(Map<String, String> params) throws IOException, InterruptedException {
+    logger.debug("readClusterNodesInfoInfo with params {}", params);
+    return performRestRequestLocally(nodesInfoAction, params);
   }
 
   private String performRestRequestLocally(RestHandler handler, Map<String, String> params) throws IOException,

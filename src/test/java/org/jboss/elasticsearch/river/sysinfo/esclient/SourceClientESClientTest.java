@@ -47,4 +47,19 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
       finalizeESClientForUnitTest();
     }
   }
+
+  @Test
+  public void readClusterNodesInfoInfo() throws Exception {
+    try {
+      Client client = prepareESClientForUnitTest();
+
+      SourceClientESClient tested = new SourceClientESClient(client);
+
+      String info = tested.readClusterHealthInfo(null);
+      Assert.assertTrue(info.contains("{\"cluster_name\":\"elasticsearch\","));
+
+    } finally {
+      finalizeESClientForUnitTest();
+    }
+  }
 }

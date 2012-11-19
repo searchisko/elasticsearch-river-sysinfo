@@ -28,6 +28,7 @@ public class SourceClientBaseTest {
     Tested tested = new Tested();
     Assert.assertEquals("SI", tested.readSysinfoValue(SysinfoType.CLUSTER_STATE, params));
     Assert.assertEquals("HI_noparams", tested.readSysinfoValue(SysinfoType.CLUSTER_HEALTH, null));
+    Assert.assertEquals("NI_noparams", tested.readSysinfoValue(SysinfoType.CLUSTER_NODES_INFO, null));
 
     try {
       tested.readSysinfoValue(null, null);
@@ -63,6 +64,11 @@ public class SourceClientBaseTest {
 
     @Override
     public void close() {
+    }
+
+    @Override
+    protected String readClusterNodesInfoInfo(Map<String, String> params) throws IOException, InterruptedException {
+      return ret("NI", params);
     }
 
   }
