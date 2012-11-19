@@ -45,7 +45,7 @@ public class LocalRestChannel implements RestChannel {
       String c = "";
       if (response.content() != null)
         c = new String(response.content(), 0, response.contentLength(), "UTF-8");
-      throw new IOException("response status is " + response.status() + " and content " + c.trim());
+      throw new IOException("response status is " + response.status() + " with content " + c.trim());
     }
     return (new String(response.content(), 0, response.contentLength(), "UTF-8")).trim();
   }

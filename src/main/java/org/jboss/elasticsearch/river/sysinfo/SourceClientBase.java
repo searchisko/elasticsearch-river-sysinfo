@@ -27,6 +27,10 @@ public abstract class SourceClientBase implements SourceClient {
       return readClusterStateInfo(params);
     case CLUSTER_NODES_INFO:
       return readClusterNodesInfoInfo(params);
+    case CLUSTER_NODES_STATS:
+      return readClusterNodesStatsInfo(params);
+    case INDICES_STATUS:
+      return readIndicesStatusInfo(params);
       // TODO implement other types of informations
     default:
       throw new UnsupportedOperationException("Unsupported information type: " + infoType);
@@ -38,6 +42,12 @@ public abstract class SourceClientBase implements SourceClient {
   protected abstract String readClusterHealthInfo(Map<String, String> params) throws IOException, InterruptedException;
 
   protected abstract String readClusterNodesInfoInfo(Map<String, String> params) throws IOException,
+      InterruptedException;
+
+  protected abstract String readClusterNodesStatsInfo(Map<String, String> params) throws IOException,
+      InterruptedException;
+
+  protected abstract String readIndicesStatusInfo(Map<String, String> params) throws IOException,
       InterruptedException;
 
 }

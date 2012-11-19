@@ -28,7 +28,15 @@ public enum SysinfoType {
   /**
    * http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-info.html
    */
-  CLUSTER_NODES_INFO("cluster_nodes_info");
+  CLUSTER_NODES_INFO("cluster_nodes_info"),
+  /**
+   * http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-stats.html
+   */
+  CLUSTER_NODES_STATS("cluster_nodes_stats"),
+  /**
+   * http://www.elasticsearch.org/guide/reference/api/admin-indices-status.html
+   */
+  INDICES_STATUS("indices_status");
 
   private String name;
 

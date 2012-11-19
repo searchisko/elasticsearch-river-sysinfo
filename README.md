@@ -104,16 +104,19 @@ Options are:
 
 Available information types:
 
-	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	| info_type          | relevant ES API doc                                                            | note                                                                           |  
-	|--------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------| 
-	| cluster_health     | http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html     | `index` param for csv list of indices to get just the specified indices health |
-	|--------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| cluster_state      | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html      |                                                                                |
-	|--------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| cluster_nodes_info | http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-info.html | `nodeId` param to specify csv list of nodes to get info for named ones only    |
-	|--------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	
+	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	| info_type           | relevant ES API doc                                                             | note                                                                           |  
+	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------| 
+	| cluster_health      | http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html      | `index` param for csv list of indices to get just the specified indices health |
+	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+	| cluster_state       | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html       |                                                                                |
+	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+	| cluster_nodes_info  | http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-info.html  | `nodeId` param to specify csv list of nodes to get info for named ones only    |
+	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+	| cluster_nodes_stats | http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-stats.html | `nodeId` param to specify csv list of nodes to get info for named ones only    |
+	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+	| indices_status      | http://www.elasticsearch.org/guide/reference/api/admin-indices-status.html      | `index` param with csv list of indices to get status for, mandatory            |
+	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 
 License
 -------

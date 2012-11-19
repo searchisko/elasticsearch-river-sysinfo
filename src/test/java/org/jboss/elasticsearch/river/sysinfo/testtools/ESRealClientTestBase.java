@@ -73,7 +73,8 @@ public abstract class ESRealClientTestBase {
 
       client = node.client();
 
-      // Thread.sleep(100);
+      // wait a moment for initialization
+      Thread.sleep(100);
 
       return client;
     } catch (Exception e) {

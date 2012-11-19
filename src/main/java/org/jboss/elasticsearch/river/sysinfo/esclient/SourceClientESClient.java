@@ -18,7 +18,9 @@ import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 import org.elasticsearch.rest.action.admin.cluster.health.RestClusterHealthAction;
 import org.elasticsearch.rest.action.admin.cluster.node.info.RestNodesInfoAction;
+import org.elasticsearch.rest.action.admin.cluster.node.stats.RestNodesStatsAction;
 import org.elasticsearch.rest.action.admin.cluster.state.RestClusterStateAction;
+import org.elasticsearch.rest.action.admin.indices.status.RestIndicesStatusAction;
 import org.jboss.elasticsearch.river.sysinfo.SourceClient;
 import org.jboss.elasticsearch.river.sysinfo.SourceClientBase;
 
@@ -44,6 +46,8 @@ public class SourceClientESClient extends SourceClientBase {
   private RestClusterHealthAction healthAction;
   private RestClusterStateAction stateAction;
   private RestNodesInfoAction nodesInfoAction;
+  private RestNodesStatsAction nodesStatsAction;
+  private RestIndicesStatusAction indicesStatusAction;
 
   /**
    * @param client ES cluster to be used for calls
@@ -56,6 +60,8 @@ public class SourceClientESClient extends SourceClientBase {
     healthAction = new RestClusterHealthAction(settings, client, controller);
     stateAction = new RestClusterStateAction(settings, client, controller, settingsFilter);
     nodesInfoAction = new RestNodesInfoAction(settings, client, controller, settingsFilter);
+    nodesStatsAction = new RestNodesStatsAction(settings, client, controller);
+    indicesStatusAction = new RestIndicesStatusAction(settings, client, controller, settingsFilter);
   }
 
   @Override
@@ -74,6 +80,18 @@ public class SourceClientESClient extends SourceClientBase {
   protected String readClusterNodesInfoInfo(Map<String, String> params) throws IOException, InterruptedException {
     logger.debug("readClusterNodesInfoInfo with params {}", params);
     return performRestRequestLocally(nodesInfoAction, params);
+  }
+
+  @Override
+  protected String readClusterNodesStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
+    logger.debug("readClusterNodesStatsInfo with params {}", params);
+    return performRestRequestLocally(nodesStatsAction, params);
+  }
+
+  @Override
+  protected String readIndicesStatusInfo(Map<String, String> params) throws IOException, InterruptedException {
+    logger.debug("readIndicesStatusInfo with params {}", params);
+    return performRestRequestLocally(indicesStatusAction, params);
   }
 
   private String performRestRequestLocally(RestHandler handler, Map<String, String> params) throws IOException,
