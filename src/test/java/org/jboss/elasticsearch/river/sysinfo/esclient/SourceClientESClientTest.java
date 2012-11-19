@@ -89,9 +89,38 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 
       SourceClientESClient tested = new SourceClientESClient(client);
 
+      String info = tested.readIndicesStatusInfo(null);
+      assertStartsWith("{\"ok\":true,\"_shards\":{\"total\":0,\"successful\":0,\"failed\":0},\"indices\":{}}", info);
+
       Map<String, String> params = new HashMap<String, String>();
       params.put("index", "test");
-      String info = tested.readIndicesStatusInfo(params);
+      info = tested.readIndicesStatusInfo(params);
+      Assert.fail("IOException must be thrown due missing index");
+    } catch (IOException e) {
+      Assert
+          .assertEquals(
+              "response status is NOT_FOUND with content {\"error\":\"IndexMissingException[[test] missing]\",\"status\":404}",
+              e.getMessage());
+    } finally {
+      finalizeESClientForUnitTest();
+    }
+  }
+
+  @Test
+  public synchronized void readIndicesStatsInfo() throws Exception {
+    try {
+      Client client = prepareESClientForUnitTest();
+
+      SourceClientESClient tested = new SourceClientESClient(client);
+
+      String info = tested.readIndicesStatsInfo(null);
+      assertStartsWith(
+          "{\"ok\":true,\"_shards\":{\"total\":0,\"successful\":0,\"failed\":0},\"_all\":{\"primaries\":{},\"total\":{},\"indices\":{}}}",
+          info);
+
+      Map<String, String> params = new HashMap<String, String>();
+      params.put("index", "test");
+      info = tested.readIndicesStatsInfo(params);
       Assert.fail("IOException must be thrown due missing index");
     } catch (IOException e) {
       Assert
