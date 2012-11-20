@@ -44,6 +44,7 @@ Creation of the System info river can be done using:
 	'
 
 The example above lists basic configuration used to store two types of information about cluster where river runs. Detailed description of configuration follows in next chapters.
+Other examples of configuration can be found in [test resources](https://github.com/jbossorg/elasticsearch-river-sysinfo/tree/master/src/test/resources).
 
 ## Connection to the monitored ES cluster
 Connection used to collect ES cluster system informations is configured using `es_connection` element. Content depends on type of connection. There are three types available.  
@@ -77,7 +78,20 @@ Optionally you can define other connection `settings` as described in the [Trans
 REST mode uses ElasticSearch [HTTP REST API](http://www.elasticsearch.org/guide/reference/modules/http.html) to collect system informations from remote ES cluster.
 You can use this connection mode in case of compatibility or networking problems with `remote` mode. Note that performance of REST API is commonly worse than binary transport mechanism behind `remote` mode.
 
-//TODO after implemented
+	"es_connection" : {
+	  "type"     : "rest",
+	  "urlBase"  : "http://localhost:9200",
+	  "timeout"  : "1s",
+	  "username" : "myusername",
+	  "pwd"      : "mypassword"
+	 }
+
+Configuration options:
+
+* `urlBase` mandatory base URL of remote ES cluster to be used for http(s) REST API calls.
+* `timeout` optional timeout for http(s) requests, default 5 second.
+* `username` optional username for http basic authentication.
+* `pwd` optional password for http basic authentication.
 
 ## Configuration of indexers
 Second significant part of the river configuration is list of `indexers`. Each indexer defines what information will be collected in which interval, and where will be stored in ES indexes.
@@ -94,7 +108,7 @@ Indexer configuration is:
 	  }
 	}
 
-Options are:
+Configuration options:
 	
 * `info_type` mandatory type of information collected by this indexer. See table below for list of all available types.
 * `index_name` mandatory name of index used to store information. Note that this river can produce big amount of data over time, so consider use of [rolling index](http://github.com/elasticsearch/elasticsearch/issues/1500) here.
@@ -109,7 +123,7 @@ Available information types:
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------| 
 	| cluster_health      | http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html      | `index` param for csv list of indices to get health for, optional              |
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| cluster_state       | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html       |                                                                                |
+	| cluster_state       | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html       |  set "filter_metadata" param to "true" to prevent performance problems         |
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 	| cluster_nodes_info  | http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-info.html  | `nodeId` param to specify csv list of nodes to get info for, optional          |
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|

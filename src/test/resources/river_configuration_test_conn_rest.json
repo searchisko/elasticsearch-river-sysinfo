@@ -1,7 +1,8 @@
 {
     "type" : "sysinfo",
     "es_connection" : {
-        "type" : "local"
+        "type"      : "rest",
+        "urlBase"   : "http://localhost:9200"
     },
     "indexers" : [
 	    {

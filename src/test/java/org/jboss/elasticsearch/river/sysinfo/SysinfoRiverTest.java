@@ -51,7 +51,14 @@ public class SysinfoRiverTest {
       Assert.assertEquals(2, ((SourceClientESTransportClient) tested.sourceClient).getTransportAddresses().length);
     }
 
-    // TODO case - REST es_connection
+    // case - REST es_connection
+    {
+      Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_rest.json");
+      SysinfoRiver tested = prepareRiverInstanceForTest(null);
+      tested.configure(settings);
+      Assert.assertEquals(SourceClientREST.class, tested.sourceClient.getClass());
+      Assert.assertEquals("http://localhost:9200/", ((SourceClientREST) tested.sourceClient).restAPIUrlBase);
+    }
 
     // case - invalid es_connection
     {
@@ -101,14 +108,14 @@ public class SysinfoRiverTest {
       Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
       SysinfoRiver tested = prepareRiverInstanceForTest(null);
       tested.configure(settings);
-      Assert.assertEquals(2, tested.indexers.size());
+      Assert.assertEquals(7, tested.indexers.size());
       SysinfoIndexer idxr = tested.indexers.get(0);
       Assert.assertEquals(tested.sourceClient, idxr.sourceClient);
       Assert.assertEquals(tested.client, idxr.targetClient);
       Assert.assertEquals(SysinfoType.CLUSTER_HEALTH, idxr.infoType);
-      Assert.assertEquals("my_index_1", idxr.indexName);
-      Assert.assertEquals("my_type_1", idxr.typeName);
-      Assert.assertEquals(60 * 1000, idxr.indexingPeriod);
+      Assert.assertEquals("my_sysinfo_index", idxr.indexName);
+      Assert.assertEquals("cluster_health", idxr.typeName);
+      Assert.assertEquals(30 * 1000, idxr.indexingPeriod);
       Assert.assertNotNull(idxr.params);
     }
 

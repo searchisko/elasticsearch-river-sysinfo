@@ -119,10 +119,10 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
 
     if (!closed)
       throw new IllegalStateException("Sysinfo River must be stopped to configure it!");
-
+    String type = null;
     if (settings.containsKey("es_connection")) {
       Map<String, Object> sourceClientSettings = (Map<String, Object>) settings.get("es_connection");
-      String type = XContentMapValues.nodeStringValue(sourceClientSettings.get("type"), null);
+      type = XContentMapValues.nodeStringValue(sourceClientSettings.get("type"), null);
       if (Utils.isEmpty(type)) {
         throw new SettingsException("es_connection/type element of configuration structure not found or empty");
       }
@@ -131,9 +131,10 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
       } else if ("remote".equalsIgnoreCase(type)) {
         sourceClient = new SourceClientESTransportClient(sourceClientSettings);
       } else if ("rest".equalsIgnoreCase(type)) {
-        // TODO create SourceClientREST
+        sourceClient = new SourceClientREST(sourceClientSettings);
       } else {
-        throw new SettingsException("es_connection/type value " + type + " is invalid. Use one of local, remote, rest");
+        throw new SettingsException("es_connection/type value '" + type
+            + "' is invalid. Use one of local, remote, rest");
       }
     } else {
       throw new SettingsException("'es_connection' element of river configuration structure not found");
@@ -152,6 +153,8 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
     } else {
       throw new SettingsException("'indexers' element of river configuration structure not found or is empty");
     }
+
+    logger.info("Sysinfo River configured for connection type '{}' and {} indexers.", type, indexers.size());
   }
 
   private String configMandatoryString(Map<String, Object> settings, String key) {

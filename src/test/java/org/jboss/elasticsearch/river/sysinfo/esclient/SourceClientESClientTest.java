@@ -23,14 +23,14 @@ import org.junit.Test;
 public class SourceClientESClientTest extends ESRealClientTestBase {
 
   @Test
-  public synchronized void readStateInfo() throws Exception {
+  public synchronized void readClusterStateInfo() throws Exception {
     try {
       Client client = prepareESClientForUnitTest();
 
       SourceClientESClient tested = new SourceClientESClient(client);
 
       String info = tested.readClusterStateInfo(null);
-      assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"master_node\":\"1\",\"blocks\":", info);
+      assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"master_node\":\"", info);
 
     } finally {
       finalizeESClientForUnitTest();
@@ -38,7 +38,7 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
   }
 
   @Test
-  public synchronized void readHealthInfo() throws Exception {
+  public synchronized void readClusterHealthInfo() throws Exception {
     try {
       Client client = prepareESClientForUnitTest();
 
