@@ -4,14 +4,14 @@ System info River for ElasticSearch
 System info river component for [ElasticSearch](http://www.elasticsearch.org) collects in defined intervals system informations from ElasticSearch cluster, and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote cluster REST protocol may be used too to decrease different ES versions impedance.
 
-*THIS RIVER IS IN BETA PHASE OF DEVELOPMENT NOW, main features here and working, new features will be added now (other information types and REST support)*
-
 In order to install the plugin into ElasticSearch, simply run: `bin/plugin -install jbossorg/elasticsearch-river-sysinfo/1.0.0`
 
 	---------------------------------------------------
 	| Sysinfo River | ElasticSearch    | Release date |
 	|-------------------------------------------------|
 	| master        | 0.19.11          |              |
+	|-------------------------------------------------|
+	| 1.1.0         | 0.19.11          | 20.11.2012   |
 	---------------------------------------------------
 
 For changelog, planned milestones/enhancements and known bugs see [github issue tracker](https://github.com/jbossorg/elasticsearch-river-sysinfo/issues) please.
@@ -123,7 +123,7 @@ Available information types:
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------| 
 	| cluster_health      | http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html      | `index` param for csv list of indices to get health for, optional              |
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| cluster_state       | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html       |  set "filter_metadata" param to "true" to prevent performance problems         |
+	| cluster_state       | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html       |  set `filter_metadata` param to `true` to prevent performance problems!        |
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 	| cluster_nodes_info  | http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-info.html  | `nodeId` param to specify csv list of nodes to get info for, optional          |
 	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
