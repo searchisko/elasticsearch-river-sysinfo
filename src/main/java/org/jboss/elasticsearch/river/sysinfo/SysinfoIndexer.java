@@ -22,6 +22,7 @@ public class SysinfoIndexer implements Runnable {
 
   protected boolean closed = true;
 
+  protected String name;
   protected SourceClient sourceClient;
   protected Client targetClient;
   protected SysinfoType infoType;
@@ -33,6 +34,7 @@ public class SysinfoIndexer implements Runnable {
   /**
    * Indexer constructor.
    * 
+   * @param name name of indexer
    * @param sourceClient used to get informations from. Can be local or remote etc.
    * @param targetClient used to store informations into
    * @param infoType type of information indexed by this indexer
@@ -41,8 +43,9 @@ public class SysinfoIndexer implements Runnable {
    * @param indexingPeriod indexing period [ms]
    * @param params additional parameters from info obtaining - possible content depends on infoType
    */
-  public SysinfoIndexer(SourceClient sourceClient, Client targetClient, SysinfoType infoType, String indexName,
-      String typeName, long indexingPeriod, Map<String, String> params) {
+  public SysinfoIndexer(String name, SourceClient sourceClient, Client targetClient, SysinfoType infoType,
+      String indexName, String typeName, long indexingPeriod, Map<String, String> params) {
+    this.name = name;
     this.sourceClient = sourceClient;
     this.targetClient = targetClient;
     this.infoType = infoType;
@@ -62,7 +65,7 @@ public class SysinfoIndexer implements Runnable {
 
   @Override
   public void run() {
-    logger.info("Sysinfo river {} indexer started", infoType);
+    logger.info("Sysinfo river {} indexer started", name);
     closed = false;
     try {
       while (true) {
@@ -77,13 +80,13 @@ public class SysinfoIndexer implements Runnable {
         } catch (Exception e) {
           if (closed)
             return;
-          logger.error("Failed to process Sysinfo {} indexer due: {}", e, infoType, e.getMessage());
+          logger.error("Failed to process Sysinfo {} indexer due: {}", e, name, e.getMessage());
         }
         try {
           if (closed)
             return;
           long waitFor = indexingPeriod - (System.currentTimeMillis() - start);
-          logger.debug("Sysinfo river {} indexer is going to sleep for {} ms", infoType, waitFor);
+          logger.debug("Sysinfo river {} indexer is going to sleep for {} ms", name, waitFor);
           if (waitFor > 0) {
             Thread.sleep(waitFor);
           }
@@ -92,7 +95,7 @@ public class SysinfoIndexer implements Runnable {
         }
       }
     } finally {
-      logger.info("Sysinfo river {} indexer stopped", infoType);
+      logger.info("Sysinfo river {} indexer stopped", name);
       closed = true;
     }
   }
@@ -117,8 +120,8 @@ public class SysinfoIndexer implements Runnable {
 
   @Override
   public String toString() {
-    return "SysinfoIndexer [infoType=" + infoType + ", indexName=" + indexName + ", typeName=" + typeName
-        + ", indexingPeriod=" + indexingPeriod + ", params=" + params + ", closed=" + closed + "]";
+    return "SysinfoIndexer [name=" + name + " infoType=" + infoType + ", indexName=" + indexName + ", typeName="
+        + typeName + ", indexingPeriod=" + indexingPeriod + ", params=" + params + ", closed=" + closed + "]";
   }
 
 }

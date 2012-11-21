@@ -94,7 +94,7 @@ public class SysinfoRiverTest {
     {
       try {
         Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
-        ((List<?>) settings.get("indexers")).clear();
+        ((Map<?, ?>) settings.get("indexers")).clear();
         SysinfoRiver tested = prepareRiverInstanceForTest(null);
         tested.configure(settings);
         Assert.fail("SettingsException must be thrown");
@@ -109,7 +109,8 @@ public class SysinfoRiverTest {
       SysinfoRiver tested = prepareRiverInstanceForTest(null);
       tested.configure(settings);
       Assert.assertEquals(7, tested.indexers.size());
-      SysinfoIndexer idxr = tested.indexers.get(0);
+      SysinfoIndexer idxr = tested.indexers.get("cluster_health");
+      Assert.assertEquals("cluster_health", idxr.name);
       Assert.assertEquals(tested.sourceClient, idxr.sourceClient);
       Assert.assertEquals(tested.client, idxr.targetClient);
       Assert.assertEquals(SysinfoType.CLUSTER_HEALTH, idxr.infoType);
@@ -154,8 +155,8 @@ public class SysinfoRiverTest {
     {
       Mockito.reset(scMock);
       tested.closed = true;
-      tested.indexers.add(indexerMock(SysinfoType.CLUSTER_HEALTH));
-      tested.indexers.add(indexerMock(SysinfoType.CLUSTER_STATE));
+      tested.indexers.put("ch", indexerMock(SysinfoType.CLUSTER_HEALTH));
+      tested.indexers.put("cs", indexerMock(SysinfoType.CLUSTER_STATE));
       tested.start();
       Assert.assertFalse(tested.closed);
       Assert.assertEquals(2, tested.indexerThreads.size());
@@ -166,7 +167,7 @@ public class SysinfoRiverTest {
       } catch (InterruptedException e) {
         // nothing to do
       }
-      for (SysinfoIndexer i : tested.indexers) {
+      for (SysinfoIndexer i : tested.indexers.values()) {
         Mockito.verify(i).run();
       }
 
@@ -189,8 +190,8 @@ public class SysinfoRiverTest {
     {
       Mockito.reset(scMock);
       tested.closed = false;
-      tested.indexers.add(indexerMock(SysinfoType.CLUSTER_HEALTH));
-      tested.indexers.add(indexerMock(SysinfoType.CLUSTER_STATE));
+      tested.indexers.put("ch", indexerMock(SysinfoType.CLUSTER_HEALTH));
+      tested.indexers.put("cs", indexerMock(SysinfoType.CLUSTER_STATE));
       List<Thread> t = new ArrayList<Thread>();
       t.add(Mockito.mock(Thread.class));
       t.add(Mockito.mock(Thread.class));
@@ -200,7 +201,7 @@ public class SysinfoRiverTest {
       Assert.assertTrue(tested.closed);
       Assert.assertEquals(0, tested.indexerThreads.size());
       Mockito.verify(scMock).close();
-      for (SysinfoIndexer i : tested.indexers) {
+      for (SysinfoIndexer i : tested.indexers.values()) {
         Mockito.verify(i).close();
       }
       for (Thread i : t) {

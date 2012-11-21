@@ -28,9 +28,10 @@ public class SysinfoIndexerTest {
     SourceClient scMock = Mockito.mock(SourceClient.class);
     Client tcMock = Mockito.mock(Client.class);
     Map<String, String> settings = new HashMap<String, String>();
-    SysinfoIndexer tested = new SysinfoIndexer(scMock, tcMock, SysinfoType.CLUSTER_HEALTH, "my index", "my type", 125,
-        settings);
+    SysinfoIndexer tested = new SysinfoIndexer("my name", scMock, tcMock, SysinfoType.CLUSTER_HEALTH, "my index",
+        "my type", 125, settings);
 
+    Assert.assertEquals("my name", tested.name);
     Assert.assertEquals(scMock, tested.sourceClient);
     Assert.assertEquals(tcMock, tested.targetClient);
     Assert.assertEquals(SysinfoType.CLUSTER_HEALTH, tested.infoType);

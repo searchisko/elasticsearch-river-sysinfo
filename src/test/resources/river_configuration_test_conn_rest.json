@@ -4,8 +4,8 @@
         "type"      : "rest",
         "urlBase"   : "http://localhost:9200"
     },
-    "indexers" : [
-	    {
+    "indexers" : {
+	    "cluster_health": {
 	        "info_type"   : "cluster_health",
 	        "index_name"  : "my_sysinfo_index",
 	        "index_type"  : "cluster_health",
@@ -13,7 +13,8 @@
 	        "params" : {
 	            "level" : "cluster"
 	        }
-	    },{
+	    },
+	    "cluster_state" : {
 	        "info_type"   : "cluster_state",
 	        "index_name"  : "my_sysinfo_index",
 	        "index_type"  : "cluster_state",
@@ -21,7 +22,8 @@
 	        "params" : {
 	            "filter_metadata" : "true"
 	        }
-	    },{
+	    },
+	    "cluster_nodes_info" : {
 	        "info_type"   : "cluster_nodes_info",
 	        "index_name"  : "my_sysinfo_index",
 	        "index_type"  : "cluster_nodes_info",
@@ -31,7 +33,8 @@
 	            "jvm" : "true",
 	            "transport" : "true"
 	        }
-	    },{
+	    },
+	    "cluster_nodes_stats" : {
 	        "info_type"   : "cluster_nodes_stats",
 	        "index_name"  : "my_sysinfo_index",
 	        "index_type"  : "cluster_nodes_stats",
@@ -41,12 +44,14 @@
 	            "jvm" : "true",
 	            "transport" : "true"
 	        }
-	    },{
+	    },
+	    "indices_status" : {
 	        "info_type"   : "indices_status",
 	        "index_name"  : "my_sysinfo_index",
 	        "index_type"  : "indices_status",
 	        "period"      : "30s"
-	    },{
+	    },
+	    "indices_stats" : {
 	        "info_type"   : "indices_stats",
 	        "index_name"  : "my_sysinfo_index",
 	        "index_type"  : "indices_stats",
@@ -54,11 +59,12 @@
 	        "params" : {
 	            "index" : "my_sysinfo_index"
 	        }
-	    },{
+	    },
+	    "indices_segments" : {
 	        "info_type"   : "indices_segments",
 	        "index_name"  : "my_sysinfo_index",
 	        "index_type"  : "indices_segments",
 	        "period"      : "30s"
 	    }
-    ]
+    }
 }

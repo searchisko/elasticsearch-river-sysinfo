@@ -6,13 +6,13 @@ System info can be collected from local or remote ES cluster, in case of remote 
 
 In order to install the plugin into ElasticSearch, simply run: `bin/plugin -install jbossorg/elasticsearch-river-sysinfo/1.0.0`
 
-	---------------------------------------------------
-	| Sysinfo River | ElasticSearch    | Release date |
-	|-------------------------------------------------|
-	| master        | 0.19.11          |              |
-	|-------------------------------------------------|
-	| 1.1.0         | 0.19.11          | 20.11.2012   |
-	---------------------------------------------------
+	------------------------------------------------------------------------------------------------------------------
+	| Sysinfo River | ElasticSearch    | Release date | Upgrade notes                                                |
+	|----------------------------------------------------------------------------------------------------------------|
+	| master        | 0.19.11          |              | river configuration format changed in `indexers` section     |
+	|----------------------------------------------------------------------------------------------------------------|
+	| 1.1.0         | 0.19.11          | 20.11.2012   |                                                              |
+	------------------------------------------------------------------------------------------------------------------
 
 For changelog, planned milestones/enhancements and known bugs see [github issue tracker](https://github.com/jbossorg/elasticsearch-river-sysinfo/issues) please.
 
@@ -24,22 +24,26 @@ Creation of the System info river can be done using:
 	    "es_connection" : {
 	      "type" : "local"
 	    },
-	    "indexers" : [
-	      {
-	          "info_type"   : "cluster_health",
-	          "index_name"  : "my_index_1",
-	          "index_type"  : "my_type_1",
-	          "period"      : "1m",
-	          "params" : {
-	              "level" : "shards"
-	          }
-	      },{
-	          "info_type"   : "cluster_state",
-	          "index_name"  : "my_index_2",
-	          "index_type"  : "my_type_2",
-	          "period"      : "1m"
+	    "indexers" : {
+	      "cluster_health" : {
+	        "info_type"   : "cluster_health",
+	        "index_name"  : "my_index_1",
+	        "index_type"  : "my_type_1",
+	        "period"      : "1m",
+	        "params" : {
+	          "level" : "shards"
+	        }
+	      },
+	      "cluster_state" : {
+	        "info_type"   : "cluster_state",
+	        "index_name"  : "my_index_2",
+	        "index_type"  : "my_type_2",
+	        "period"      : "1m",
+	        "params" : {
+	          "filter_metadata" : "true"
+	        }
 	      }
-	    ]
+	    }
 	}
 	'
 
@@ -94,11 +98,12 @@ Configuration options:
 * `pwd` optional password for http basic authentication.
 
 ## Configuration of indexers
-Second significant part of the river configuration is list of `indexers`. Each indexer defines what information will be collected in which interval, and where will be stored in ES indexes.
+Second significant part of the river configuration is map of `indexers`. Each indexer defines what information will be collected in which interval, and where will be stored in ES indexes.
+Each indexer has unique name defined as key in map of indexers.
 Information is stored to the ES indexes in cluster where river runs. Structure of stored information is exactly same as returned from ElasticSearch API call.
 Indexer configuration is:
 
-	{
+	"indexer_name" : {
 	  "info_type"  : "cluster_health",
 	  "index_name" : "my_index_1",
 	  "index_type" : "my_type_1",
@@ -110,7 +115,7 @@ Indexer configuration is:
 
 Configuration options:
 	
-* `info_type` mandatory type of information collected by this indexer. See table below for list of all available types.
+* `info_type` mandatory type of information collected by this indexer. See table below for list of all available types. You can create more indexers with same type.
 * `index_name` mandatory name of index used to store information. Note that this river can produce big amount of data over time, so consider use of [rolling index](http://github.com/elasticsearch/elasticsearch/issues/1500) here.
 * `index_type` mandatory [type](http://www.elasticsearch.org/guide/appendix/glossary.html#type) used to stored information into search index. You should define [Mapping](http://www.elasticsearch.org/guide/reference/mapping/) for this type. You should enable [Automatic Timestamp Field](http://www.elasticsearch.org/guide/reference/mapping/timestamp-field.html) in this mapping to have consistent timestamp available in stored data.
 * `period` mandatory period of information collecting in milliseconds. You can use postfixes appended to the number to define units: `s` for seconds, `m` for minutes, `h` for hours, `d` for days and `w` for weeks. So for example value `5h` means five fours, `2w` means two weeks.

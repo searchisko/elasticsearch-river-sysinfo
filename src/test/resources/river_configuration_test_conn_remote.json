@@ -7,8 +7,8 @@
           {"host": "host2", "port" : "9300"}
         ]
     },
-    "indexers" : [
-	    {
+    "indexers" : {
+	    "cluster_health" : {
 	        "info_type"   : "cluster_health",
 	        "index_name"  : "my_index_1",
 	        "index_type"  : "my_type_1",
@@ -17,11 +17,14 @@
 	            "level" : "shards"
 	        }
 	    },
-	    {
+	    "cluster_state" : {
 	        "info_type"   : "cluster_state",
 	        "index_name"  : "my_index_1",
 	        "index_type"  : "my_type_1",
-	        "period"      : "1m"
+	        "period"      : "1m",
+	        "params" : {
+	            "filter_metadata" : "true"
+	        }
 	    }
-    ]
+    }
 }

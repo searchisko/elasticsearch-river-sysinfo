@@ -7,6 +7,7 @@ package org.jboss.elasticsearch.river.sysinfo;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +35,8 @@ import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESTransportCli
  *     "es_connection" : {
  *         "type" : "local"
  *     },
- *     "indexers" : [
- *       {
+ *     "indexers" : {
+ *       "cluster_health" : {
  *           "info_type"   : "cluster_health",
  *           "index_name"  : "my_index_1",
  *           "index_type"  : "my_type_1",
@@ -44,13 +45,13 @@ import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESTransportCli
  *               "level" : "shards"
  *           }
  *       },
- *       {
+ *       "cluster_state" : {
  *           "info_type"   : "cluster_state",
  *           "index_name"  : "my_index_1",
  *           "index_type"  : "my_type_1",
  *           "period"      : "1m"
  *       }
- *     ]
+ *     }
  * }
  * 
  * </pre>
@@ -77,7 +78,7 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
   /**
    * List of configured indexers.
    */
-  protected List<SysinfoIndexer> indexers = new ArrayList<SysinfoIndexer>();
+  protected Map<String, SysinfoIndexer> indexers = new LinkedHashMap<String, SysinfoIndexer>();
 
   /**
    * List of running indexer threads.
@@ -140,15 +141,21 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
       throw new SettingsException("'es_connection' element of river configuration structure not found");
     }
 
-    List<Map<String, Object>> is = (List<Map<String, Object>>) settings.get("indexers");
-    if (is != null && !is.isEmpty()) {
-      for (Map<String, Object> ic : is) {
+    Map<String, Map<String, Object>> indexersMap = (Map<String, Map<String, Object>>) settings.get("indexers");
+    if (indexersMap != null && !indexersMap.isEmpty()) {
+      for (String name : indexersMap.keySet()) {
+        name = name.trim();
+        if (indexers.containsKey(name)) {
+          throw new SettingsException("Duplicate 'indexers/" + name + "' section");
+        }
+        Map<String, Object> ic = indexersMap.get(name);
         SysinfoType infoType = SysinfoType.parseConfiguration((String) ic.get("info_type"));
-        String indexName = configMandatoryString(ic, "index_name");
-        String typeName = configMandatoryString(ic, "index_type");
+        String indexName = configMandatoryString(ic, "index_name", name);
+        String typeName = configMandatoryString(ic, "index_type", name);
         long indexingPeriod = Utils.parseTimeValue(ic, "period", 30, TimeUnit.SECONDS);
         Map<String, String> params = (Map<String, String>) ic.get("params");
-        indexers.add(new SysinfoIndexer(sourceClient, client, infoType, indexName, typeName, indexingPeriod, params));
+        indexers.put(name, new SysinfoIndexer(name, sourceClient, client, infoType, indexName, typeName,
+            indexingPeriod, params));
       }
     } else {
       throw new SettingsException("'indexers' element of river configuration structure not found or is empty");
@@ -157,11 +164,11 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
     logger.info("Sysinfo River configured for connection type '{}' and {} indexers.", type, indexers.size());
   }
 
-  private String configMandatoryString(Map<String, Object> settings, String key) {
+  private String configMandatoryString(Map<String, Object> settings, String key, String parentName) {
     String s = (String) settings.get(key);
     if (Utils.isEmpty(s)) {
-      throw new SettingsException("'indexers/" + key
-          + "' element of river configuration structure not found or is empty");
+      throw new SettingsException("'indexers/" + parentName + "/" + key
+          + "' river configuration element not found or is empty");
     }
     return s;
   }
@@ -173,8 +180,8 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
     logger.info("starting Sysinfo River");
     sourceClient.start();
     closed = false;
-    for (SysinfoIndexer indexer : indexers) {
-      Thread t = acquireThread("sysinfo_river_" + indexer.infoType.getName(), indexer);
+    for (SysinfoIndexer indexer : indexers.values()) {
+      Thread t = acquireThread("sysinfo_river_" + indexer.name, indexer);
       indexerThreads.add(t);
       t.start();
     }
@@ -186,11 +193,11 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
     logger.info("closing Sysinfo River on this node");
     closed = true;
     try {
-      for (SysinfoIndexer indexer : indexers) {
+      for (SysinfoIndexer indexer : indexers.values()) {
         try {
           indexer.close();
         } catch (Throwable t) {
-          logger.warn("Exception during {} indexer closing: {}", indexer.infoType, t.getMessage());
+          logger.warn("Exception during {} indexer closing: {}", indexer.name, t.getMessage());
         }
       }
       // let threads some time to finish
