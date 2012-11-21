@@ -58,7 +58,8 @@ public class SysinfoIndexer implements Runnable {
   /**
    * For unit test.
    */
-  protected SysinfoIndexer(SourceClient sourceClient, Client targetClient) {
+  protected SysinfoIndexer(String name, SourceClient sourceClient, Client targetClient) {
+    this.name = name;
     this.sourceClient = sourceClient;
     this.targetClient = targetClient;
   }

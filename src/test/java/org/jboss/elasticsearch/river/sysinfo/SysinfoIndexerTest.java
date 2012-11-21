@@ -51,7 +51,7 @@ public class SysinfoIndexerTest {
     Client tcMock = Mockito.mock(Client.class);
     Map<String, String> paramsMock = new HashMap<String, String>();
 
-    SysinfoIndexer tested = new SysinfoIndexer(scMock, tcMock);
+    SysinfoIndexer tested = new SysinfoIndexer("testindexer", scMock, tcMock);
     tested.infoType = SysinfoType.CLUSTER_HEALTH;
     tested.params = paramsMock;
     Mockito.when(scMock.readSysinfoValue(SysinfoType.CLUSTER_HEALTH, paramsMock)).thenReturn("{test : test 2}");
@@ -75,7 +75,7 @@ public class SysinfoIndexerTest {
   public void runAndClose() throws Exception {
     SourceClient scMock = Mockito.mock(SourceClient.class);
     Client tcMock = Mockito.mock(Client.class);
-    SysinfoIndexer tested = new SysinfoIndexer(scMock, tcMock);
+    SysinfoIndexer tested = new SysinfoIndexer("testindexer", scMock, tcMock);
     tested.infoType = SysinfoType.CLUSTER_HEALTH;
     tested.indexingPeriod = 50;
 
