@@ -145,7 +145,15 @@ Management REST API
 -------------------
 Sysinfo river supports next REST commands for management purposes. Note `my_sysinfo_river` in examples is name of Sysinfo river you can call operation for, so replace it with real name for your calls.
 
-List names of all Sysinfo Rivers running in ES cluster:
+Stop Sysinfo river indexing process. Process is stopped temporarily, so after complete elasticsearch cluster restart or river migration to another node it's started back.
+
+	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm/stop
+
+Restart Sysinfo river indexing process. Configuration of river is reloaded during restart. You can restart running indexing, or stopped indexing (see previous command).
+
+	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm/restart
+
+List names of all Sysinfo Rivers running in ES cluster.
 
 	curl -XGET localhost:9200/_sysinfo_river/list
 

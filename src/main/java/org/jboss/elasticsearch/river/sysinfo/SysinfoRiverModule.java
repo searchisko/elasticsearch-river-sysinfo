@@ -2,6 +2,8 @@ package org.jboss.elasticsearch.river.sysinfo;
 
 import org.elasticsearch.action.ActionModule;
 import org.elasticsearch.river.River;
+import org.jboss.elasticsearch.river.sysinfo.mgm.lifecycle.JRLifecycleAction;
+import org.jboss.elasticsearch.river.sysinfo.mgm.lifecycle.TransportJRLifecycleAction;
 import org.jboss.elasticsearch.river.sysinfo.mgm.riverslist.ListRiversAction;
 import org.jboss.elasticsearch.river.sysinfo.mgm.riverslist.TransportListRiversAction;
 
@@ -20,5 +22,6 @@ public class SysinfoRiverModule extends ActionModule {
   protected void configure() {
     bind(River.class).to(SysinfoRiver.class).asEagerSingleton();
     registerAction(ListRiversAction.INSTANCE, TransportListRiversAction.class);
+    registerAction(JRLifecycleAction.INSTANCE, TransportJRLifecycleAction.class);
   }
 }

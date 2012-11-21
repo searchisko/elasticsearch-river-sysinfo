@@ -19,6 +19,8 @@ import org.elasticsearch.river.RiverName;
 import org.elasticsearch.river.RiverSettings;
 import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESClient;
 import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESTransportClient;
+import org.jboss.elasticsearch.river.sysinfo.testtools.ESRealClientTestBase;
+import org.jboss.elasticsearch.river.sysinfo.testtools.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,7 +30,7 @@ import org.mockito.Mockito;
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */
-public class SysinfoRiverTest {
+public class SysinfoRiverTest extends ESRealClientTestBase {
 
   @SuppressWarnings("unchecked")
   @Test
@@ -126,6 +128,7 @@ public class SysinfoRiverTest {
   public void start() throws Exception {
     SysinfoRiver tested = prepareRiverInstanceForTest(null);
     SourceClient scMock = tested.sourceClient;
+    SysinfoRiver.clearRunningInstances();
 
     // case - exception if started already
     {
@@ -138,6 +141,7 @@ public class SysinfoRiverTest {
         Assert.assertFalse(tested.closed);
         Assert.assertEquals(0, tested.indexerThreads.size());
         Mockito.verifyZeroInteractions(scMock);
+        Assert.assertEquals(0, SysinfoRiver.getRunningInstances().size());
       }
     }
 
@@ -149,6 +153,7 @@ public class SysinfoRiverTest {
       Assert.assertFalse(tested.closed);
       Assert.assertEquals(0, tested.indexerThreads.size());
       Mockito.verify(scMock).start();
+      Assert.assertEquals(1, SysinfoRiver.getRunningInstances().size());
     }
 
     // case - check threads created and started for indexers
@@ -170,24 +175,28 @@ public class SysinfoRiverTest {
       for (SysinfoIndexer i : tested.indexers.values()) {
         Mockito.verify(i).run();
       }
-
     }
+    SysinfoRiver.clearRunningInstances();
   }
 
   @Test
   public void close() throws Exception {
     SysinfoRiver tested = prepareRiverInstanceForTest(null);
     SourceClient scMock = tested.sourceClient;
+    SysinfoRiver.clearRunningInstances();
+    SysinfoRiver.addRunningInstance(tested);
 
     // case - no errors on empty indexers list and unstarted river
     {
       tested.close();
       Assert.assertTrue(tested.closed);
       Mockito.verify(scMock).close();
+      Assert.assertEquals(0, SysinfoRiver.getRunningInstances().size());
     }
 
     // case - successful close
     {
+      SysinfoRiver.addRunningInstance(tested);
       Mockito.reset(scMock);
       tested.closed = false;
       tested.indexers.put("ch", indexerMock(SysinfoType.CLUSTER_HEALTH));
@@ -206,6 +215,98 @@ public class SysinfoRiverTest {
       }
       for (Thread i : t) {
         Mockito.verify(i).interrupt();
+      }
+      Assert.assertEquals(0, SysinfoRiver.getRunningInstances().size());
+    }
+    SysinfoRiver.clearRunningInstances();
+  }
+
+  @Test
+  public void stop() throws Exception {
+    SysinfoRiver tested = prepareRiverInstanceForTest(null);
+    SourceClient scMock = tested.sourceClient;
+    SysinfoRiver.clearRunningInstances();
+    SysinfoRiver.addRunningInstance(tested);
+
+    // case - no errors on empty indexers list and unstarted river
+    {
+      tested.stop();
+      Assert.assertTrue(tested.closed);
+      Mockito.verify(scMock).close();
+    }
+
+    // case - successful stop
+    {
+      Mockito.reset(scMock);
+      tested.closed = false;
+      tested.indexers.put("ch", indexerMock(SysinfoType.CLUSTER_HEALTH));
+      tested.indexers.put("cs", indexerMock(SysinfoType.CLUSTER_STATE));
+      List<Thread> t = new ArrayList<Thread>();
+      t.add(Mockito.mock(Thread.class));
+      t.add(Mockito.mock(Thread.class));
+      tested.indexerThreads.addAll(t);
+
+      tested.stop();
+      Assert.assertTrue(tested.closed);
+      Assert.assertEquals(0, tested.indexerThreads.size());
+      Mockito.verify(scMock).close();
+      for (SysinfoIndexer i : tested.indexers.values()) {
+        Mockito.verify(i).close();
+      }
+      for (Thread i : t) {
+        Mockito.verify(i).interrupt();
+      }
+      Assert.assertEquals(1, SysinfoRiver.getRunningInstances().size());
+    }
+    SysinfoRiver.clearRunningInstances();
+  }
+
+  @Test
+  public void reconfigure() throws Exception {
+
+    // case - exception when not stopped
+    {
+      SysinfoRiver tested = prepareRiverInstanceForTest(null);
+      try {
+        tested.closed = false;
+        tested.reconfigure();
+        Assert.fail("IllegalStateException must be thrown");
+      } catch (IllegalStateException e) {
+        // OK
+      }
+    }
+
+    // case - config reload error because no document
+    {
+      SysinfoRiver tested = prepareRiverInstanceForTest(null);
+      try {
+        tested.client = prepareESClientForUnitTest();
+        tested.closed = true;
+        tested.client.admin().indices().prepareCreate(tested.getRiverIndexName()).execute().actionGet();
+        tested.reconfigure();
+        Assert.fail("IllegalStateException must be thrown");
+      } catch (IllegalStateException e) {
+        // OK
+      } finally {
+        finalizeESClientForUnitTest();
+      }
+    }
+
+    // case - config reload performed
+    {
+      SysinfoRiver tested = prepareRiverInstanceForTest(null);
+      try {
+        tested.client = prepareESClientForUnitTest();
+        tested.closed = true;
+        tested.client.prepareIndex(tested.getRiverIndexName(), tested.riverName().getName(), "_meta")
+            .setSource(TestUtils.readStringFromClasspathFile("/river_configuration_test_conn_local.json")).execute()
+            .actionGet();
+
+        tested.reconfigure();
+        Assert.assertEquals(7, tested.indexers.size());
+        Assert.assertTrue(tested.sourceClient instanceof SourceClientESClient);
+      } finally {
+        finalizeESClientForUnitTest();
       }
     }
   }

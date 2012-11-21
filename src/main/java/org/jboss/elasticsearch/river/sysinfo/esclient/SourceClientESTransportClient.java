@@ -76,7 +76,8 @@ public class SourceClientESTransportClient extends SourceClientESClient {
         throw new SettingsException(
             "es_connection/addresses/port element of configuration structure not found or is empty");
       }
-      transportAddresses[i++] = new InetSocketTransportAddress((String) a.get("host"), Utils.nodeIntegerValue(a.get("port")));
+      transportAddresses[i++] = new InetSocketTransportAddress((String) a.get("host"), Utils.nodeIntegerValue(a
+          .get("port")));
     }
 
     settingsConf = (Map<String, String>) sourceClientSettings.get("settings");
@@ -95,7 +96,7 @@ public class SourceClientESTransportClient extends SourceClientESClient {
   @Override
   public synchronized void start() {
     if (client != null) {
-      logger.warn("Client started already, ignoring start() call");
+      logger.info("Client started already, ignoring start() call");
       return;
     }
     TransportClient tclient = new TransportClient(ImmutableSettings.settingsBuilder().put(settingsConf).build());

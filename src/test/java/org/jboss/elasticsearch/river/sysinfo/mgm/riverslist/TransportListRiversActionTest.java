@@ -70,8 +70,9 @@ public class TransportListRiversActionTest {
   @Test
   public void nodeOperation() throws Exception {
 
-    TransportListRiversAction tested = prepareTestedInstance(clusterName);
+    SysinfoRiver.clearRunningInstances();
 
+    TransportListRiversAction tested = prepareTestedInstance(clusterName);
     {
       NodeListRiversRequest req = new NodeListRiversRequest(dn.getId());
       NodeListRiversResponse resp = tested.nodeOperation(req);

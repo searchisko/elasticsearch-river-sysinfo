@@ -79,8 +79,9 @@ public abstract class TransportJRMgmBaseAction<Request extends JRMgmBaseRequest,
     } else {
       logger.debug("Sysinfo River {} found on this node, go to call mgm operation on it {}", req.getRiverName(), req);
       try {
-        return performOperationOnJiraRiver(river, req, clusterService.localNode());
+        return performOperationOnRiver(river, req, clusterService.localNode());
       } catch (Exception e) {
+        logger.error("Exception from river management operation: {}", e, e.getMessage());
         throw new ElasticSearchException(e.getMessage(), e);
       }
     }
@@ -96,6 +97,6 @@ public abstract class TransportJRMgmBaseAction<Request extends JRMgmBaseRequest,
    * @return node response with operation result
    * @throws Exception if something is wrong
    */
-  protected abstract NodeResponse performOperationOnJiraRiver(IRiverMgm river, Request req, DiscoveryNode node)
+  protected abstract NodeResponse performOperationOnRiver(IRiverMgm river, Request req, DiscoveryNode node)
       throws Exception;
 }

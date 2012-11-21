@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.SettingsException;
@@ -204,6 +205,20 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
     logger.info("closing Sysinfo River on this node");
     closed = true;
     try {
+      stop();
+    } finally {
+      logger.info("Sysinfo River closed");
+      synchronized (riverInstances) {
+        riverInstances.remove(riverName().getName());
+      }
+    }
+  }
+
+  @Override
+  public synchronized void stop() {
+    logger.info("stopping Sysinfo River indexing process");
+    closed = true;
+    try {
       for (SysinfoIndexer indexer : indexers.values()) {
         try {
           indexer.close();
@@ -213,7 +228,7 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
       }
       // let threads some time to finish
       try {
-        Thread.sleep(200);
+        Thread.sleep(500);
       } catch (InterruptedException e) {
         // nothing to do
       }
@@ -223,15 +238,65 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
       }
       indexerThreads.clear();
     } finally {
-      try {
-        sourceClient.close();
-      } finally {
-        logger.info("Sysinfo River closed");
-        synchronized (riverInstances) {
-          riverInstances.remove(riverName().getName());
-        }
-      }
+      sourceClient.close();
     }
+  }
+
+  /**
+   * Restart river. Configuration of river is updated.
+   */
+  @Override
+  public synchronized void restart() {
+    logger.info("restarting Sysinfo River");
+    if (!closed) {
+      stop();
+      // wait a while to allow currently running indexers to finish??
+      try {
+        Thread.sleep(2000);
+      } catch (InterruptedException e) {
+        return;
+      }
+    } else {
+      logger.debug("stopped already");
+    }
+    reconfigure();
+    start();
+    logger.info("Sysinfo River restarted");
+  }
+
+  /**
+   * Reconfigure river. Must be stopped!
+   */
+  public synchronized void reconfigure() {
+    if (!closed)
+      throw new IllegalStateException("Sysinfo River must be stopped to reconfigure it!");
+
+    logger.info("reconfiguring Sysinfo River");
+    String riverIndexName = getRiverIndexName();
+    refreshSearchIndex(riverIndexName);
+    GetResponse resp = client.prepareGet(riverIndexName, riverName().name(), "_meta").execute().actionGet();
+    if (resp.exists()) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Configuration document: {}", resp.getSourceAsString());
+      }
+      Map<String, Object> newset = resp.getSource();
+      indexers.clear();
+      configure(newset);
+    } else {
+      throw new IllegalStateException("Configuration document not found to reconfigure river " + riverName().name());
+    }
+  }
+
+  /**
+   * @return
+   */
+  protected String getRiverIndexName() {
+    return "_river";
+    // return RiverIndexName.Conf.indexName(settings.globalSettings());
+  }
+
+  public void refreshSearchIndex(String indexName) {
+    client.admin().indices().prepareRefresh(indexName).execute().actionGet();
   }
 
   /**
@@ -257,6 +322,13 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
    */
   public static void addRunningInstance(IRiverMgm river) {
     riverInstances.put(river.riverName().getName(), river);
+  }
+
+  /**
+   * For unit tests
+   */
+  public static void clearRunningInstances() {
+    riverInstances.clear();
   }
 
   /**
