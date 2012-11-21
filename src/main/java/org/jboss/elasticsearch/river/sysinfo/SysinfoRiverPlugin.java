@@ -5,6 +5,9 @@ import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.plugins.AbstractPlugin;
 import org.elasticsearch.rest.RestModule;
 import org.elasticsearch.river.RiversModule;
+import org.jboss.elasticsearch.river.sysinfo.mgm.riverslist.ListRiversAction;
+import org.jboss.elasticsearch.river.sysinfo.mgm.riverslist.RestListRiversAction;
+import org.jboss.elasticsearch.river.sysinfo.mgm.riverslist.TransportListRiversAction;
 
 /**
  * System Info River ElasticSearch Plugin class.
@@ -32,8 +35,10 @@ public class SysinfoRiverPlugin extends AbstractPlugin {
   }
 
   public void onModule(RestModule module) {
+    module.addRestAction(RestListRiversAction.class);
   }
 
   public void onModule(ActionModule module) {
+    module.registerAction(ListRiversAction.INSTANCE, TransportListRiversAction.class);
   }
 }

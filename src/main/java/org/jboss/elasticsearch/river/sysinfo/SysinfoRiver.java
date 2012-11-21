@@ -7,9 +7,12 @@ package org.jboss.elasticsearch.river.sysinfo;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.client.Client;
@@ -58,7 +61,12 @@ import org.jboss.elasticsearch.river.sysinfo.esclient.SourceClientESTransportCli
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */
-public class SysinfoRiver extends AbstractRiverComponent implements River {
+public class SysinfoRiver extends AbstractRiverComponent implements River, IRiverMgm {
+
+  /**
+   * Map of running river instances. Used for management operations dispatching. See {@link #getRunningInstance(String)}
+   */
+  protected static Map<String, IRiverMgm> riverInstances = new HashMap<String, IRiverMgm>();
 
   /**
    * Local ElasticSearch client to be used for indexing.
@@ -178,6 +186,9 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
     if (!closed)
       throw new IllegalStateException("Can't start already running river");
     logger.info("starting Sysinfo River");
+    synchronized (riverInstances) {
+      addRunningInstance(this);
+    }
     sourceClient.start();
     closed = false;
     for (SysinfoIndexer indexer : indexers.values()) {
@@ -212,9 +223,51 @@ public class SysinfoRiver extends AbstractRiverComponent implements River {
       }
       indexerThreads.clear();
     } finally {
-      sourceClient.close();
-      logger.info("Sysinfo River closed");
+      try {
+        sourceClient.close();
+      } finally {
+        logger.info("Sysinfo River closed");
+        synchronized (riverInstances) {
+          riverInstances.remove(riverName().getName());
+        }
+      }
     }
+  }
+
+  /**
+   * Get running instance of river for given name. Used for REST management operations handling.
+   * 
+   * @param riverName to get instance for
+   * @return river instance or null if not found
+   * @see #addRunningInstance(IRiverMgm)
+   * @see #getRunningInstances()
+   */
+  public static IRiverMgm getRunningInstance(String riverName) {
+    if (riverName == null)
+      return null;
+    return riverInstances.get(riverName);
+  }
+
+  /**
+   * Put running instance of jira river into registry. Used for REST management operations handling.
+   * 
+   * @param riverName to get instance for
+   * @see #getRunningInstances()
+   * @see #getRunningInstance(String)
+   */
+  public static void addRunningInstance(IRiverMgm river) {
+    riverInstances.put(river.riverName().getName(), river);
+  }
+
+  /**
+   * Get running instances of all sysinfo rivers. Used for REST management operations handling.
+   * 
+   * @return Set with names of all river instances registered for management
+   * @see #addRunningInstance(IRiverMgm)
+   * @see #getRunningInstance(String)
+   */
+  public static Set<String> getRunningInstances() {
+    return Collections.unmodifiableSet((riverInstances.keySet()));
   }
 
   protected Thread acquireThread(String threadName, Runnable runnable) {

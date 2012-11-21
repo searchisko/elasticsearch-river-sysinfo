@@ -2,6 +2,8 @@ package org.jboss.elasticsearch.river.sysinfo;
 
 import org.elasticsearch.action.ActionModule;
 import org.elasticsearch.river.River;
+import org.jboss.elasticsearch.river.sysinfo.mgm.riverslist.ListRiversAction;
+import org.jboss.elasticsearch.river.sysinfo.mgm.riverslist.TransportListRiversAction;
 
 /**
  * System Info River ElasticSearch Module class.
@@ -17,5 +19,6 @@ public class SysinfoRiverModule extends ActionModule {
   @Override
   protected void configure() {
     bind(River.class).to(SysinfoRiver.class).asEagerSingleton();
+    registerAction(ListRiversAction.INSTANCE, TransportListRiversAction.class);
   }
 }

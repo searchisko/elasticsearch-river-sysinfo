@@ -141,6 +141,15 @@ Available information types:
 	| indices_segments    | http://www.elasticsearch.org/guide/reference/api/admin-indices-segments.html    | `index` param with csv list of indices to get statistics for, optional         |
 	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+Management REST API
+-------------------
+Sysinfo river supports next REST commands for management purposes. Note `my_sysinfo_river` in examples is name of Sysinfo river you can call operation for, so replace it with real name for your calls.
+
+List names of all Sysinfo Rivers running in ES cluster:
+
+	curl -XGET localhost:9200/_sysinfo_river/list
+
+
 License
 -------
 
