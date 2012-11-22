@@ -28,4 +28,13 @@ public interface IRiverMgm {
    */
   public abstract void restart();
 
+  /**
+   * Change indexing period for indexers.
+   * 
+   * @param indexerNames names of indexers to change period for
+   * @param indexingPeriod to use
+   * @return true if at least one indexer of passed names was found
+   */
+  public abstract boolean changeIndexerPeriod(String[] indexerNames, long indexingPeriod);
+
 }

@@ -7,6 +7,7 @@ package org.jboss.elasticsearch.river.sysinfo;
 
 import static org.mockito.Mockito.mock;
 
+import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -160,8 +161,8 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
     {
       Mockito.reset(scMock);
       tested.closed = true;
-      tested.indexers.put("ch", indexerMock(SysinfoType.CLUSTER_HEALTH));
-      tested.indexers.put("cs", indexerMock(SysinfoType.CLUSTER_STATE));
+      tested.indexers.put("ch", indexerMock("ch", SysinfoType.CLUSTER_HEALTH));
+      tested.indexers.put("cs", indexerMock("cs", SysinfoType.CLUSTER_STATE));
       tested.start();
       Assert.assertFalse(tested.closed);
       Assert.assertEquals(2, tested.indexerThreads.size());
@@ -199,13 +200,13 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
       SysinfoRiver.addRunningInstance(tested);
       Mockito.reset(scMock);
       tested.closed = false;
-      tested.indexers.put("ch", indexerMock(SysinfoType.CLUSTER_HEALTH));
-      tested.indexers.put("cs", indexerMock(SysinfoType.CLUSTER_STATE));
+      tested.indexers.put("ch", indexerMock("ch", SysinfoType.CLUSTER_HEALTH));
+      tested.indexers.put("cs", indexerMock("cs", SysinfoType.CLUSTER_STATE));
       List<Thread> t = new ArrayList<Thread>();
       t.add(Mockito.mock(Thread.class));
       t.add(Mockito.mock(Thread.class));
-      tested.indexerThreads.addAll(t);
-
+      tested.indexerThreads.put("ch", t.get(0));
+      tested.indexerThreads.put("cs", t.get(1));
       tested.close();
       Assert.assertTrue(tested.closed);
       Assert.assertEquals(0, tested.indexerThreads.size());
@@ -239,12 +240,13 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
     {
       Mockito.reset(scMock);
       tested.closed = false;
-      tested.indexers.put("ch", indexerMock(SysinfoType.CLUSTER_HEALTH));
-      tested.indexers.put("cs", indexerMock(SysinfoType.CLUSTER_STATE));
+      tested.indexers.put("ch", indexerMock("ch", SysinfoType.CLUSTER_HEALTH));
+      tested.indexers.put("cs", indexerMock("cs", SysinfoType.CLUSTER_STATE));
       List<Thread> t = new ArrayList<Thread>();
       t.add(Mockito.mock(Thread.class));
       t.add(Mockito.mock(Thread.class));
-      tested.indexerThreads.addAll(t);
+      tested.indexerThreads.put("ch", t.get(0));
+      tested.indexerThreads.put("cs", t.get(1));
 
       tested.stop();
       Assert.assertTrue(tested.closed);
@@ -311,14 +313,84 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
     }
   }
 
+  @Test
+  public void changeIndexerPeriod() throws Exception {
+    SysinfoRiver tested = prepareRiverInstanceForTest(null);
+
+    // case - no indexer to change send, no NPE
+    Assert.assertTrue(tested.changeIndexerPeriod(null, 1000));
+
+    // case - no indexers
+    Assert.assertFalse(tested.changeIndexerPeriod(new String[] { "myIndexer" }, 1000));
+
+    // case - no indexer found if some exists
+    SysinfoIndexer chi = indexerMock("ch", SysinfoType.CLUSTER_HEALTH);
+    tested.indexers.put("ch", chi);
+    SysinfoIndexer csi = indexerMock("cs", SysinfoType.CLUSTER_HEALTH);
+    tested.indexers.put("cs", csi);
+    Thread cht = Mockito.mock(Thread.class);
+    Thread cst = Mockito.mock(Thread.class);
+    tested.indexerThreads.put("ch", cht);
+    tested.indexerThreads.put("cs", cst);
+    Assert.assertFalse(tested.changeIndexerPeriod(new String[] { "myIndexer" }, 1000));
+    Assert.assertFalse(tested.changeIndexerPeriod(new String[] { "myIndexer", "myIndexer2" }, 1000));
+    Mockito.verifyZeroInteractions(chi);
+    Mockito.verifyZeroInteractions(csi);
+    Mockito.verifyZeroInteractions(cht);
+    Mockito.verifyZeroInteractions(cst);
+
+    // case - one indexer found from two, increase, no thread restarted
+    Mockito.reset(chi, csi, cht, cst);
+    Assert.assertTrue(tested.changeIndexerPeriod(new String[] { "myIndexer", "ch" }, 4000));
+    Assert.assertEquals(4000, chi.indexingPeriod);
+    Mockito.verifyZeroInteractions(chi);
+    Mockito.verifyZeroInteractions(csi);
+    Mockito.verifyZeroInteractions(cht);
+    Mockito.verifyZeroInteractions(cst);
+
+    // case - two indexers found, increase, no threads restarted
+    Mockito.reset(chi, csi, cht, cst);
+    Assert.assertTrue(tested.changeIndexerPeriod(new String[] { "cs", "ch" }, 5000));
+    Assert.assertEquals(5000, chi.indexingPeriod);
+    Assert.assertEquals(5000, csi.indexingPeriod);
+    Mockito.verifyZeroInteractions(chi);
+    Mockito.verifyZeroInteractions(csi);
+    Mockito.verifyZeroInteractions(cht);
+    Mockito.verifyZeroInteractions(cst);
+
+    // case - one indexer, decrease, thread restarted if old period is long
+    Mockito.reset(chi, csi, cht, cst);
+    Mockito.when(cht.getState()).thenReturn(State.TERMINATED);
+    Assert.assertTrue(tested.changeIndexerPeriod(new String[] { "ch" }, 2000));
+    Assert.assertEquals(2000, chi.indexingPeriod);
+    Assert.assertNotSame(cht, tested.indexerThreads.get("ch"));
+    Mockito.verify(chi).close();
+    Mockito.verify(cht).interrupt();
+    Mockito.verifyZeroInteractions(csi);
+    Mockito.verifyZeroInteractions(cst);
+    tested.indexerThreads.get("ch").interrupt();
+
+    // case - one indexer, decrease, thread restarted if old period is long
+    Mockito.reset(chi, csi, cht, cst);
+    Mockito.when(cht.getState()).thenReturn(State.TERMINATED);
+    Assert.assertTrue(tested.changeIndexerPeriod(new String[] { "ch" }, 1000));
+    Assert.assertEquals(1000, chi.indexingPeriod);
+    Mockito.verifyZeroInteractions(chi);
+    Mockito.verifyZeroInteractions(csi);
+    Mockito.verifyZeroInteractions(cht);
+    Mockito.verifyZeroInteractions(cst);
+
+  }
+
   /**
    * Prepare mock indexer of given type
    * 
    * @return
    */
-  protected SysinfoIndexer indexerMock(SysinfoType type) {
+  protected SysinfoIndexer indexerMock(String name, SysinfoType type) {
     SysinfoIndexer i = Mockito.mock(SysinfoIndexer.class);
     i.infoType = type;
+    i.name = name;
     return i;
   }
 

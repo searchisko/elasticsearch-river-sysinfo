@@ -6,11 +6,9 @@
 package org.jboss.elasticsearch.river.sysinfo;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -85,14 +83,14 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
   protected SourceClient sourceClient;
 
   /**
-   * List of configured indexers.
+   * Map of configured indexers.
    */
   protected Map<String, SysinfoIndexer> indexers = new LinkedHashMap<String, SysinfoIndexer>();
 
   /**
-   * List of running indexer threads.
+   * Map of running indexer threads.
    */
-  protected List<Thread> indexerThreads = new ArrayList<Thread>();
+  protected Map<String, Thread> indexerThreads = new LinkedHashMap<String, Thread>();
 
   /**
    * Public constructor used by ElasticSearch.
@@ -193,11 +191,18 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
     sourceClient.start();
     closed = false;
     for (SysinfoIndexer indexer : indexers.values()) {
-      Thread t = acquireThread("sysinfo_river_" + indexer.name, indexer);
-      indexerThreads.add(t);
-      t.start();
+      runIndexer(indexer);
     }
     logger.info("Sysinfo River started");
+  }
+
+  /**
+   * @param indexer
+   */
+  protected void runIndexer(SysinfoIndexer indexer) {
+    Thread t = acquireThread("sysinfo_river_" + indexer.name, indexer);
+    indexerThreads.put(indexer.name, t);
+    t.start();
   }
 
   @Override
@@ -233,7 +238,7 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
         // nothing to do
       }
       // and interrupt them if not finished yet
-      for (Thread pi : indexerThreads) {
+      for (Thread pi : indexerThreads.values()) {
         pi.interrupt();
       }
       indexerThreads.clear();
@@ -346,4 +351,42 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
     return EsExecutors.daemonThreadFactory(settings.globalSettings(), threadName).newThread(runnable);
   }
 
+  @Override
+  public synchronized boolean changeIndexerPeriod(String[] indexerNames, long indexingPeriod) {
+
+    logger.debug("Go to change period to {}[ms] for indexers {}", indexingPeriod, indexerNames);
+
+    if (indexerNames == null || indexerNames.length == 0)
+      return true;
+
+    boolean ret = false;
+    for (String in : indexerNames) {
+      in = in.trim();
+      try {
+        if (indexers.containsKey(in)) {
+          ret = true;
+          SysinfoIndexer si = indexers.get(in);
+          long old = si.indexingPeriod;
+          si.indexingPeriod = indexingPeriod;
+          if (old > 3000 && old > indexingPeriod && !si.closed) {
+            // restart thread when we shorten period and old period is longer than some reasonable limit to start
+            // shorter period nearly immediately
+            si.close();
+            Thread t = indexerThreads.get(in);
+            if (t != null) {
+              t.interrupt();
+              while (t.getState() != Thread.State.TERMINATED) {
+                Thread.sleep(50);
+              }
+              runIndexer(si);
+            }
+          }
+        }
+      } catch (Exception e) {
+        // nothing to do
+      }
+    }
+    logger.info("Indexing period changed to {}[ms] for indexers {}", indexingPeriod, indexerNames);
+    return ret;
+  }
 }

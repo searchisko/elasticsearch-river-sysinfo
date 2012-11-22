@@ -152,6 +152,10 @@ Stop Sysinfo river indexing process. Process is stopped temporarily, so after co
 Restart Sysinfo river indexing process. Configuration of river is reloaded during restart. You can restart running indexing, or stopped indexing (see previous command).
 
 	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm/restart
+	
+Change indexing period for named indexers (indexers are named in url and comma separated, see `cluster_health,cluster_state` in example below). Change is not persistent, it's back on value from river configuration file after river restart!
+	
+	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm/cluster_health,cluster_state/period/2s
 
 List names of all Sysinfo Rivers running in ES cluster.
 

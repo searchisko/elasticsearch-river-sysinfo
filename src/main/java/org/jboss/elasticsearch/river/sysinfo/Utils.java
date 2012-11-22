@@ -79,7 +79,7 @@ public class Utils {
    *          case
    * @return time value in millis
    */
-  protected static long parseTimeValue(Map<String, Object> settings, String key, long defaultDuration,
+  public static long parseTimeValue(Map<String, ? extends Object> settings, String key, long defaultDuration,
       TimeUnit defaultTimeUnit) {
     long ret = 0;
     if (settings == null || !settings.containsKey(key)) {
