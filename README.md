@@ -4,14 +4,16 @@ System info River for ElasticSearch
 System info river component for [ElasticSearch](http://www.elasticsearch.org) collects in defined intervals system informations from ElasticSearch cluster, and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote cluster REST protocol may be used too to decrease different ES versions impedance.
 
-In order to install the plugin into ElasticSearch, simply run: `bin/plugin -install jbossorg/elasticsearch-river-sysinfo/1.0.0`
+In order to install the plugin into ElasticSearch, simply run: `bin/plugin -install jbossorg/elasticsearch-river-sysinfo/1.1.0`
 
 	------------------------------------------------------------------------------------------------------------------
 	| Sysinfo River | ElasticSearch    | Release date | Upgrade notes                                                |
 	|----------------------------------------------------------------------------------------------------------------|
-	| master        | 0.19.11          |              | river configuration format changed in `indexers` section     |
+	| master        | 0.19.11          |              |                                                              |
 	|----------------------------------------------------------------------------------------------------------------|
-	| 1.1.0         | 0.19.11          | 20.11.2012   |                                                              |
+	| 1.1.0         | 0.19.11          | 23.11.2012   | river configuration format changed in `indexers` section     |
+	|----------------------------------------------------------------------------------------------------------------|
+	| 1.0.0         | 0.19.11          | 20.11.2012   |                                                              |
 	------------------------------------------------------------------------------------------------------------------
 
 For changelog, planned milestones/enhancements and known bugs see [github issue tracker](https://github.com/jbossorg/elasticsearch-river-sysinfo/issues) please.
