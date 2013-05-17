@@ -8,7 +8,7 @@ System info can be collected from local or remote ES cluster, in case of remote
 cluster REST protocol may be used too to decrease different ES versions impedance.
 
 In order to install the plugin into ElasticSearch, simply run: 
-`bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.2.0/elasticsearch-river-sysinfo-1.2.0.zip -install elasticsearch-river-sysinfo`.
+`bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.2.1/elasticsearch-river-sysinfo-1.2.1.zip -install elasticsearch-river-sysinfo`.
 
 
 	------------------------------------------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ In order to install the plugin into ElasticSearch, simply run:
 	|----------------------------------------------------------------------------------------------------------------|
 	| master        | 0.90.0           |              |                                                              |
 	|----------------------------------------------------------------------------------------------------------------|
-	| 1.2.0         | 0.90.0           | 17.5.2013    | Management REST API url's changed                            |
+	| 1.2.1         | 0.90.0           | 17.5.2013    | Management REST API url's changed                            |
 	|----------------------------------------------------------------------------------------------------------------|
 	| 1.1.0         | 0.19.11          | 23.11.2012   | river configuration format changed in `indexers` section     |
 	|----------------------------------------------------------------------------------------------------------------|
