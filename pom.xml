@@ -9,6 +9,7 @@
   <packaging>jar</packaging>
   <description>System info River for ElasticSearch</description>
   <inceptionYear>2012</inceptionYear>
+  <url>https://github.com/jbossorg/elasticsearch-river-sysinfo</url>
 
   <developers>
     <developer>
