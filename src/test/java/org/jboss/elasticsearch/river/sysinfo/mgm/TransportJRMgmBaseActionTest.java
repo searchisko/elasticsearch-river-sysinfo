@@ -32,83 +32,83 @@ import org.mockito.Mockito;
  */
 public class TransportJRMgmBaseActionTest {
 
-  protected static final ClusterName clusterName = TransportJRLifecycleActionTest.clusterName;
-  DiscoveryNode dn = new DiscoveryNode("aa", DummyTransportAddress.INSTANCE);
-  DiscoveryNode dn2 = new DiscoveryNode("aa2", DummyTransportAddress.INSTANCE);
+	protected static final ClusterName clusterName = TransportJRLifecycleActionTest.clusterName;
+	DiscoveryNode dn = new DiscoveryNode("aa", DummyTransportAddress.INSTANCE);
+	DiscoveryNode dn2 = new DiscoveryNode("aa2", DummyTransportAddress.INSTANCE);
 
-  @Test
-  public void constructor() {
-    TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
-    Assert.assertNotNull(tested.logger);
-    Assert.assertEquals(
-        "org.elasticsearch.org.jboss.elasticsearch.river.sysinfo.mgm.lifecycle.TransportJRLifecycleAction",
-        tested.logger.getName());
-  }
+	@Test
+	public void constructor() {
+		TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
+		Assert.assertNotNull(tested.logger);
+		Assert.assertEquals(
+				"org.elasticsearch.org.jboss.elasticsearch.river.sysinfo.mgm.lifecycle.TransportJRLifecycleAction",
+				tested.logger.getName());
+	}
 
-  @Test
-  public void newResponse() {
-    TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
+	@Test
+	public void newResponse() {
+		TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
 
-    {
-      AtomicReferenceArray<NodeJRLifecycleResponse> responses = new AtomicReferenceArray<NodeJRLifecycleResponse>(0);
-      JRLifecycleResponse res = tested.newResponse(null, responses);
-      Assert.assertEquals(clusterName.value(), res.getClusterName());
-      Assert.assertEquals(0, res.nodes().length);
-    }
+		{
+			AtomicReferenceArray<NodeJRLifecycleResponse> responses = new AtomicReferenceArray<NodeJRLifecycleResponse>(0);
+			JRLifecycleResponse res = tested.newResponse(null, responses);
+			Assert.assertEquals(clusterName, res.getClusterName());
+			Assert.assertEquals(0, res.getNodes().length);
+		}
 
-    {
-      AtomicReferenceArray<NodeJRLifecycleResponse> responses = new AtomicReferenceArray<NodeJRLifecycleResponse>(
-          new NodeJRLifecycleResponse[] { new NodeJRLifecycleResponse(dn), new NodeJRLifecycleResponse(dn2) });
-      JRLifecycleResponse res = tested.newResponse(null, responses);
-      Assert.assertEquals(clusterName.value(), res.getClusterName());
-      Assert.assertEquals(2, res.nodes().length);
-    }
+		{
+			AtomicReferenceArray<NodeJRLifecycleResponse> responses = new AtomicReferenceArray<NodeJRLifecycleResponse>(
+					new NodeJRLifecycleResponse[] { new NodeJRLifecycleResponse(dn), new NodeJRLifecycleResponse(dn2) });
+			JRLifecycleResponse res = tested.newResponse(null, responses);
+			Assert.assertEquals(clusterName, res.getClusterName());
+			Assert.assertEquals(2, res.getNodes().length);
+		}
 
-  }
+	}
 
-  @Test
-  public void executor() {
-    TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
-    Assert.assertEquals(ThreadPool.Names.MANAGEMENT, tested.executor());
-  }
+	@Test
+	public void executor() {
+		TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
+		Assert.assertEquals(ThreadPool.Names.MANAGEMENT, tested.executor());
+	}
 
-  @Test
-  public void accumulateExceptions() {
-    TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
-    Assert.assertEquals(false, tested.accumulateExceptions());
-  }
+	@Test
+	public void accumulateExceptions() {
+		TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
+		Assert.assertEquals(false, tested.accumulateExceptions());
+	}
 
-  @Test
-  public void nodeOperation() {
-    SysinfoRiver.clearRunningInstances();
+	@Test
+	public void nodeOperation() {
+		SysinfoRiver.clearRunningInstances();
 
-    IRiverMgm jiraRiverMock = Mockito.mock(IRiverMgm.class);
-    RiverName riverName = new RiverName("sysinfo", "myRiver");
-    Mockito.when(jiraRiverMock.riverName()).thenReturn(riverName);
-    SysinfoRiver.addRunningInstance(jiraRiverMock);
-    TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
+		IRiverMgm jiraRiverMock = Mockito.mock(IRiverMgm.class);
+		RiverName riverName = new RiverName("sysinfo", "myRiver");
+		Mockito.when(jiraRiverMock.riverName()).thenReturn(riverName);
+		SysinfoRiver.addRunningInstance(jiraRiverMock);
+		TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
 
-    Mockito.reset(jiraRiverMock);
-    {
-      NodeJRLifecycleRequest nodeRequest = new NodeJRLifecycleRequest("ndid", new JRLifecycleRequest("unknownRiver",
-          JRLifecycleCommand.STOP));
-      NodeJRLifecycleResponse resp = tested.nodeOperation(nodeRequest);
-      Assert.assertNotNull(resp);
-      Assert.assertFalse(resp.riverFound);
-      Mockito.verifyZeroInteractions(jiraRiverMock);
-    }
+		Mockito.reset(jiraRiverMock);
+		{
+			NodeJRLifecycleRequest nodeRequest = new NodeJRLifecycleRequest("ndid", new JRLifecycleRequest("unknownRiver",
+					JRLifecycleCommand.STOP));
+			NodeJRLifecycleResponse resp = tested.nodeOperation(nodeRequest);
+			Assert.assertNotNull(resp);
+			Assert.assertFalse(resp.riverFound);
+			Mockito.verifyZeroInteractions(jiraRiverMock);
+		}
 
-    Mockito.reset(jiraRiverMock);
-    {
-      NodeJRLifecycleRequest nodeRequest = new NodeJRLifecycleRequest("ndid", new JRLifecycleRequest("myRiver",
-          JRLifecycleCommand.STOP));
-      NodeJRLifecycleResponse resp = tested.nodeOperation(nodeRequest);
-      Assert.assertNotNull(resp);
-      Assert.assertTrue(resp.riverFound);
-      Mockito.verify(jiraRiverMock).stop();
-      Mockito.verifyNoMoreInteractions(jiraRiverMock);
-    }
+		Mockito.reset(jiraRiverMock);
+		{
+			NodeJRLifecycleRequest nodeRequest = new NodeJRLifecycleRequest("ndid", new JRLifecycleRequest("myRiver",
+					JRLifecycleCommand.STOP));
+			NodeJRLifecycleResponse resp = tested.nodeOperation(nodeRequest);
+			Assert.assertNotNull(resp);
+			Assert.assertTrue(resp.riverFound);
+			Mockito.verify(jiraRiverMock).stop();
+			Mockito.verifyNoMoreInteractions(jiraRiverMock);
+		}
 
-  }
+	}
 
 }

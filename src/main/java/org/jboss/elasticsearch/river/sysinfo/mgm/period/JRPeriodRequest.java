@@ -17,67 +17,67 @@ import org.jboss.elasticsearch.river.sysinfo.mgm.JRMgmBaseRequest;
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
  */
-public class JRPeriodRequest extends JRMgmBaseRequest {
+public class JRPeriodRequest extends JRMgmBaseRequest<JRPeriodRequest> {
 
-  protected String[] indexerNames;
-  protected long period;
+	protected String[] indexerNames;
+	protected long period;
 
-  JRPeriodRequest() {
+	JRPeriodRequest() {
 
-  }
+	}
 
-  /**
-   * Construct request.
-   * 
-   * @param riverName for request
-   * @param indexerNames names of indexers to change period for
-   * @param period new period to set
-   */
-  public JRPeriodRequest(String riverName, String[] indexerNames, long period) {
-    super(riverName);
-    this.indexerNames = indexerNames;
-    this.period = period;
-  }
+	/**
+	 * Construct request.
+	 * 
+	 * @param riverName for request
+	 * @param indexerNames names of indexers to change period for
+	 * @param period new period to set
+	 */
+	public JRPeriodRequest(String riverName, String[] indexerNames, long period) {
+		super(riverName);
+		this.indexerNames = indexerNames;
+		this.period = period;
+	}
 
-  @Override
-  public void readFrom(StreamInput in) throws IOException {
-    super.readFrom(in);
-    if (in.readBoolean()) {
-      indexerNames = in.readStringArray();
-    }
-    period = in.readLong();
-  }
+	@Override
+	public void readFrom(StreamInput in) throws IOException {
+		super.readFrom(in);
+		if (in.readBoolean()) {
+			indexerNames = in.readStringArray();
+		}
+		period = in.readLong();
+	}
 
-  @Override
-  public void writeTo(StreamOutput out) throws IOException {
-    super.writeTo(out);
-    out.writeBoolean(indexerNames != null);
-    if (indexerNames != null) {
-      out.writeStringArray(indexerNames);
-    }
-    out.writeLong(period);
-  }
+	@Override
+	public void writeTo(StreamOutput out) throws IOException {
+		super.writeTo(out);
+		out.writeBoolean(indexerNames != null);
+		if (indexerNames != null) {
+			out.writeStringArray(indexerNames);
+		}
+		out.writeLong(period);
+	}
 
-  public String[] getIndexerNames() {
-    return indexerNames;
-  }
+	public String[] getIndexerNames() {
+		return indexerNames;
+	}
 
-  public void setIndexerNames(String[] indexerNames) {
-    this.indexerNames = indexerNames;
-  }
+	public void setIndexerNames(String[] indexerNames) {
+		this.indexerNames = indexerNames;
+	}
 
-  public long getPeriod() {
-    return period;
-  }
+	public long getPeriod() {
+		return period;
+	}
 
-  public void setPeriod(long period) {
-    this.period = period;
-  }
+	public void setPeriod(long period) {
+		this.period = period;
+	}
 
-  @Override
-  public String toString() {
-    return "JRPeriodRequest [riverName=" + riverName + ", indexerNames=" + Arrays.toString(indexerNames) + ", period="
-        + period + "]";
-  }
+	@Override
+	public String toString() {
+		return "JRPeriodRequest [riverName=" + riverName + ", indexerNames=" + Arrays.toString(indexerNames) + ", period="
+				+ period + "]";
+	}
 
 }

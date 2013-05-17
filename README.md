@@ -1,15 +1,22 @@
 System info River for ElasticSearch
 ===================================
 
-System info river component for [ElasticSearch](http://www.elasticsearch.org) collects in defined intervals system informations from ElasticSearch cluster, and store them into search indexes, so may be used for later analysis.
-System info can be collected from local or remote ES cluster, in case of remote cluster REST protocol may be used too to decrease different ES versions impedance.
+System info river component for [ElasticSearch](http://www.elasticsearch.org) 
+collects in defined intervals system informations from ElasticSearch cluster, 
+and store them into search indexes, so may be used for later analysis.
+System info can be collected from local or remote ES cluster, in case of remote 
+cluster REST protocol may be used too to decrease different ES versions impedance.
 
-In order to install the plugin into ElasticSearch, simply run: `bin/plugin -install jbossorg/elasticsearch-river-sysinfo/1.1.0`
+In order to install the plugin into ElasticSearch, simply run: 
+`bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.2.0/elasticsearch-river-sysinfo-1.2.0.zip -install elasticsearch-river-sysinfo`.
+
 
 	------------------------------------------------------------------------------------------------------------------
 	| Sysinfo River | ElasticSearch    | Release date | Upgrade notes                                                |
 	|----------------------------------------------------------------------------------------------------------------|
-	| master        | 0.19.11          |              |                                                              |
+	| master        | 0.90.0           |              |                                                              |
+	|----------------------------------------------------------------------------------------------------------------|
+	| 1.2.0         | 0.90.0           | 17.5.2013    | Management REST API url's changed                            |
 	|----------------------------------------------------------------------------------------------------------------|
 	| 1.1.0         | 0.19.11          | 23.11.2012   | river configuration format changed in `indexers` section     |
 	|----------------------------------------------------------------------------------------------------------------|
@@ -49,21 +56,26 @@ Creation of the System info river can be done using:
 	}
 	'
 
-The example above lists basic configuration used to store two types of information about cluster where river runs. Detailed description of configuration follows in next chapters.
+The example above lists basic configuration used to store two types of information about cluster where river runs. 
+Detailed description of configuration follows in next chapters.
 Other examples of configuration can be found in [test resources](https://github.com/jbossorg/elasticsearch-river-sysinfo/tree/master/src/test/resources).
 
 ## Connection to the monitored ES cluster
-Connection used to collect ES cluster system informations is configured using `es_connection` element. Content depends on type of connection. There are three types available.  
+Connection used to collect ES cluster system informations is configured using 
+`es_connection` element. Content depends on type of connection. There are three types available.  
 
 ### local
-Local mode is used to collect informations about ES cluster where river runs. Only `type` option is used here, no any additional configuration parameter necessary.
+Local mode is used to collect informations about ES cluster where river runs. 
+Only `type` option is used here, no any additional configuration parameter necessary.
 
 	"es_connection" : {
 	  "type" : "local"
 	},
 
 ### remote
-Remote mode uses [Transport Client](http://www.elasticsearch.org/guide/reference/java-api/client.html) to collect system informations from remote ES cluster using internal [Transport](http://www.elasticsearch.org/guide/reference/modules/transport.html) mechanism.
+Remote mode uses [Transport Client](http://www.elasticsearch.org/guide/reference/java-api/client.html) to collect 
+system informations from remote ES cluster using internal [Transport](http://www.elasticsearch.org/guide/reference/modules/transport.html) 
+mechanism.
 You can use this connection if transport mechanism of remote ES cluster version is compatible with version of ES cluster where river runs.  
 Configuration requires `address` element with list of remote cluster nodes (both `host` and `port` elements are mandatory). 
 Optionally you can define other connection `settings` as described in the [Transport Client documentation](http://www.elasticsearch.org/guide/reference/java-api/client.html). 
@@ -81,8 +93,10 @@ Optionally you can define other connection `settings` as described in the [Trans
  	}
 
 ### rest
-REST mode uses ElasticSearch [HTTP REST API](http://www.elasticsearch.org/guide/reference/modules/http.html) to collect system informations from remote ES cluster.
-You can use this connection mode in case of compatibility or networking problems with `remote` mode. Note that performance of REST API is commonly worse than binary transport mechanism behind `remote` mode.
+REST mode uses ElasticSearch [HTTP REST API](http://www.elasticsearch.org/guide/reference/modules/http.html) 
+to collect system informations from remote ES cluster.
+You can use this connection mode in case of compatibility or networking problems with `remote` mode. 
+Note that performance of REST API is commonly worse than binary transport mechanism behind `remote` mode.
 
 	"es_connection" : {
 	  "type"     : "rest",
@@ -100,9 +114,11 @@ Configuration options:
 * `pwd` optional password for http basic authentication.
 
 ## Configuration of indexers
-Second significant part of the river configuration is map of `indexers`. Each indexer defines what information will be collected in which interval, and where will be stored in ES indexes.
+Second significant part of the river configuration is map of `indexers`. Each indexer defines what 
+information will be collected in which interval, and where will be stored in ES indexes.
 Each indexer has unique name defined as key in map of indexers.
-Information is stored to the ES indexes in cluster where river runs. Structure of stored information is exactly same as returned from ElasticSearch API call.
+Information is stored to the ES indexes in cluster where river runs. Structure of stored
+information is exactly same as returned from ElasticSearch API call.
 Indexer configuration is:
 
 	"indexer_name" : {
@@ -145,19 +161,25 @@ Available information types:
 
 Management REST API
 -------------------
-Sysinfo river supports next REST commands for management purposes. Note `my_sysinfo_river` in examples is name of Sysinfo river you can call operation for, so replace it with real name for your calls.
+Sysinfo river supports next REST commands for management purposes. Note `my_sysinfo_river`
+in examples is name of Sysinfo river you can call operation for, so replace it with real 
+name for your calls.
 
-Stop Sysinfo river indexing process. Process is stopped temporarily, so after complete elasticsearch cluster restart or river migration to another node it's started back.
+Stop Sysinfo river indexing process. Process is stopped temporarily, so after complete 
+elasticsearch cluster restart or river migration to another node it's started back.
 
-	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm/stop
+	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm_sr/stop
 
-Restart Sysinfo river indexing process. Configuration of river is reloaded during restart. You can restart running indexing, or stopped indexing (see previous command).
+Restart Sysinfo river indexing process. Configuration of river is reloaded during restart. 
+You can restart running indexing, or stopped indexing (see previous command).
 
-	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm/restart
+	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm_sr/restart
 	
-Change indexing period for named indexers (indexers are named in url and comma separated, see `cluster_health,cluster_state` in example below). Change is not persistent, it's back on value from river configuration file after river restart!
+Change indexing period for named indexers (indexers are named in url and comma 
+separated, see `cluster_health,cluster_state` in example below). Change is not 
+persistent, it's back on value from river configuration file after river restart!
 	
-	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm/cluster_health,cluster_state/period/2s
+	curl -XPOST localhost:9200/_river/my_sysinfo_river/_mgm_sr/cluster_health,cluster_state/period/2s
 
 List names of all Sysinfo Rivers running in ES cluster.
 

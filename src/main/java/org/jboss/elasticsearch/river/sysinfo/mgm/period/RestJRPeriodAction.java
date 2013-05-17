@@ -29,44 +29,49 @@ import org.jboss.elasticsearch.river.sysinfo.mgm.RestJRMgmBaseAction;
  */
 public class RestJRPeriodAction extends RestJRMgmBaseAction {
 
-  @Inject
-  protected RestJRPeriodAction(Settings settings, Client client, RestController controller) {
-    super(settings, client);
-    String baseUrl = baseRestMgmUrl();
-    controller.registerHandler(org.elasticsearch.rest.RestRequest.Method.POST, baseUrl
-        + "{indexerName}/period/{period}", this);
-  }
+	@Inject
+	protected RestJRPeriodAction(Settings settings, Client client, RestController controller) {
+		super(settings, client);
+		String baseUrl = baseRestMgmUrl();
+		controller.registerHandler(org.elasticsearch.rest.RestRequest.Method.POST, baseUrl
+				+ "{indexerName}/period/{period}", this);
+	}
 
-  @Override
-  public void handleRequest(final RestRequest restRequest, final RestChannel restChannel) {
+	@Override
+	public void handleRequest(final RestRequest restRequest, final RestChannel restChannel) {
 
-    final String indexerNames = restRequest.param("indexerName");
-    final long period = Utils.parseTimeValue(restRequest.params(), "period", 1, TimeUnit.MINUTES);
-    JRPeriodRequest actionRequest = new JRPeriodRequest(restRequest.param("riverName"),
-        splitIndexerNames(indexerNames), period);
+		final String indexerNames = restRequest.param("indexerName");
+		final long period = Utils.parseTimeValue(restRequest.params(), "period", 1, TimeUnit.MINUTES);
+		JRPeriodRequest actionRequest = new JRPeriodRequest(restRequest.param("riverName"),
+				splitIndexerNames(indexerNames), period);
 
-    client.execute(JRPeriodAction.INSTANCE, actionRequest,
-        new JRMgmBaseActionListener<JRPeriodRequest, JRPeriodResponse, NodeJRPeriodResponse>(actionRequest,
-            restRequest, restChannel) {
+		client
+				.admin()
+				.cluster()
+				.execute(
+						JRPeriodAction.INSTANCE,
+						actionRequest,
+						new JRMgmBaseActionListener<JRPeriodRequest, JRPeriodResponse, NodeJRPeriodResponse>(actionRequest,
+								restRequest, restChannel) {
 
-          @Override
-          protected void handleRiverResponse(NodeJRPeriodResponse nodeInfo) throws Exception {
-            if (nodeInfo.indexerFound) {
-              restChannel.sendResponse(new XContentRestResponse(restRequest, OK, buildMessageDocument(restRequest,
-                  "Period changed to " + period + "[ms] for at least one of defined indexers")));
-            } else {
-              restChannel.sendResponse(new XContentRestResponse(restRequest, RestStatus.NOT_FOUND,
-                  buildMessageDocument(restRequest, "No any of defined indexers '" + indexerNames + "' found")));
-            }
-          }
+							@Override
+							protected void handleRiverResponse(NodeJRPeriodResponse nodeInfo) throws Exception {
+								if (nodeInfo.indexerFound) {
+									restChannel.sendResponse(new XContentRestResponse(restRequest, OK, buildMessageDocument(restRequest,
+											"Period changed to " + period + "[ms] for at least one of defined indexers")));
+								} else {
+									restChannel.sendResponse(new XContentRestResponse(restRequest, RestStatus.NOT_FOUND,
+											buildMessageDocument(restRequest, "No any of defined indexers '" + indexerNames + "' found")));
+								}
+							}
 
-        });
-  }
+						});
+	}
 
-  public static String[] splitIndexerNames(String namesParam) {
-    if (Utils.isEmpty(namesParam)) {
-      return Strings.EMPTY_ARRAY;
-    }
-    return Strings.splitStringByCommaToArray(namesParam);
-  }
+	public static String[] splitIndexerNames(String namesParam) {
+		if (Utils.isEmpty(namesParam)) {
+			return Strings.EMPTY_ARRAY;
+		}
+		return Strings.splitStringByCommaToArray(namesParam);
+	}
 }
