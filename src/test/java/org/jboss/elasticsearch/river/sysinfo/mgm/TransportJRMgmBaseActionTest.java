@@ -7,6 +7,7 @@ package org.jboss.elasticsearch.river.sysinfo.mgm;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
+import org.elasticsearch.Version;
 import org.elasticsearch.cluster.ClusterName;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.transport.DummyTransportAddress;
@@ -32,9 +33,10 @@ import org.mockito.Mockito;
  */
 public class TransportJRMgmBaseActionTest {
 
+	private static final String RIVER_NAME = "myRiver";
 	protected static final ClusterName clusterName = TransportJRLifecycleActionTest.clusterName;
-	DiscoveryNode dn = new DiscoveryNode("aa", DummyTransportAddress.INSTANCE);
-	DiscoveryNode dn2 = new DiscoveryNode("aa2", DummyTransportAddress.INSTANCE);
+	DiscoveryNode dn = new DiscoveryNode("aa", DummyTransportAddress.INSTANCE, Version.CURRENT);
+	DiscoveryNode dn2 = new DiscoveryNode("aa2", DummyTransportAddress.INSTANCE, Version.CURRENT);
 
 	@Test
 	public void constructor() {
@@ -83,32 +85,35 @@ public class TransportJRMgmBaseActionTest {
 		SysinfoRiver.clearRunningInstances();
 
 		IRiverMgm jiraRiverMock = Mockito.mock(IRiverMgm.class);
-		RiverName riverName = new RiverName("sysinfo", "myRiver");
+		RiverName riverName = new RiverName("sysinfo", RIVER_NAME);
 		Mockito.when(jiraRiverMock.riverName()).thenReturn(riverName);
 		SysinfoRiver.addRunningInstance(jiraRiverMock);
-		TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
+		try {
+			TransportJRLifecycleAction tested = TransportJRLifecycleActionTest.prepareTestedInstance(clusterName);
 
-		Mockito.reset(jiraRiverMock);
-		{
-			NodeJRLifecycleRequest nodeRequest = new NodeJRLifecycleRequest("ndid", new JRLifecycleRequest("unknownRiver",
-					JRLifecycleCommand.STOP));
-			NodeJRLifecycleResponse resp = tested.nodeOperation(nodeRequest);
-			Assert.assertNotNull(resp);
-			Assert.assertFalse(resp.riverFound);
-			Mockito.verifyZeroInteractions(jiraRiverMock);
+			Mockito.reset(jiraRiverMock);
+			{
+				NodeJRLifecycleRequest nodeRequest = new NodeJRLifecycleRequest("ndid", new JRLifecycleRequest("unknownRiver",
+						JRLifecycleCommand.STOP));
+				NodeJRLifecycleResponse resp = tested.nodeOperation(nodeRequest);
+				Assert.assertNotNull(resp);
+				Assert.assertFalse(resp.riverFound);
+				Mockito.verifyZeroInteractions(jiraRiverMock);
+			}
+
+			Mockito.reset(jiraRiverMock);
+			{
+				NodeJRLifecycleRequest nodeRequest = new NodeJRLifecycleRequest("ndid", new JRLifecycleRequest(RIVER_NAME,
+						JRLifecycleCommand.STOP));
+				NodeJRLifecycleResponse resp = tested.nodeOperation(nodeRequest);
+				Assert.assertNotNull(resp);
+				Assert.assertTrue(resp.riverFound);
+				Mockito.verify(jiraRiverMock).stop();
+				Mockito.verifyNoMoreInteractions(jiraRiverMock);
+			}
+		} finally {
+			SysinfoRiver.clearRunningInstances();
 		}
-
-		Mockito.reset(jiraRiverMock);
-		{
-			NodeJRLifecycleRequest nodeRequest = new NodeJRLifecycleRequest("ndid", new JRLifecycleRequest("myRiver",
-					JRLifecycleCommand.STOP));
-			NodeJRLifecycleResponse resp = tested.nodeOperation(nodeRequest);
-			Assert.assertNotNull(resp);
-			Assert.assertTrue(resp.riverFound);
-			Mockito.verify(jiraRiverMock).stop();
-			Mockito.verifyNoMoreInteractions(jiraRiverMock);
-		}
-
 	}
 
 }

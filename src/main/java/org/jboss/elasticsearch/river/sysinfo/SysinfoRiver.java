@@ -319,7 +319,7 @@ public class SysinfoRiver extends AbstractRiverComponent implements River, IRive
 	}
 
 	/**
-	 * Put running instance of jira river into registry. Used for REST management operations handling.
+	 * Put running instance of river into registry. Used for REST management operations handling.
 	 * 
 	 * @param riverName to get instance for
 	 * @see #getRunningInstances()

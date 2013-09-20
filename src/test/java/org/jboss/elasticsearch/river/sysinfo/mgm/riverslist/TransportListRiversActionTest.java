@@ -7,6 +7,7 @@ package org.jboss.elasticsearch.river.sysinfo.mgm.riverslist;
 
 import junit.framework.Assert;
 
+import org.elasticsearch.Version;
 import org.elasticsearch.cluster.ClusterName;
 import org.elasticsearch.cluster.ClusterService;
 import org.elasticsearch.cluster.node.DiscoveryNode;
@@ -28,6 +29,8 @@ import org.mockito.Mockito;
  */
 public class TransportListRiversActionTest {
 
+	private static final String RIVER_NAME_2 = "myRiver2";
+	private static final String RIVER_NAME_1 = "myRiver";
 	public static final ClusterName clusterName = new ClusterName("myCluster");
 
 	@Test
@@ -73,43 +76,47 @@ public class TransportListRiversActionTest {
 		SysinfoRiver.clearRunningInstances();
 
 		TransportListRiversAction tested = prepareTestedInstance(clusterName);
-		{
-			NodeListRiversRequest req = Mockito.mock(NodeListRiversRequest.class);
-			NodeListRiversResponse resp = tested.nodeOperation(req);
-			Assert.assertNotNull(resp);
-			Assert.assertNotNull(resp.riverNames);
-			Assert.assertEquals(0, resp.riverNames.size());
-		}
+		try {
+			{
+				NodeListRiversRequest req = Mockito.mock(NodeListRiversRequest.class);
+				NodeListRiversResponse resp = tested.nodeOperation(req);
+				Assert.assertNotNull(resp);
+				Assert.assertNotNull(resp.riverNames);
+				Assert.assertEquals(0, resp.riverNames.size());
+			}
 
-		{
-			IRiverMgm riverMock = Mockito.mock(IRiverMgm.class);
-			RiverName riverName = new RiverName("sysinfo", "myRiver");
-			Mockito.when(riverMock.riverName()).thenReturn(riverName);
-			SysinfoRiver.addRunningInstance(riverMock);
-			NodeListRiversRequest req = Mockito.mock(NodeListRiversRequest.class);
-			NodeListRiversResponse resp = tested.nodeOperation(req);
-			Assert.assertNotNull(resp);
-			Assert.assertNotNull(resp.riverNames);
-			Assert.assertEquals(1, resp.riverNames.size());
-			Assert.assertTrue(resp.riverNames.contains("myRiver"));
-		}
+			{
+				IRiverMgm riverMock = Mockito.mock(IRiverMgm.class);
+				RiverName riverName = new RiverName("sysinfo", RIVER_NAME_1);
+				Mockito.when(riverMock.riverName()).thenReturn(riverName);
+				SysinfoRiver.addRunningInstance(riverMock);
+				NodeListRiversRequest req = Mockito.mock(NodeListRiversRequest.class);
+				NodeListRiversResponse resp = tested.nodeOperation(req);
+				Assert.assertNotNull(resp);
+				Assert.assertNotNull(resp.riverNames);
+				Assert.assertEquals(1, resp.riverNames.size());
+				Assert.assertTrue(resp.riverNames.contains(RIVER_NAME_1));
+			}
 
-		{
-			IRiverMgm jiraRiverMock = Mockito.mock(IRiverMgm.class);
-			RiverName riverName = new RiverName("sysinfo", "myRiver2");
-			Mockito.when(jiraRiverMock.riverName()).thenReturn(riverName);
-			SysinfoRiver.addRunningInstance(jiraRiverMock);
-			NodeListRiversRequest req = Mockito.mock(NodeListRiversRequest.class);
-			NodeListRiversResponse resp = tested.nodeOperation(req);
-			Assert.assertNotNull(resp);
-			Assert.assertNotNull(resp.riverNames);
-			Assert.assertEquals(2, resp.riverNames.size());
-			Assert.assertTrue(resp.riverNames.contains("myRiver"));
-			Assert.assertTrue(resp.riverNames.contains("myRiver2"));
+			{
+				IRiverMgm jiraRiverMock = Mockito.mock(IRiverMgm.class);
+				RiverName riverName = new RiverName("sysinfo", RIVER_NAME_2);
+				Mockito.when(jiraRiverMock.riverName()).thenReturn(riverName);
+				SysinfoRiver.addRunningInstance(jiraRiverMock);
+				NodeListRiversRequest req = Mockito.mock(NodeListRiversRequest.class);
+				NodeListRiversResponse resp = tested.nodeOperation(req);
+				Assert.assertNotNull(resp);
+				Assert.assertNotNull(resp.riverNames);
+				Assert.assertEquals(2, resp.riverNames.size());
+				Assert.assertTrue(resp.riverNames.contains(RIVER_NAME_1));
+				Assert.assertTrue(resp.riverNames.contains(RIVER_NAME_2));
+			}
+		} finally {
+			SysinfoRiver.clearRunningInstances();
 		}
 	}
 
-	private static DiscoveryNode dn = new DiscoveryNode("aa", DummyTransportAddress.INSTANCE);
+	private static DiscoveryNode dn = new DiscoveryNode("aa", DummyTransportAddress.INSTANCE, Version.CURRENT);
 	private static ClusterService clusterService = Mockito.mock(ClusterService.class);
 
 	public static TransportListRiversAction prepareTestedInstance(ClusterName clusterName) {
