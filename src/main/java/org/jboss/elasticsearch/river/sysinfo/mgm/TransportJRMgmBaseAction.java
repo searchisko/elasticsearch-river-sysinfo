@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import org.elasticsearch.ElasticSearchException;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.support.nodes.TransportNodesOperationAction;
 import org.elasticsearch.cluster.ClusterName;
 import org.elasticsearch.cluster.ClusterService;
@@ -30,73 +30,73 @@ import org.jboss.elasticsearch.river.sysinfo.SysinfoRiver;
  */
 @SuppressWarnings("rawtypes")
 public abstract class TransportJRMgmBaseAction<Request extends JRMgmBaseRequest, Response extends JRMgmBaseResponse, NodeRequest extends NodeJRMgmBaseRequest<Request>, NodeResponse extends NodeJRMgmBaseResponse>
-    extends TransportNodesOperationAction<Request, Response, NodeRequest, NodeResponse> {
+		extends TransportNodesOperationAction<Request, Response, NodeRequest, NodeResponse> {
 
-  protected final ESLogger logger;
+	protected final ESLogger logger;
 
-  @Inject
-  public TransportJRMgmBaseAction(Settings settings, ClusterName clusterName, ThreadPool threadPool,
-      ClusterService clusterService, TransportService transportService) {
-    super(settings, clusterName, threadPool, clusterService, transportService);
-    logger = Loggers.getLogger(getClass());
-  }
+	@Inject
+	public TransportJRMgmBaseAction(Settings settings, ClusterName clusterName, ThreadPool threadPool,
+			ClusterService clusterService, TransportService transportService) {
+		super(settings, clusterName, threadPool, clusterService, transportService);
+		logger = Loggers.getLogger(getClass());
+	}
 
-  @Override
-  protected String executor() {
-    return ThreadPool.Names.MANAGEMENT;
-  }
+	@Override
+	protected String executor() {
+		return ThreadPool.Names.MANAGEMENT;
+	}
 
-  @SuppressWarnings("unchecked")
-  @Override
-  protected Response newResponse(Request request, AtomicReferenceArray responses) {
-    final List<NodeResponse> nodesInfos = new ArrayList<NodeResponse>();
-    for (int i = 0; i < responses.length(); i++) {
-      Object resp = responses.get(i);
-      if (resp instanceof NodeJRMgmBaseResponse) {
-        nodesInfos.add((NodeResponse) resp);
-      }
-    }
-    return newResponse(clusterName, nodesInfos.toArray(newNodeResponseArray(nodesInfos.size())));
-  }
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Response newResponse(Request request, AtomicReferenceArray responses) {
+		final List<NodeResponse> nodesInfos = new ArrayList<NodeResponse>();
+		for (int i = 0; i < responses.length(); i++) {
+			Object resp = responses.get(i);
+			if (resp instanceof NodeJRMgmBaseResponse) {
+				nodesInfos.add((NodeResponse) resp);
+			}
+		}
+		return newResponse(clusterName, nodesInfos.toArray(newNodeResponseArray(nodesInfos.size())));
+	}
 
-  protected abstract NodeResponse[] newNodeResponseArray(int len);
+	protected abstract NodeResponse[] newNodeResponseArray(int len);
 
-  protected abstract Response newResponse(ClusterName clusterName, NodeResponse[] array);
+	protected abstract Response newResponse(ClusterName clusterName, NodeResponse[] array);
 
-  @Override
-  protected boolean accumulateExceptions() {
-    return false;
-  }
+	@Override
+	protected boolean accumulateExceptions() {
+		return false;
+	}
 
-  @Override
-  protected NodeResponse nodeOperation(NodeRequest nodeRequest) throws ElasticSearchException {
-    Request req = nodeRequest.getRequest();
-    logger.debug("Go to look for Sysinfo river '{}' on this node", req.getRiverName());
-    IRiverMgm river = SysinfoRiver.getRunningInstance(req.getRiverName());
-    if (river == null) {
-      logger.debug("Sysinfo River {} not found on this node", req.getRiverName());
-      return newNodeResponse();
-    } else {
-      logger.debug("Sysinfo River {} found on this node, go to call mgm operation on it {}", req.getRiverName(), req);
-      try {
-        return performOperationOnRiver(river, req, clusterService.localNode());
-      } catch (Exception e) {
-        logger.error("Exception from river management operation: {}", e, e.getMessage());
-        throw new ElasticSearchException(e.getMessage(), e);
-      }
-    }
-  }
+	@Override
+	protected NodeResponse nodeOperation(NodeRequest nodeRequest) throws ElasticsearchException {
+		Request req = nodeRequest.getRequest();
+		logger.debug("Go to look for Sysinfo river '{}' on this node", req.getRiverName());
+		IRiverMgm river = SysinfoRiver.getRunningInstance(req.getRiverName());
+		if (river == null) {
+			logger.debug("Sysinfo River {} not found on this node", req.getRiverName());
+			return newNodeResponse();
+		} else {
+			logger.debug("Sysinfo River {} found on this node, go to call mgm operation on it {}", req.getRiverName(), req);
+			try {
+				return performOperationOnRiver(river, req, clusterService.localNode());
+			} catch (Exception e) {
+				logger.error("Exception from river management operation: {}", e, e.getMessage());
+				throw new ElasticsearchException(e.getMessage(), e);
+			}
+		}
+	}
 
-  /**
-   * Implement in subclass to perform necessary management operation on river instance. This method is called only on
-   * node where river really runs.
-   * 
-   * @param river instance to perform operation on, never null
-   * @param req request for operation to process
-   * @param node this operation runs on (used to construct response etc.)
-   * @return node response with operation result
-   * @throws Exception if something is wrong
-   */
-  protected abstract NodeResponse performOperationOnRiver(IRiverMgm river, Request req, DiscoveryNode node)
-      throws Exception;
+	/**
+	 * Implement in subclass to perform necessary management operation on river instance. This method is called only on
+	 * node where river really runs.
+	 * 
+	 * @param river instance to perform operation on, never null
+	 * @param req request for operation to process
+	 * @param node this operation runs on (used to construct response etc.)
+	 * @return node response with operation result
+	 * @throws Exception if something is wrong
+	 */
+	protected abstract NodeResponse performOperationOnRiver(IRiverMgm river, Request req, DiscoveryNode node)
+			throws Exception;
 }

@@ -41,92 +41,97 @@ import org.jboss.elasticsearch.river.sysinfo.SourceClientBase;
  */
 public class SourceClientESClient extends SourceClientBase {
 
-  private static final ESLogger logger = Loggers.getLogger(SourceClientESClient.class);
+	private static final ESLogger logger = Loggers.getLogger(SourceClientESClient.class);
 
-  protected Client client;
+	protected Client client;
 
-  private RestClusterHealthAction healthAction;
-  private RestClusterStateAction stateAction;
-  private RestNodesInfoAction nodesInfoAction;
-  private RestNodesStatsAction nodesStatsAction;
-  private RestIndicesStatusAction indicesStatusAction;
-  private RestIndicesStatsAction indicesStatsAction;
-  private RestIndicesSegmentsAction indicesSegmentsAction;
+	private RestClusterHealthAction healthAction;
+	private RestClusterStateAction stateAction;
+	private RestNodesInfoAction nodesInfoAction;
+	private RestNodesStatsAction nodesStatsAction;
+	private RestIndicesStatusAction indicesStatusAction;
+	private RestIndicesStatsAction indicesStatsAction;
+	private RestIndicesSegmentsAction indicesSegmentsAction;
 
-  /**
-   * @param client ES cluster to be used for calls
-   */
-  public SourceClientESClient(Client client) {
-    this.client = client;
-    Settings settings = ImmutableSettings.Builder.EMPTY_SETTINGS;
-    SettingsFilter settingsFilter = new SettingsFilter(settings);
-    RestController controller = new RestController(settings);
-    healthAction = new RestClusterHealthAction(settings, client, controller);
-    stateAction = new RestClusterStateAction(settings, client, controller, settingsFilter);
-    nodesInfoAction = new RestNodesInfoAction(settings, client, controller, settingsFilter);
-    nodesStatsAction = new RestNodesStatsAction(settings, client, controller);
-    indicesStatusAction = new RestIndicesStatusAction(settings, client, controller, settingsFilter);
-    indicesStatsAction = new RestIndicesStatsAction(settings, client, controller);
-    indicesSegmentsAction = new RestIndicesSegmentsAction(settings, client, controller);
-  }
+	/**
+	 * @param client ES cluster to be used for calls
+	 */
+	public SourceClientESClient(Client client) {
+		this.client = client;
+		Settings settings = ImmutableSettings.Builder.EMPTY_SETTINGS;
+		SettingsFilter settingsFilter = new SettingsFilter(settings);
+		RestController controller = new RestController(settings);
+		healthAction = new RestClusterHealthAction(settings, client, controller);
+		stateAction = new RestClusterStateAction(settings, client, controller, settingsFilter);
+		nodesInfoAction = new RestNodesInfoAction(settings, client, controller, settingsFilter);
+		nodesStatsAction = new RestNodesStatsAction(settings, client, controller);
+		indicesStatusAction = new RestIndicesStatusAction(settings, client, controller, settingsFilter);
+		indicesStatsAction = new RestIndicesStatsAction(settings, client, controller);
+		indicesSegmentsAction = new RestIndicesSegmentsAction(settings, client, controller);
+	}
 
-  @Override
-  protected String readClusterStateInfo(Map<String, String> params) throws IOException, InterruptedException {
-    logger.debug("readClusterStateInfo with params {}", params);
-    return performRestRequestLocally(stateAction, params);
-  }
+	@Override
+	protected String readClusterStateInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readClusterStateInfo with params {}", params);
+		return performRestRequestLocally(stateAction, params);
+	}
 
-  @Override
-  protected String readClusterHealthInfo(Map<String, String> params) throws IOException, InterruptedException {
-    logger.debug("readClusterHealthInfo with params {}", params);
-    return performRestRequestLocally(healthAction, params);
-  }
+	@Override
+	protected String readClusterHealthInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readClusterHealthInfo with params {}", params);
+		return performRestRequestLocally(healthAction, params);
+	}
 
-  @Override
-  protected String readClusterNodesInfoInfo(Map<String, String> params) throws IOException, InterruptedException {
-    logger.debug("readClusterNodesInfoInfo with params {}", params);
-    return performRestRequestLocally(nodesInfoAction, params);
-  }
+	@Override
+	protected String readClusterNodesInfoInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readClusterNodesInfoInfo with params {}", params);
+		return performRestRequestLocally(nodesInfoAction, params);
+	}
 
-  @Override
-  protected String readClusterNodesStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
-    logger.debug("readClusterNodesStatsInfo with params {}", params);
-    return performRestRequestLocally(nodesStatsAction, params);
-  }
+	@Override
+	protected String readClusterNodesStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readClusterNodesStatsInfo with params {}", params);
+		return performRestRequestLocally(nodesStatsAction, params);
+	}
 
-  @Override
-  protected String readIndicesStatusInfo(Map<String, String> params) throws IOException, InterruptedException {
-    logger.debug("readIndicesStatusInfo with params {}", params);
-    return performRestRequestLocally(indicesStatusAction, params);
-  }
+	@Override
+	protected String readIndicesStatusInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readIndicesStatusInfo with params {}", params);
+		return performRestRequestLocally(indicesStatusAction, params);
+	}
 
-  @Override
-  protected String readIndicesStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
-    logger.debug("readIndicesStatsInfo with params {}", params);
-    return performRestRequestLocally(indicesStatsAction, params);
-  }
+	@Override
+	protected String readIndicesStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readIndicesStatsInfo with params {}", params);
+		return performRestRequestLocally(indicesStatsAction, params);
+	}
 
-  @Override
-  protected String readIndicesSegmentsInfo(Map<String, String> params) throws IOException, InterruptedException {
-    logger.debug("readIndicesSegmentsInfo with params {}", params);
-    return performRestRequestLocally(indicesSegmentsAction, params);
-  }
+	@Override
+	protected String readIndicesSegmentsInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readIndicesSegmentsInfo with params {}", params);
+		return performRestRequestLocally(indicesSegmentsAction, params);
+	}
 
-  private String performRestRequestLocally(RestHandler handler, Map<String, String> params) throws IOException,
-      InterruptedException {
-    LocalRestChannel channel = new LocalRestChannel();
-    handler.handleRequest(new LocalRestRequest(params), channel);
-    String res = channel.getResponseContent();
-    logger.debug("performRestRequestLocally response {}", res);
-    return res;
-  }
+	private String performRestRequestLocally(RestHandler handler, Map<String, String> params) throws IOException,
+			InterruptedException {
+		LocalRestRequest request = new LocalRestRequest(params);
+		LocalRestChannel channel = new LocalRestChannel(request);
+		try {
+			handler.handleRequest(request, channel);
+		} catch (Exception e) {
+			throw new IOException(e.getMessage(), e.getCause());
+		}
+		String res = channel.getResponseContent();
+		logger.debug("performRestRequestLocally response {}", res);
+		return res;
+	}
 
-  @Override
-  public void start() {
-  }
+	@Override
+	public void start() {
+	}
 
-  @Override
-  public void close() {
-  }
+	@Override
+	public void close() {
+	}
 
 }

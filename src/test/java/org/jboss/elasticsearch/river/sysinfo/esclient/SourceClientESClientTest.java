@@ -30,7 +30,8 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 			SourceClientESClient tested = new SourceClientESClient(client);
 
 			String info = tested.readClusterStateInfo(null);
-			assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"master_node\":\"", info);
+			System.out.println(info);
+			assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"version\":3,\"master_node\":\"", info);
 
 		} finally {
 			finalizeESClientForUnitTest();
@@ -45,6 +46,7 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 			SourceClientESClient tested = new SourceClientESClient(client);
 
 			String info = tested.readClusterHealthInfo(null);
+			System.out.println(info);
 			assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"status\":", info);
 
 		} finally {
@@ -60,7 +62,8 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 			SourceClientESClient tested = new SourceClientESClient(client);
 
 			String info = tested.readClusterNodesInfoInfo(null);
-			assertStartsWith("{\"ok\":true,\"cluster_name\":\"elasticsearch\",\"nodes\":{", info);
+			System.out.println(info);
+			assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"nodes\":{", info);
 
 		} finally {
 			finalizeESClientForUnitTest();
@@ -75,6 +78,7 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 			SourceClientESClient tested = new SourceClientESClient(client);
 
 			String info = tested.readClusterNodesStatsInfo(null);
+			System.out.println(info);
 			assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"nodes\":{", info);
 
 		} finally {
@@ -90,7 +94,8 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 			SourceClientESClient tested = new SourceClientESClient(client);
 
 			String info = tested.readIndicesStatusInfo(null);
-			assertStartsWith("{\"ok\":true,\"_shards\":{\"total\":0,\"successful\":0,\"failed\":0},\"indices\":{}}", info);
+			System.out.println(info);
+			assertStartsWith("{\"_shards\":{\"total\":0,\"successful\":0,\"failed\":0},\"indices\":{}}", info);
 
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("index", "test");
@@ -114,8 +119,9 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 			SourceClientESClient tested = new SourceClientESClient(client);
 
 			String info = tested.readIndicesStatsInfo(null);
+			System.out.println(info);
 			assertStartsWith(
-					"{\"ok\":true,\"_shards\":{\"total\":0,\"successful\":0,\"failed\":0},\"_all\":{\"primaries\":{},\"total\":{}},\"indices\":{}}",
+					"{\"_shards\":{\"total\":0,\"successful\":0,\"failed\":0},\"_all\":{\"primaries\":{},\"total\":{}},\"indices\":{}}",
 					info);
 
 			Map<String, String> params = new HashMap<String, String>();
@@ -133,18 +139,53 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 	}
 
 	@Test
-	public synchronized void readIndicesSegmentsInfo() throws Exception {
+	public synchronized void readIndicesSegmentsInfo_allIndices() throws Exception {
 		try {
 			Client client = prepareESClientForUnitTest();
 
 			SourceClientESClient tested = new SourceClientESClient(client);
 
+			indexCreate("test_index");
+
 			String info = tested.readIndicesSegmentsInfo(null);
-			assertStartsWith("{\"ok\":true,\"_shards\":{\"total\":0,\"successful\":0,\"failed\":0},\"indices\":{}}", info);
+			System.out.println(info);
+			assertStartsWith("{\"_shards\":{\"total\":10,\"successful\":5,\"failed\":0},\"indices\":{\"test_index\":{\"",
+					info);
+
+		} finally {
+			finalizeESClientForUnitTest();
+		}
+	}
+
+	@Test
+	public synchronized void readIndicesSegmentsInfo_missingAllIndices() throws Exception {
+		try {
+			Client client = prepareESClientForUnitTest();
+
+			SourceClientESClient tested = new SourceClientESClient(client);
+
+			tested.readIndicesSegmentsInfo(null);
+			Assert.fail("IOException must be thrown due missing index");
+		} catch (IOException e) {
+			Assert
+					.assertEquals(
+							"response status is NOT_FOUND with content {\"error\":\"IndexMissingException[[_all] missing]\",\"status\":404}",
+							e.getMessage());
+		} finally {
+			finalizeESClientForUnitTest();
+		}
+	}
+
+	@Test
+	public synchronized void readIndicesSegmentsInfo_missingOneIndex() throws Exception {
+		try {
+			Client client = prepareESClientForUnitTest();
+
+			SourceClientESClient tested = new SourceClientESClient(client);
 
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("index", "test");
-			info = tested.readIndicesSegmentsInfo(params);
+			tested.readIndicesSegmentsInfo(params);
 			Assert.fail("IOException must be thrown due missing index");
 		} catch (IOException e) {
 			Assert

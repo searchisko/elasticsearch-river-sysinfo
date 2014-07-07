@@ -5,8 +5,6 @@
  */
 package org.jboss.elasticsearch.river.sysinfo;
 
-import static org.mockito.Mockito.mock;
-
 import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +23,8 @@ import org.jboss.elasticsearch.river.sysinfo.testtools.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit test for {@link SysinfoRiver}.
@@ -290,7 +290,7 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
 			try {
 				tested.client = prepareESClientForUnitTest();
 				tested.closed = true;
-				tested.client.admin().indices().prepareCreate(tested.getRiverIndexName()).execute().actionGet();
+				indexCreate(tested.getRiverIndexName());
 				tested.reconfigure();
 				Assert.fail("IllegalStateException must be thrown");
 			} catch (IllegalStateException e) {

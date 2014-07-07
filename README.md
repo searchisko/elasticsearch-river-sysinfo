@@ -1,20 +1,20 @@
-System info River for ElasticSearch
+System info River for Elasticsearch
 ===================================
 
-System info river component for [ElasticSearch](http://www.elasticsearch.org) 
-collects in defined intervals system informations from ElasticSearch cluster, 
+System info river component for [Elasticsearch](http://www.elasticsearch.org) 
+collects in defined intervals system informations from Elasticsearch cluster, 
 and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote 
 cluster REST protocol may be used too to decrease different ES versions impedance.
 
-In order to install the plugin into ElasticSearch, simply run: 
+In order to install the plugin into Elasticsearch, simply run: 
 `bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.2.2/elasticsearch-river-sysinfo-1.2.2.zip -install elasticsearch-river-sysinfo`.
 
 
 	------------------------------------------------------------------------------------------------------------------
-	| Sysinfo River | ElasticSearch    | Release date | Upgrade notes                                                |
+	| Sysinfo River | Elasticsearch    | Release date | Upgrade notes                                                |
 	|----------------------------------------------------------------------------------------------------------------|
-	| master        | 0.90.5           |              |                                                              |
+	| master        | 1.2.0            |              |                                                              |
 	|----------------------------------------------------------------------------------------------------------------|
 	| 1.2.2         | 0.90.5           | 20.9.2013    |                                                              |
 	|----------------------------------------------------------------------------------------------------------------|
@@ -25,7 +25,7 @@ In order to install the plugin into ElasticSearch, simply run:
 	| 1.0.0         | 0.19.11          | 20.11.2012   |                                                              |
 	------------------------------------------------------------------------------------------------------------------
 
-For changelog, planned milestones/enhancements and known bugs see [github issue tracker](https://github.com/jbossorg/elasticsearch-river-sysinfo/issues) please.
+For changelog, planned milestones/enhancements and known bugs see [github issue tracker](https://github.com/searchisko/elasticsearch-river-sysinfo/issues) please.
 
 Creation of the System info river can be done using:
 
@@ -60,7 +60,7 @@ Creation of the System info river can be done using:
 
 The example above lists basic configuration used to store two types of information about cluster where river runs. 
 Detailed description of configuration follows in next chapters.
-Other examples of configuration can be found in [test resources](https://github.com/jbossorg/elasticsearch-river-sysinfo/tree/master/src/test/resources).
+Other examples of configuration can be found in [test resources](https://github.com/searchisko/elasticsearch-river-sysinfo/tree/master/src/test/resources).
 
 ## Connection to the monitored ES cluster
 Connection used to collect ES cluster system informations is configured using 
@@ -95,7 +95,7 @@ Optionally you can define other connection `settings` as described in the [Trans
  	}
 
 ### rest
-REST mode uses ElasticSearch [HTTP REST API](http://www.elasticsearch.org/guide/reference/modules/http.html) 
+REST mode uses Elasticsearch [HTTP REST API](http://www.elasticsearch.org/guide/reference/modules/http.html) 
 to collect system informations from remote ES cluster.
 You can use this connection mode in case of compatibility or networking problems with `remote` mode. 
 Note that performance of REST API is commonly worse than binary transport mechanism behind `remote` mode.
@@ -193,7 +193,7 @@ License
 
     This software is licensed under the Apache 2 license, quoted below.
 
-    Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors as indicated by the @authors tag. 
+    Copyright 2012-2014 Red Hat Inc. and/or its affiliates and other contributors as indicated by the @authors tag. 
     All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not
