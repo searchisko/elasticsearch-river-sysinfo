@@ -51,7 +51,7 @@ Creation of the System info river can be done using:
 	        "index_type"  : "my_type_2",
 	        "period"      : "1m",
 	        "params" : {
-	          "filter_metadata" : "true"
+	          "metrics" : "nodes"
 	        }
 	      }
 	    }
@@ -143,24 +143,24 @@ Configuration options:
 
 Available information types:
 
-	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	| info_type           | relevant ES API doc                                                             | note                                                                           |  
-	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------| 
-	| cluster_health      | http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html      | `index` param for csv list of indices to get health for, optional              |
-	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| cluster_state       | http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html       |  set `filter_metadata` param to `true` to prevent performance problems!        |
-	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| cluster_nodes_info  | http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-info.html  | `nodeId` param to specify csv list of nodes to get info for, optional          |
-	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| cluster_nodes_stats | http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-stats.html | `nodeId` param to specify csv list of nodes to get info for, optional          |
-	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| indices_status      | http://www.elasticsearch.org/guide/reference/api/admin-indices-status.html      | `index` param with csv list of indices to get status for, optional             |
-	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| indices_stats       | http://www.elasticsearch.org/guide/reference/api/admin-indices-stats.html       | `index` param with csv list of indices to get statistics for, optional         |
-	|---------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-	| indices_segments    | http://www.elasticsearch.org/guide/reference/api/admin-indices-segments.html    | `index` param with csv list of indices to get statistics for, optional         |
-	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	| info_type           | relevant ES API doc                                                                            | note                                                                                            |  
+	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------| 
+	| cluster_health      | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-health.html      | `index` param                                                                                   |
+	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+	| cluster_state       | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-state.html       | `indices`, `metrics` param for ES 1.2, use of `metadata` metric may bring performance problems! |
+	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+	| cluster_nodes_info  | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-nodes-info.html  | `nodeId` param. `metrics` param for ES 1.2                                                      |
+	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+	| cluster_nodes_stats | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html | `nodeId` param. `metric`, `indexMetric`, `fields` params for ES 1.2                             |
+	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+	| indices_status      | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-status.html      | `index` param                                                                                   |
+	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+	| indices_stats       | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-stats.html       | `index` param. `metric`, `indexMetric` params for ES 1.2                                        |
+	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+	| indices_segments    | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-segments.html    | `index` param                                                                                   |
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  
 Management REST API
 -------------------
 Sysinfo river supports next REST commands for management purposes. Note `my_sysinfo_river`
