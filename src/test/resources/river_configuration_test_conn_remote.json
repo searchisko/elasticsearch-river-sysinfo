@@ -23,7 +23,7 @@
 	        "index_type"  : "my_type_1",
 	        "period"      : "1m",
 	        "params" : {
-	            "filter_metadata" : "true"
+	            "metric" : "version,nodes,blocks,master_node"
 	        }
 	    }
     }

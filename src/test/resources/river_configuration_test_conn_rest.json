@@ -20,7 +20,7 @@
 	        "index_type"  : "cluster_state",
 	        "period"      : "30s",
 	        "params" : {
-	            "filter_metadata" : "true"
+	            "metric" : "version,nodes,blocks,master_node"
 	        }
 	    },
 	    "cluster_nodes_info" : {
@@ -29,9 +29,7 @@
 	        "index_type"  : "cluster_nodes_info",
 	        "period"      : "30s",
 	        "params" : {
-	            "os" : "true",
-	            "jvm" : "true",
-	            "transport" : "true"
+	            "metrics" : "os,jvm,transport"
 	        }
 	    },
 	    "cluster_nodes_stats" : {
@@ -40,9 +38,7 @@
 	        "index_type"  : "cluster_nodes_stats",
 	        "period"      : "30s",
 	        "params" : {
-	            "os" : "true",
-	            "jvm" : "true",
-	            "transport" : "true"
+	            "metric" : "os,jvm,transport"
 	        }
 	    },
 	    "indices_status" : {

@@ -49,10 +49,10 @@ public class LocalRestChannel extends RestChannel {
 		if (response.status() != RestStatus.OK) {
 			String c = "";
 			if (response.content() != null)
-				c = new String(response.content().array(), "UTF-8");
+				c = new String(response.content().toBytes(), "UTF-8");
 			throw new IOException("response status is " + response.status() + " with content " + c.trim());
 		}
-		return (new String(response.content().array(), "UTF-8")).trim();
+		return (new String(response.content().toBytes(), "UTF-8")).trim();
 	}
 
 	@Override

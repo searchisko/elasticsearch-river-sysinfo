@@ -51,7 +51,7 @@ Creation of the System info river can be done using:
 	        "index_type"  : "my_type_2",
 	        "period"      : "1m",
 	        "params" : {
-	          "metrics" : "nodes"
+	          "metric" : "nodes"
 	        }
 	      }
 	    }
@@ -120,7 +120,7 @@ Second significant part of the river configuration is map of `indexers`. Each in
 information will be collected in which interval, and where will be stored in ES indexes.
 Each indexer has unique name defined as key in map of indexers.
 Information is stored to the ES indexes in cluster where river runs. Structure of stored
-information is exactly same as returned from ElasticSearch API call.
+information is exactly same as returned from ElasticSearch API call. Note that this information typically do not contain timestamp when it was acquired and stored, to get time information you have to enable automatic [`_timestamp`](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-timestamp-field.html) field in your mapping. 
 Indexer configuration is:
 
 	"indexer_name" : {
@@ -148,7 +148,7 @@ Available information types:
 	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------| 
 	| cluster_health      | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-health.html      | `index` param                                                                                   |
 	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-	| cluster_state       | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-state.html       | `indices`, `metrics` param for ES 1.2, use of `metadata` metric may bring performance problems! |
+	| cluster_state       | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-state.html       | `indices`, `metric` param for ES 1.2, use of `metadata` metric may bring performance problems! |
 	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 	| cluster_nodes_info  | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-nodes-info.html  | `nodeId` param. `metrics` param for ES 1.2                                                      |
 	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
