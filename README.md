@@ -7,14 +7,16 @@ and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote 
 cluster REST protocol may be used too to decrease different ES versions impedance.
 
-In order to install the plugin into Elasticsearch 1.2.x, simply run: 
-`bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.3.0/elasticsearch-river-sysinfo-1.3.0.zip -install elasticsearch-river-sysinfo`.
+In order to install the plugin into Elasticsearch 1.3.x, simply run: 
+`bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.4.0/elasticsearch-river-sysinfo-1.4.0.zip -install elasticsearch-river-sysinfo`.
 
 
 	----------------------------------------------------------------------------------------------------------------------
 	| Sysinfo River | Elasticsearch    | Release date | Upgrade notes                                                    |
 	|--------------------------------------------------------------------------------------------------------------------|
-	| master        | 1.2.0            |              |                                                                  |
+	| master        | 1.3.0            |              |                                                                  |
+	|--------------------------------------------------------------------------------------------------------------------|
+	| 1.4.0         | 1.3.0            | 20.8.2014    |                                                                  |
 	|--------------------------------------------------------------------------------------------------------------------|
 	| 1.3.0         | 1.2.0            | 8.7.2014     | changes in `indexers` config section necessary to monitor ES 1.2 |
 	|--------------------------------------------------------------------------------------------------------------------|
