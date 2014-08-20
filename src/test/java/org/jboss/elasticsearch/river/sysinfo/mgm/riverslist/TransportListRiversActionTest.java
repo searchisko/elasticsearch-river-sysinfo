@@ -34,12 +34,6 @@ public class TransportListRiversActionTest {
 	public static final ClusterName clusterName = new ClusterName("myCluster");
 
 	@Test
-	public void transportAction() {
-		TransportListRiversAction tested = prepareTestedInstance(clusterName);
-		Assert.assertEquals(ListRiversAction.NAME, tested.transportAction());
-	}
-
-	@Test
 	public void newRequest() {
 		TransportListRiversAction tested = prepareTestedInstance(clusterName);
 		Assert.assertNotNull(tested.newRequest());
@@ -121,7 +115,7 @@ public class TransportListRiversActionTest {
 
 	public static TransportListRiversAction prepareTestedInstance(ClusterName clusterName) {
 		Settings settings = Mockito.mock(Settings.class);
-		ThreadPool threadPool = new ThreadPool();
+		ThreadPool threadPool = new ThreadPool("tp");
 		TransportService transportService = new TransportService(Mockito.mock(Transport.class), threadPool);
 		TransportListRiversAction tested = new TransportListRiversAction(settings, clusterName, threadPool, clusterService,
 				transportService);

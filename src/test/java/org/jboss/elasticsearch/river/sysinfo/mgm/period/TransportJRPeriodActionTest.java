@@ -30,12 +30,6 @@ public class TransportJRPeriodActionTest {
 	public static final ClusterName clusterName = new ClusterName("myCluster");
 
 	@Test
-	public void transportAction() {
-		TransportJRPeriodAction tested = prepareTestedInstance(clusterName);
-		Assert.assertEquals(JRPeriodAction.NAME, tested.transportAction());
-	}
-
-	@Test
 	public void newRequest() {
 		TransportJRPeriodAction tested = prepareTestedInstance(clusterName);
 		Assert.assertNotNull(tested.newRequest());
@@ -125,7 +119,7 @@ public class TransportJRPeriodActionTest {
 
 	public static TransportJRPeriodAction prepareTestedInstance(ClusterName clusterName) {
 		Settings settings = Mockito.mock(Settings.class);
-		ThreadPool threadPool = new ThreadPool();
+		ThreadPool threadPool = new ThreadPool("tp");
 		TransportService transportService = new TransportService(Mockito.mock(Transport.class), threadPool);
 		TransportJRPeriodAction tested = new TransportJRPeriodAction(settings, clusterName, threadPool, clusterService,
 				transportService);

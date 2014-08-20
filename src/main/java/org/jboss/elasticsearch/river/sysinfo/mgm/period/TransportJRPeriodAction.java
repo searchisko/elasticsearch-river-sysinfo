@@ -21,56 +21,51 @@ import org.jboss.elasticsearch.river.sysinfo.mgm.TransportJRMgmBaseAction;
  * @author Vlastimil Elias (velias at redhat dot com)
  */
 public class TransportJRPeriodAction extends
-    TransportJRMgmBaseAction<JRPeriodRequest, JRPeriodResponse, NodeJRPeriodRequest, NodeJRPeriodResponse> {
+		TransportJRMgmBaseAction<JRPeriodRequest, JRPeriodResponse, NodeJRPeriodRequest, NodeJRPeriodResponse> {
 
-  @Inject
-  public TransportJRPeriodAction(Settings settings, ClusterName clusterName, ThreadPool threadPool,
-      ClusterService clusterService, TransportService transportService) {
-    super(settings, clusterName, threadPool, clusterService, transportService);
-  }
+	@Inject
+	public TransportJRPeriodAction(Settings settings, ClusterName clusterName, ThreadPool threadPool,
+			ClusterService clusterService, TransportService transportService) {
+		super(settings, JRPeriodAction.NAME, clusterName, threadPool, clusterService, transportService);
+	}
 
-  @Override
-  protected String transportAction() {
-    return JRPeriodAction.NAME;
-  }
+	@Override
+	protected NodeJRPeriodResponse performOperationOnRiver(IRiverMgm river, JRPeriodRequest req, DiscoveryNode node)
+			throws Exception {
+		logger.debug("Go to perform period change to {} for indexers {} on river '{}'", req.period, req.indexerNames,
+				req.getRiverName());
+		boolean ret = river.changeIndexerPeriod(req.indexerNames, req.period);
+		return new NodeJRPeriodResponse(node, true, ret);
+	}
 
-  @Override
-  protected NodeJRPeriodResponse performOperationOnRiver(IRiverMgm river, JRPeriodRequest req, DiscoveryNode node)
-      throws Exception {
-    logger.debug("Go to perform period change to {} for indexers {} on river '{}'", req.period, req.indexerNames,
-        req.getRiverName());
-    boolean ret = river.changeIndexerPeriod(req.indexerNames, req.period);
-    return new NodeJRPeriodResponse(node, true, ret);
-  }
+	@Override
+	protected JRPeriodRequest newRequest() {
+		return new JRPeriodRequest();
+	}
 
-  @Override
-  protected JRPeriodRequest newRequest() {
-    return new JRPeriodRequest();
-  }
+	@Override
+	protected NodeJRPeriodRequest newNodeRequest() {
+		return new NodeJRPeriodRequest();
+	}
 
-  @Override
-  protected NodeJRPeriodRequest newNodeRequest() {
-    return new NodeJRPeriodRequest();
-  }
+	@Override
+	protected NodeJRPeriodRequest newNodeRequest(String nodeId, JRPeriodRequest request) {
+		return new NodeJRPeriodRequest(nodeId, request);
+	}
 
-  @Override
-  protected NodeJRPeriodRequest newNodeRequest(String nodeId, JRPeriodRequest request) {
-    return new NodeJRPeriodRequest(nodeId, request);
-  }
+	@Override
+	protected NodeJRPeriodResponse newNodeResponse() {
+		return new NodeJRPeriodResponse(clusterService.localNode());
+	}
 
-  @Override
-  protected NodeJRPeriodResponse newNodeResponse() {
-    return new NodeJRPeriodResponse(clusterService.localNode());
-  }
+	@Override
+	protected NodeJRPeriodResponse[] newNodeResponseArray(int len) {
+		return new NodeJRPeriodResponse[len];
+	}
 
-  @Override
-  protected NodeJRPeriodResponse[] newNodeResponseArray(int len) {
-    return new NodeJRPeriodResponse[len];
-  }
-
-  @Override
-  protected JRPeriodResponse newResponse(ClusterName clusterName, NodeJRPeriodResponse[] array) {
-    return new JRPeriodResponse(clusterName, array);
-  }
+	@Override
+	protected JRPeriodResponse newResponse(ClusterName clusterName, NodeJRPeriodResponse[] array) {
+		return new JRPeriodResponse(clusterName, array);
+	}
 
 }

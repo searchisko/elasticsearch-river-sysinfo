@@ -38,7 +38,7 @@ public class RestJRPeriodAction extends RestJRMgmBaseAction {
 	}
 
 	@Override
-	public void handleRequest(final RestRequest restRequest, final RestChannel restChannel) {
+	public void handleRequest(final RestRequest restRequest, final RestChannel restChannel, Client client) {
 
 		final String indexerNames = restRequest.param("indexerName");
 		final long period = Utils.parseTimeValue(restRequest.params(), "period", 1, TimeUnit.MINUTES);

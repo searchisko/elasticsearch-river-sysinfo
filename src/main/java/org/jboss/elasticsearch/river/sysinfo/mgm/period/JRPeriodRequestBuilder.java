@@ -8,7 +8,6 @@ package org.jboss.elasticsearch.river.sysinfo.mgm.period;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.support.nodes.NodesOperationRequestBuilder;
 import org.elasticsearch.client.ClusterAdminClient;
-import org.elasticsearch.client.internal.InternalClusterAdminClient;
 
 /**
  * Request builder to perform period change method of some sysinfo river.
@@ -19,7 +18,7 @@ public class JRPeriodRequestBuilder extends
 		NodesOperationRequestBuilder<JRPeriodRequest, JRPeriodResponse, JRPeriodRequestBuilder> {
 
 	public JRPeriodRequestBuilder(ClusterAdminClient client) {
-		super((InternalClusterAdminClient) client, new JRPeriodRequest());
+		super(client, new JRPeriodRequest());
 	}
 
 	/**
@@ -59,7 +58,7 @@ public class JRPeriodRequestBuilder extends
 	protected void doExecute(ActionListener<JRPeriodResponse> listener) {
 		if (request.getRiverName() == null)
 			throw new IllegalArgumentException("riverName must be provided for request");
-		((InternalClusterAdminClient) client).execute(JRPeriodAction.INSTANCE, request, listener);
+		client.execute(JRPeriodAction.INSTANCE, request, listener);
 	}
 
 }
