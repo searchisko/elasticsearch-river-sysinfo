@@ -10,15 +10,18 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.message.BasicStatusLine;
 import org.apache.http.protocol.HttpContext;
 import org.elasticsearch.common.settings.SettingsException;
 import org.elasticsearch.http.HttpException;
@@ -127,29 +130,39 @@ public class SourceClientRESTTest {
 
 		// case - ok response, no aut nor parameters
 		{
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/testop", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/testop", false));
 			Assert.assertEquals(null, tested.performRESTCall("testop", null));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 
 		// case - ok response, both auth and parameters
 		{
 			Mockito.reset(hcMock);
 			tested.isAuthConfigured = true;
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/testop?param=pval", true));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/testop?param=pval", true));
 			NameValuePair[] params = new NameValuePair[] { new BasicNameValuePair("param", "pval") };
 			Assert.assertEquals(null, tested.performRESTCall("testop", params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 
 		// case - http error response
 		{
 			Mockito.reset(hcMock);
 			tested.isAuthConfigured = false;
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					new Answer<Integer>() {
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(new Answer<Integer>() {
 
 						@Override
 						public Integer answer(InvocationOnMock invocation) throws Throwable {
@@ -165,21 +178,25 @@ public class SourceClientRESTTest {
 				Assert.assertEquals(null, tested.performRESTCall("testop", params));
 				Assert.fail("IOException must be thrown");
 			} catch (IOException e) {
-				Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+				Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+						Mockito.any(HttpContext.class));
 			}
 		}
 
 		// case - exception from http client call
 		{
 			Mockito.reset(hcMock);
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenThrow(
-					new HttpException("test exception"));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenThrow(new HttpException("test exception"));
 			try {
 				NameValuePair[] params = new NameValuePair[] { new BasicNameValuePair("param", "pval") };
 				Assert.assertEquals(null, tested.performRESTCall("testop", params));
 				Assert.fail("HttpException must be thrown");
 			} catch (IOException e) {
-				Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+				Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+						Mockito.any(HttpContext.class));
 			}
 		}
 	}
@@ -192,10 +209,14 @@ public class SourceClientRESTTest {
 		{
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_cluster/state?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_cluster/state?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterStateInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 	}
 
@@ -207,10 +228,14 @@ public class SourceClientRESTTest {
 		{
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_cluster/health?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_cluster/health?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterHealthInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 
 		{
@@ -218,10 +243,14 @@ public class SourceClientRESTTest {
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
 			params.put("index", "idx1,idx2");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_cluster/health/idx1,idx2?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_cluster/health/idx1,idx2?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterHealthInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 	}
 
@@ -233,10 +262,14 @@ public class SourceClientRESTTest {
 		{
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_cluster/nodes?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_cluster/nodes?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterNodesInfoInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 
 		{
@@ -244,10 +277,14 @@ public class SourceClientRESTTest {
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
 			params.put("nodeId", "idx1,idx2");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_cluster/nodes/idx1,idx2?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_cluster/nodes/idx1,idx2?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterNodesInfoInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 	}
 
@@ -259,10 +296,14 @@ public class SourceClientRESTTest {
 		{
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_nodes/stats?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_nodes/stats?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterNodesStatsInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 
 		{
@@ -270,10 +311,14 @@ public class SourceClientRESTTest {
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
 			params.put("nodeId", "idx1,idx2");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_nodes/idx1,idx2/stats?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_nodes/idx1,idx2/stats?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterNodesStatsInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 	}
 
@@ -285,10 +330,14 @@ public class SourceClientRESTTest {
 		{
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_status?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_status?param=myparam", false));
 			Assert.assertEquals(null, tested.readIndicesStatusInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 
 		{
@@ -296,10 +345,14 @@ public class SourceClientRESTTest {
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
 			params.put("index", "idx1,idx2");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/idx1,idx2/_status?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/idx1,idx2/_status?param=myparam", false));
 			Assert.assertEquals(null, tested.readIndicesStatusInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 	}
 
@@ -311,10 +364,14 @@ public class SourceClientRESTTest {
 		{
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_stats?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_stats?param=myparam", false));
 			Assert.assertEquals(null, tested.readIndicesStatsInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 
 		{
@@ -322,10 +379,14 @@ public class SourceClientRESTTest {
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
 			params.put("index", "idx1,idx2");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/idx1,idx2/_stats?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/idx1,idx2/_stats?param=myparam", false));
 			Assert.assertEquals(null, tested.readIndicesStatsInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 	}
 
@@ -337,10 +398,14 @@ public class SourceClientRESTTest {
 		{
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/_segments?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/_segments?param=myparam", false));
 			Assert.assertEquals(null, tested.readIndicesSegmentsInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 
 		{
@@ -348,16 +413,20 @@ public class SourceClientRESTTest {
 			Map<String, String> params = new LinkedHashMap<String, String>();
 			params.put("param", "myparam");
 			params.put("index", "idx1,idx2");
-			Mockito.when(hcMock.execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class))).thenAnswer(
-					prepareOKAnswerWithAssertions("http://test.org/idx1,idx2/_segments?param=myparam", false));
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+							prepareOKAnswerWithAssertions("http://test.org/idx1,idx2/_segments?param=myparam", false));
 			Assert.assertEquals(null, tested.readIndicesSegmentsInfo(params));
-			Mockito.verify(hcMock).execute(Mockito.any(HttpUriRequest.class), Mockito.any(HttpContext.class));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
 		}
 	}
 
 	protected SourceClientREST prepareTestedInstance() {
 		SourceClientREST tested = new SourceClientREST();
-		HttpClient hcMock = Mockito.mock(HttpClient.class);
+		CloseableHttpClient hcMock = Mockito.mock(CloseableHttpClient.class);
 		tested.httpclient = hcMock;
 		tested.restAPIUrlBase = "http://test.org/";
 		return tested;
@@ -369,9 +438,12 @@ public class SourceClientRESTTest {
 
 			@Override
 			public HttpResponse answer(InvocationOnMock invocation) throws Throwable {
-				HttpGet method = (HttpGet) invocation.getArguments()[0];
+				HttpGet method = (HttpGet) invocation.getArguments()[1];
 				Assert.assertEquals(expectedUrl, method.getURI().toString());
-				return new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_OK, "reason");
+				CloseableHttpResponse ret = Mockito.mock(CloseableHttpResponse.class);
+				Mockito.when(ret.getStatusLine()).thenReturn(
+						new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), HttpStatus.SC_OK, "reason"));
+				return ret;
 			}
 		};
 	}

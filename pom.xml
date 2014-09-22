@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.elasticsearch</groupId>
   <artifactId>elasticsearch-river-sysinfo</artifactId>
-  <version>1.4.0</version>
+  <version>1.4.1</version>
   <packaging>jar</packaging>
   <description>System info River for ElasticSearch</description>
   <inceptionYear>2012</inceptionYear>
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.2.6</version>
+      <version>4.3.5</version>
     </dependency>
 
     <dependency>

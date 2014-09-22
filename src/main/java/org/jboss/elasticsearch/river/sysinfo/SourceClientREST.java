@@ -13,26 +13,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.Consts;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.config.ConnectionConfig;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
@@ -63,7 +65,7 @@ public class SourceClientREST extends SourceClientBase {
 
 	private static final ESLogger logger = Loggers.getLogger(SourceClientREST.class);
 
-	protected HttpClient httpclient;
+	protected CloseableHttpClient httpclient;
 
 	protected String restAPIUrlBase;
 
@@ -89,32 +91,35 @@ public class SourceClientREST extends SourceClientBase {
 			throw new SettingsException("Parameter es_connection/urlBase is malformed: " + e.getMessage());
 		}
 
-		PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
-		connectionManager.setDefaultMaxPerRoute(20);
-		connectionManager.setMaxTotal(20);
+		PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+		connManager.setDefaultMaxPerRoute(20);
+		connManager.setMaxTotal(20);
 
-		DefaultHttpClient dc = new DefaultHttpClient(connectionManager);
-		httpclient = dc;
-		HttpParams params = httpclient.getParams();
-		params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
+		ConnectionConfig connectionConfig = ConnectionConfig.custom().setCharset(Consts.UTF_8).build();
+		connManager.setDefaultConnectionConfig(connectionConfig);
+
+		HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(connManager);
 
 		int timeout = (int) Utils.parseTimeValue(sourceClientSettings, "timeout", 5, TimeUnit.SECONDS);
-		params.setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
-		params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
+		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(timeout).setConnectTimeout(timeout).build();
+		clientBuilder.setDefaultRequestConfig(requestConfig);
 
 		String username = Utils.trimToNull((String) sourceClientSettings.get("username"));
 		String password = (String) sourceClientSettings.get("pwd");
 		if (!Utils.isEmpty(username)) {
 			if (password != null) {
 				String host = url.getHost();
-				dc.getCredentialsProvider().setCredentials(new AuthScope(host, AuthScope.ANY_PORT),
-						new UsernamePasswordCredentials(username, password));
+				CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+				credentialsProvider.setCredentials(new AuthScope(host, AuthScope.ANY_PORT), new UsernamePasswordCredentials(
+						username, password));
+				clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
 				isAuthConfigured = true;
 			} else {
 				logger.warn("Password not found so authentication is not used!");
 				username = null;
 			}
 		}
+		httpclient = clientBuilder.build();
 	}
 
 	/**
@@ -256,6 +261,7 @@ public class SourceClientREST extends SourceClientBase {
 			HttpGet method = new HttpGet(builder.build());
 			method.addHeader("Accept", "application/json");
 
+			CloseableHttpResponse response = null;
 			try {
 
 				// Preemptive authentication enabled - see
@@ -264,10 +270,10 @@ public class SourceClientREST extends SourceClientBase {
 				AuthCache authCache = new BasicAuthCache();
 				BasicScheme basicAuth = new BasicScheme();
 				authCache.put(targetHost, basicAuth);
-				BasicHttpContext localcontext = new BasicHttpContext();
-				localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+				HttpClientContext localcontext = HttpClientContext.create();
+				localcontext.setAuthCache(authCache);
 
-				HttpResponse response = httpclient.execute(method, localcontext);
+				response = httpclient.execute(targetHost, method, localcontext);
 				int statusCode = response.getStatusLine().getStatusCode();
 				String responseContent = null;
 				if (response.getEntity() != null) {
@@ -279,6 +285,8 @@ public class SourceClientREST extends SourceClientBase {
 				}
 				return responseContent;
 			} finally {
+				if (response != null)
+					response.close();
 				method.releaseConnection();
 			}
 		} catch (IOException e) {
