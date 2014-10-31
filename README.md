@@ -1,6 +1,10 @@
 System info River for Elasticsearch
 ===================================
 
+[![Build Status](https://travis-ci.org/searchisko/elasticsearch-river-sysinfo.svg?branch=master)](https://travis-ci.org/searchisko/elasticsearch-river-sysinfo)
+[![Coverage Status](https://coveralls.io/repos/searchisko/elasticsearch-river-sysinfo/badge.png?branch=master)](https://coveralls.io/r/searchisko/elasticsearch-river-sysinfo)
+
+
 System info river component for [Elasticsearch](http://www.elasticsearch.org) 
 collects in defined intervals system informations from Elasticsearch cluster, 
 and store them into search indexes, so may be used for later analysis.
