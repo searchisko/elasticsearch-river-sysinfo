@@ -31,7 +31,7 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 
 			String info = tested.readClusterStateInfo(null);
 			System.out.println(info);
-			assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"version\":3,\"master_node\":\"", info);
+			assertStartsWith("{\"cluster_name\":\"elasticsearch\",\"version\":2,\"master_node\":\"", info);
 
 		} finally {
 			finalizeESClientForUnitTest();

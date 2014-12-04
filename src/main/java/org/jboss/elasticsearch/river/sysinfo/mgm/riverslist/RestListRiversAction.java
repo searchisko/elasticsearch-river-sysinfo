@@ -31,7 +31,7 @@ public class RestListRiversAction extends RestJRMgmBaseAction {
 
 	@Inject
 	protected RestListRiversAction(Settings settings, Client client, RestController controller) {
-		super(settings, client);
+		super(settings, client, controller);
 		controller.registerHandler(org.elasticsearch.rest.RestRequest.Method.GET, "/_sysinfo_river/list", this);
 	}
 

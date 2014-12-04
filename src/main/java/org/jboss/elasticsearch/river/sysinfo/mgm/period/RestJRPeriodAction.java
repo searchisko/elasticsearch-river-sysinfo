@@ -31,7 +31,7 @@ public class RestJRPeriodAction extends RestJRMgmBaseAction {
 
 	@Inject
 	protected RestJRPeriodAction(Settings settings, Client client, RestController controller) {
-		super(settings, client);
+		super(settings, client, controller);
 		String baseUrl = baseRestMgmUrl();
 		controller.registerHandler(org.elasticsearch.rest.RestRequest.Method.POST, baseUrl
 				+ "{indexerName}/period/{period}", this);

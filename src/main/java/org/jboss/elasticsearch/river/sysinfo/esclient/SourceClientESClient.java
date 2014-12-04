@@ -61,13 +61,13 @@ public class SourceClientESClient extends SourceClientBase {
 		Settings settings = ImmutableSettings.Builder.EMPTY_SETTINGS;
 		SettingsFilter settingsFilter = new SettingsFilter(settings);
 		RestController controller = new RestController(settings);
-		healthAction = new RestClusterHealthAction(settings, client, controller);
-		stateAction = new RestClusterStateAction(settings, client, controller, settingsFilter);
-		nodesInfoAction = new RestNodesInfoAction(settings, client, controller, settingsFilter);
-		nodesStatsAction = new RestNodesStatsAction(settings, client, controller);
-		indicesStatusAction = new RestIndicesStatusAction(settings, client, controller, settingsFilter);
-		indicesStatsAction = new RestIndicesStatsAction(settings, client, controller);
-		indicesSegmentsAction = new RestIndicesSegmentsAction(settings, client, controller);
+		healthAction = new RestClusterHealthAction(settings, controller, client);
+		stateAction = new RestClusterStateAction(settings, controller, client, settingsFilter);
+		nodesInfoAction = new RestNodesInfoAction(settings, controller, client, settingsFilter);
+		nodesStatsAction = new RestNodesStatsAction(settings, controller, client);
+		indicesStatusAction = new RestIndicesStatusAction(settings, controller, client, settingsFilter);
+		indicesStatsAction = new RestIndicesStatsAction(settings, controller, client);
+		indicesSegmentsAction = new RestIndicesSegmentsAction(settings, controller, client);
 	}
 
 	@Override

@@ -14,11 +14,15 @@ cluster REST protocol may be used too to decrease different ES versions impedanc
 In order to install the plugin into Elasticsearch 1.3.x, simply run: 
 `bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.4.1/elasticsearch-river-sysinfo-1.4.1.zip -install elasticsearch-river-sysinfo`.
 
+In order to install the plugin into Elasticsearch 1.4.x, simply run: 
+`bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.5.0/elasticsearch-river-sysinfo-1.5.0.zip -install elasticsearch-river-sysinfo`.
 
 	----------------------------------------------------------------------------------------------------------------------
 	| Sysinfo River | Elasticsearch    | Release date | Upgrade notes                                                    |
 	|--------------------------------------------------------------------------------------------------------------------|
-	| master        | 1.3.0            |              |                                                                  |
+	| master        | 1.4.0            |              |                                                                  |
+	|--------------------------------------------------------------------------------------------------------------------|
+	| 1.5.0         | 1.4.0            | 4.12.2014    |                                                                  |
 	|--------------------------------------------------------------------------------------------------------------------|
 	| 1.4.1         | 1.3.0            | 22.9.2014    |                                                                  |
 	|--------------------------------------------------------------------------------------------------------------------|
