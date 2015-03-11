@@ -43,7 +43,7 @@ import org.elasticsearch.common.settings.SettingsException;
 /**
  * {@link SourceClient} implementation using remote ES HTTP REST API calls.
  * <p>
- * Use next section in river configuration if you want to process informations from local ES cluster:
+ * Use next section in river configuration if you want to process information from local ES cluster:
  * 
  * <pre>
  * "es_connection" : {
@@ -214,6 +214,16 @@ public class SourceClientREST extends SourceClientBase {
 		op = op + "_segments";
 		return performRESTCall(op, prepareRequestParams(params, PARAM_INDEX));
 	}
+
+    @Override
+    protected String readIndicesRecoveryInfo(Map<String, String> params) throws IOException, InterruptedException {
+	    String op = "";
+	    if (params != null && !Utils.isEmpty(params.get(PARAM_INDEX))) {
+		    op = params.get(PARAM_INDEX) + "/";
+	    }
+	    op = op + "_recovery";
+	    return performRESTCall(op, prepareRequestParams(params, PARAM_INDEX));
+    }
 
 	/**
 	 * Prepare request params to be used by {@link #performRESTCall(String, NameValuePair[])}

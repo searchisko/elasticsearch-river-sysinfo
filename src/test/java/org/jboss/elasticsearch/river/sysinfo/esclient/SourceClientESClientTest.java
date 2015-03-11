@@ -197,6 +197,24 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 		}
 	}
 
+	@Test
+	public synchronized void readIndicesRecoveryInfo_allIndices() throws Exception {
+		try {
+			Client client = prepareESClientForUnitTest();
+
+			SourceClientESClient tested = new SourceClientESClient(client);
+
+			indexCreate("test_index");
+
+			String info = tested.readIndicesRecoveryInfo(null);
+			System.out.println(info);
+			assertStartsWith("{\"test_index\":{\"shards\":[{\"id\":0,\"type\":\"GATEWAY\"", info);
+
+		} finally {
+			finalizeESClientForUnitTest();
+		}
+	}
+
 	protected void assertStartsWith(String expected, String actual) {
 		if (expected == null && actual == null)
 			return;

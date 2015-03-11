@@ -18,33 +18,37 @@ import org.elasticsearch.common.settings.SettingsException;
 public enum SysinfoType {
 
   /**
-   * http://www.elasticsearch.org/guide/reference/api/admin-cluster-health.html
+   * http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html
    */
   CLUSTER_HEALTH("cluster_health"),
   /**
-   * http://www.elasticsearch.org/guide/reference/api/admin-cluster-state.html
+   * http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-state.html
    */
   CLUSTER_STATE("cluster_state"),
   /**
-   * http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-info.html
+   * http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html
    */
   CLUSTER_NODES_INFO("cluster_nodes_info"),
   /**
-   * http://www.elasticsearch.org/guide/reference/api/admin-cluster-nodes-stats.html
+   * http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html
    */
   CLUSTER_NODES_STATS("cluster_nodes_stats"),
   /**
-   * http://www.elasticsearch.org/guide/reference/api/admin-indices-status.html
+   * http://www.elastic.co/guide/en/elasticsearch/reference/current/indices-status.html
    */
   INDICES_STATUS("indices_status"),
   /**
-   * http://www.elasticsearch.org/guide/reference/api/admin-indices-stats.html
+   * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html
    */
   INDICES_STATS("indices_stats"),
   /**
-   * http://www.elasticsearch.org/guide/reference/api/admin-indices-segments.html
+   * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html
    */
-  INDICES_SEGMENTS("indices_segments");
+  INDICES_SEGMENTS("indices_segments"),
+  /**
+   * https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html
+   */
+  INDICES_RECOVERY("indices_recovery");
 
   private String name;
 

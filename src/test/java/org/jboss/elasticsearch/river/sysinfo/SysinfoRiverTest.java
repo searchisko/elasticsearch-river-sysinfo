@@ -113,7 +113,7 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
 			Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
 			SysinfoRiver tested = prepareRiverInstanceForTest(null);
 			tested.configure(settings);
-			Assert.assertEquals(7, tested.indexers.size());
+			Assert.assertEquals(8, tested.indexers.size());
 			SysinfoIndexer idxr = tested.indexers.get("cluster_health");
 			Assert.assertEquals("cluster_health", idxr.name);
 			Assert.assertEquals(tested.sourceClient, idxr.sourceClient);
@@ -311,7 +311,7 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
 						.actionGet();
 
 				tested.reconfigure();
-				Assert.assertEquals(7, tested.indexers.size());
+				Assert.assertEquals(8, tested.indexers.size());
 				Assert.assertTrue(tested.sourceClient instanceof SourceClientESClient);
 			} finally {
 				finalizeESClientForUnitTest();
@@ -401,7 +401,7 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
 	}
 
 	/**
-	 * Prepare {@link JiraRiver} instance for unit test, with Mockito moceked elasticSearchClient.
+	 * Prepare {@link JiraRiver} instance for unit test, with Mockito mocked elasticSearchClient.
 	 * 
 	 * @param toplevelSettings settings to be passed to the river configuring constructor. If null then river is
 	 *          constructed without configuration.

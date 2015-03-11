@@ -157,24 +157,112 @@ Configuration options:
 
 Available information types:
 
-	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	| info_type           | relevant ES API doc                                                                            | note                                                                                            |  
-	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------| 
-	| cluster_health      | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-health.html      | `index` param                                                                                   |
-	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-	| cluster_state       | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-state.html       | `indices`, `metric` param for ES 1.2, use of `metadata` metric may bring performance problems! |
-	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-	| cluster_nodes_info  | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-nodes-info.html  | `nodeId` param. `metrics` param for ES 1.2                                                      |
-	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-	| cluster_nodes_stats | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html | `nodeId` param. `metric`, `indexMetric`, `fields` params for ES 1.2                             |
-	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-	| indices_status      | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-status.html      | `index` param                                                                                   |
-	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-	| indices_stats       | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-stats.html       | `index` param. `metric`, `indexMetric` params for ES 1.2                                        |
-	|---------------------|------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-	| indices_segments    | http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-segments.html    | `index` param                                                                                   |
-	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  
+<table>
+
+  <tr>
+    <th><code>info_type</code></th>
+    <th>Relevant ES API doc</th>
+    <th>Note</th>
+  </tr>
+
+  <tr>
+    <td>
+      <code>cluster_health</code>
+    </td>
+    <td>
+      <a href="http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html">Cluster Health</a>
+    </td>
+    <td>
+      <code>index</code> param
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>cluster_state</code>
+    </td>
+    <td>
+      <a href="http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-state.html">Cluster State</a>
+    </td>
+    <td>
+      <code>indices</code>, <code>metric</code> param for ES 1.2, use of <code>metadata</code> metric may bring performance problems!
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>cluster_nodes_info</code>
+    </td>
+    <td>
+      <a href="http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html">Nodes Info</a>
+    </td>
+    <td>
+      <code>nodeId</code> param. <code>metrics</code> param for ES 1.2
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>cluster_nodes_stats</code>
+    </td>
+    <td>
+      <a href="http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html">Nodes Stats</a>
+    </td>
+    <td>
+      <code>nodeId</code> param. <code>metric</code>, <code>indexMetric</code>, <code>fields</code> params for ES 1.2
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>indices_status</code>
+    </td>
+    <td>
+      <a href="http://www.elastic.co/guide/en/elasticsearch/reference/current/indices-status.html">Indices Status</a>
+    </td>
+    <td>
+      <code>index</code> param. Note this API is deprecated in ES 1.2.0 - Index Recovery should be used instead.
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>indices_stats</code>
+    </td>
+    <td>
+      <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html">Indices Stats</a>
+    </td>
+    <td>
+      <code>index</code> param. <code>metric</code>, <code>indexMetric</code> params for ES 1.2
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>indices_segments</code>
+    </td>
+    <td>
+      <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html">Indices Segments</a>
+    </td>
+    <td>
+      <code>index</code> param
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>indices_recovery</code>
+    </td>
+    <td>
+      <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html">Indices Recovery</a>
+    </td>
+    <td>
+      <code>index</code> param
+    </td>
+  </tr>
+
+</table>
+
 Management REST API
 -------------------
 Sysinfo river supports next REST commands for management purposes. Note `my_sysinfo_river`

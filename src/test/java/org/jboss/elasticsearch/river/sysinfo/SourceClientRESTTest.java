@@ -59,7 +59,7 @@ public class SourceClientRESTTest {
 			// OK
 		}
 
-		// case - mallformed urlBase
+		// case - malformed urlBase
 		try {
 			Map<String, Object> settings = new HashMap<String, Object>();
 			settings.put("urlBase", "ahoj");
@@ -419,6 +419,40 @@ public class SourceClientRESTTest {
 									Mockito.any(HttpContext.class))).thenAnswer(
 							prepareOKAnswerWithAssertions("http://test.org/idx1,idx2/_segments?param=myparam", false));
 			Assert.assertEquals(null, tested.readIndicesSegmentsInfo(params));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
+		}
+	}
+
+	@Test
+	public void readIndicesRecoveryInfo() throws IOException, InterruptedException {
+		SourceClientREST tested = prepareTestedInstance();
+		HttpClient hcMock = tested.httpclient;
+
+		{
+			Map<String, String> params = new LinkedHashMap<String, String>();
+			params.put("param", "myparam");
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+					prepareOKAnswerWithAssertions("http://test.org/_recovery?param=myparam", false));
+			Assert.assertEquals(null, tested.readIndicesRecoveryInfo(params));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
+		}
+
+		{
+			Mockito.reset(hcMock);
+			Map<String, String> params = new LinkedHashMap<String, String>();
+			params.put("param", "myparam");
+			params.put("index", "idx1,idx2");
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+					prepareOKAnswerWithAssertions("http://test.org/idx1,idx2/_recovery?param=myparam", false));
+			Assert.assertEquals(null, tested.readIndicesRecoveryInfo(params));
 			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
 					Mockito.any(HttpContext.class));
 		}

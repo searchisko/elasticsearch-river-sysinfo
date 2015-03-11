@@ -20,6 +20,7 @@ import org.elasticsearch.rest.action.admin.cluster.health.RestClusterHealthActio
 import org.elasticsearch.rest.action.admin.cluster.node.info.RestNodesInfoAction;
 import org.elasticsearch.rest.action.admin.cluster.node.stats.RestNodesStatsAction;
 import org.elasticsearch.rest.action.admin.cluster.state.RestClusterStateAction;
+import org.elasticsearch.rest.action.admin.indices.recovery.RestRecoveryAction;
 import org.elasticsearch.rest.action.admin.indices.segments.RestIndicesSegmentsAction;
 import org.elasticsearch.rest.action.admin.indices.stats.RestIndicesStatsAction;
 import org.elasticsearch.rest.action.admin.indices.status.RestIndicesStatusAction;
@@ -29,7 +30,7 @@ import org.jboss.elasticsearch.river.sysinfo.SourceClientBase;
 /**
  * {@link SourceClient} implementation using passed in {@link Client} instance.
  * <p>
- * Use next section in river configuration if you want to process informations from local ES cluster:
+ * Use next section in river configuration if you want to process information from local ES cluster:
  * 
  * <pre>
  * "es_connection" : {
@@ -52,6 +53,7 @@ public class SourceClientESClient extends SourceClientBase {
 	private RestIndicesStatusAction indicesStatusAction;
 	private RestIndicesStatsAction indicesStatsAction;
 	private RestIndicesSegmentsAction indicesSegmentsAction;
+	private RestRecoveryAction indicesRecoveryAction;
 
 	/**
 	 * @param client ES cluster to be used for calls
@@ -68,6 +70,7 @@ public class SourceClientESClient extends SourceClientBase {
 		indicesStatusAction = new RestIndicesStatusAction(settings, controller, client, settingsFilter);
 		indicesStatsAction = new RestIndicesStatsAction(settings, controller, client);
 		indicesSegmentsAction = new RestIndicesSegmentsAction(settings, controller, client);
+		indicesRecoveryAction = new RestRecoveryAction(settings, controller, client);
 	}
 
 	@Override
@@ -110,6 +113,12 @@ public class SourceClientESClient extends SourceClientBase {
 	protected String readIndicesSegmentsInfo(Map<String, String> params) throws IOException, InterruptedException {
 		logger.debug("readIndicesSegmentsInfo with params {}", params);
 		return performRestRequestLocally(indicesSegmentsAction, params);
+	}
+
+	@Override
+	protected String readIndicesRecoveryInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readIndicesRecoveryInfo with params {}", params);
+		return performRestRequestLocally(indicesRecoveryAction, params);
 	}
 
 	private String performRestRequestLocally(RestHandler handler, Map<String, String> params) throws IOException,

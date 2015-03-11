@@ -35,6 +35,8 @@ public abstract class SourceClientBase implements SourceClient {
       return readIndicesStatsInfo(params);
     case INDICES_SEGMENTS:
       return readIndicesSegmentsInfo(params);
+    case INDICES_RECOVERY:
+      return readIndicesRecoveryInfo(params);
     default:
       throw new UnsupportedOperationException("Unsupported information type: " + infoType);
     }
@@ -43,7 +45,7 @@ public abstract class SourceClientBase implements SourceClient {
   /**
    * Load information for {@link SysinfoType#CLUSTER_STATE} type.
    * 
-   * @param params configured to narrow down informations
+   * @param params configured to narrow down information
    * @return information JSON string
    * @throws IOException
    * @throws InterruptedException
@@ -53,7 +55,7 @@ public abstract class SourceClientBase implements SourceClient {
   /**
    * Load information for {@link SysinfoType#CLUSTER_HEALTH} type.
    * 
-   * @param params configured to narrow down informations
+   * @param params configured to narrow down information
    * @return information JSON string
    * @throws IOException
    * @throws InterruptedException
@@ -63,7 +65,7 @@ public abstract class SourceClientBase implements SourceClient {
   /**
    * Load information for {@link SysinfoType#CLUSTER_NODES_INFO} type.
    * 
-   * @param params configured to narrow down informations
+   * @param params configured to narrow down information
    * @return information JSON string
    * @throws IOException
    * @throws InterruptedException
@@ -74,7 +76,7 @@ public abstract class SourceClientBase implements SourceClient {
   /**
    * Load information for {@link SysinfoType#CLUSTER_NODES_STATS} type.
    * 
-   * @param params configured to narrow down informations
+   * @param params configured to narrow down information
    * @return information JSON string
    * @throws IOException
    * @throws InterruptedException
@@ -85,7 +87,7 @@ public abstract class SourceClientBase implements SourceClient {
   /**
    * Load information for {@link SysinfoType#INDICES_STATUS} type.
    * 
-   * @param params configured to narrow down informations
+   * @param params configured to narrow down information
    * @return information JSON string
    * @throws IOException
    * @throws InterruptedException
@@ -95,7 +97,7 @@ public abstract class SourceClientBase implements SourceClient {
   /**
    * Load information for {@link SysinfoType#INDICES_STATS} type.
    * 
-   * @param params configured to narrow down informations
+   * @param params configured to narrow down information
    * @return information JSON string
    * @throws IOException
    * @throws InterruptedException
@@ -105,12 +107,23 @@ public abstract class SourceClientBase implements SourceClient {
   /**
    * Load information for {@link SysinfoType#INDICES_SEGMENTS} type.
    * 
-   * @param params configured to narrow down informations
+   * @param params configured to narrow down information
    * @return information JSON string
    * @throws IOException
    * @throws InterruptedException
    */
   protected abstract String readIndicesSegmentsInfo(Map<String, String> params) throws IOException,
+      InterruptedException;
+
+  /**
+   * Load information for {@link SysinfoType#INDICES_RECOVERY} type.
+   *
+   * @param params
+   * @return information JSON string
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  protected abstract String readIndicesRecoveryInfo(Map<String, String> params) throws IOException,
       InterruptedException;
 
 }

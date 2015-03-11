@@ -61,6 +61,16 @@
 	        "index_name"  : "my_sysinfo_index",
 	        "index_type"  : "indices_segments",
 	        "period"      : "30s"
+	    },
+	    "indices_recovery" : {
+		    "info_type"   : "indices_recovery",
+		    "index_name"  : "my_sysinfo_index",
+		    "index_type"  : "indices_recovery",
+		    "period"      : "30s",
+		    "params" : {
+		        "detailed" : "true",
+		        "active_only" : "true"
+		    }
 	    }
     }
 }
