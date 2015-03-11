@@ -43,7 +43,7 @@ public class LocalRestChannel extends RestChannel {
 		long start = System.currentTimeMillis();
 		while (response == null) {
 			if ((System.currentTimeMillis() - start) > TIMEOUT)
-				throw new IOException("Request timmed out after " + TIMEOUT + "ms");
+				throw new IOException("Request time out after " + TIMEOUT + "ms");
 			Thread.sleep(50);
 		}
 		if (response.status() != RestStatus.OK) {

@@ -22,7 +22,7 @@ import org.jboss.elasticsearch.river.sysinfo.Utils;
 /**
  * {@link SourceClient} implementation using {@link TransportClient} instance pointing to remote ES cluster.
  * <p>
- * Use next section in river configuration if you want to obtain informations from remote ES cluster using transport
+ * Use next section in river configuration if you want to obtain information from remote ES cluster using transport
  * protocol:
  * 
  * <pre>

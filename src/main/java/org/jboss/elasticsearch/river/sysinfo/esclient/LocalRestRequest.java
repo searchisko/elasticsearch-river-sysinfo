@@ -88,7 +88,7 @@ public class LocalRestRequest extends RestRequest {
 	 * 
 	 * @param key of parameter
 	 * @param value of parameter
-	 * @param return self for call chaining.
+	 * @return self for call chaining.
 	 */
 	public LocalRestRequest addParam(String key, String value) {
 		params.put(key, value);
