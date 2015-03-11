@@ -58,7 +58,6 @@ public class TransportListRiversActionTest {
 	@Test
 	public void newNodeResponse() {
 		TransportListRiversAction tested = prepareTestedInstance(clusterName);
-		Mockito.when(clusterService.localNode()).thenReturn(dn);
 
 		NodeListRiversResponse resp = tested.newNodeResponse();
 		Assert.assertNotNull(resp);
@@ -113,6 +112,9 @@ public class TransportListRiversActionTest {
 
 	private static DiscoveryNode dn = new DiscoveryNode("aa", DummyTransportAddress.INSTANCE, Version.CURRENT);
 	private static ClusterService clusterService = Mockito.mock(ClusterService.class);
+	static {
+		Mockito.when(clusterService.localNode()).thenReturn(dn);
+	}
 
 	public static TransportListRiversAction prepareTestedInstance(ClusterName clusterName) {
 		Settings settings = Mockito.mock(Settings.class);
