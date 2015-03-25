@@ -5,8 +5,8 @@ System info River for Elasticsearch
 [![Coverage Status](https://coveralls.io/repos/searchisko/elasticsearch-river-sysinfo/badge.png?branch=master)](https://coveralls.io/r/searchisko/elasticsearch-river-sysinfo)
 
 
-System info river component for [Elasticsearch](http://www.elasticsearch.org) 
-collects in defined intervals system informations from Elasticsearch cluster, 
+System info river component for [Elasticsearch](http://www.elastic.co)
+collects in defined intervals system information from Elasticsearch cluster,
 and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote 
 cluster REST protocol may be used too to decrease different ES versions impedance.
@@ -77,11 +77,11 @@ Detailed description of configuration follows in next chapters.
 Other examples of configuration can be found in [test resources](https://github.com/searchisko/elasticsearch-river-sysinfo/tree/master/src/test/resources).
 
 ## Connection to the monitored ES cluster
-Connection used to collect ES cluster system informations is configured using 
+Connection used to collect ES cluster system information is configured using
 `es_connection` element. Content depends on type of connection. There are three types available.  
 
 ### local
-Local mode is used to collect informations about ES cluster where river runs. 
+Local mode is used to collect information about ES cluster where river runs.
 Only `type` option is used here, no any additional configuration parameter necessary.
 
 	"es_connection" : {
@@ -89,12 +89,12 @@ Only `type` option is used here, no any additional configuration parameter neces
 	},
 
 ### remote
-Remote mode uses [Transport Client](http://www.elasticsearch.org/guide/reference/java-api/client.html) to collect 
-system informations from remote ES cluster using internal [Transport](http://www.elasticsearch.org/guide/reference/modules/transport.html) 
+Remote mode uses [Transport Client](http://www.elastic.co/guide/en/elasticsearch/client/java-api/current/client.html#transport-client) to collect
+system information from remote ES cluster using internal [Transport](http://www.elastic.co/guide/en/elasticsearch/reference/current/modules-transport.html)
 mechanism.
 You can use this connection if transport mechanism of remote ES cluster version is compatible with version of ES cluster where river runs.  
 Configuration requires `address` element with list of remote cluster nodes (both `host` and `port` elements are mandatory). 
-Optionally you can define other connection `settings` as described in the [Transport Client documentation](http://www.elasticsearch.org/guide/reference/java-api/client.html). 
+Optionally you can define other connection `settings` as described in the [Transport Client documentation](http://www.elastic.co/guide/en/elasticsearch/client/java-api/current/client.html).
 
 	"es_connection" : {
 	  "type" : "remote",
@@ -109,8 +109,8 @@ Optionally you can define other connection `settings` as described in the [Trans
  	}
 
 ### rest
-REST mode uses Elasticsearch [HTTP REST API](http://www.elasticsearch.org/guide/reference/modules/http.html) 
-to collect system informations from remote ES cluster.
+REST mode uses Elasticsearch [HTTP REST API](http://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)
+to collect system information from remote ES cluster.
 You can use this connection mode in case of compatibility or networking problems with `remote` mode. 
 Note that performance of REST API is commonly worse than binary transport mechanism behind `remote` mode.
 
@@ -134,7 +134,7 @@ Second significant part of the river configuration is map of `indexers`. Each in
 information will be collected in which interval, and where will be stored in ES indexes.
 Each indexer has unique name defined as key in map of indexers.
 Information is stored to the ES indexes in cluster where river runs. Structure of stored
-information is exactly same as returned from ElasticSearch API call. Note that this information typically do not contain timestamp when it was acquired and stored, to get time information you have to enable automatic [`_timestamp`](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-timestamp-field.html) field in your mapping. 
+information is exactly same as returned from ElasticSearch API call. Note that this information typically do not contain timestamp when it was acquired and stored, to get time information you have to enable automatic [`_timestamp`](http://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-timestamp-field.html) field in your mapping.
 Indexer configuration is:
 
 	"indexer_name" : {
@@ -150,8 +150,8 @@ Indexer configuration is:
 Configuration options:
 	
 * `info_type` mandatory type of information collected by this indexer. See table below for list of all available types. You can create more indexers with same type.
-* `index_name` mandatory name of index used to store information. Note that this river can produce big amount of data over time, so consider use of [rolling index](http://github.com/elasticsearch/elasticsearch/issues/1500) here.
-* `index_type` mandatory [type](http://www.elasticsearch.org/guide/appendix/glossary.html#type) used to stored information into search index. You should define [Mapping](http://www.elasticsearch.org/guide/reference/mapping/) for this type. You should enable [Automatic Timestamp Field](http://www.elasticsearch.org/guide/reference/mapping/timestamp-field.html) in this mapping to have consistent timestamp available in stored data.
+* `index_name` mandatory name of index used to store information. Note that this river can produce big amount of data over time, so consider use of [rolling index](http://github.com/elastic/elasticsearch/issues/1500) here.
+* `index_type` mandatory [type](http://www.elastic.co/guide/en/elasticsearch/reference/current/glossary.html#type) used to stored information into search index. You should define [Mapping](http://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html) for this type. You should enable [Automatic Timestamp Field](http://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-timestamp-field.html) in this mapping to have consistent timestamp available in stored data.
 * `period` mandatory period of information collecting in milliseconds. You can use postfixes appended to the number to define units: `s` for seconds, `m` for minutes, `h` for hours, `d` for days and `w` for weeks. So for example value `5h` means five fours, `2w` means two weeks.
 * `params` optional map of additional parameters to narrow down collected information. Available parameters depend on `info_type`, and can be found as 'Request parameters' in relevant ES API doc for each type. Some additional parameters (passed as URL parts in API doc) are described in note, see table below.
 
