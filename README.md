@@ -5,7 +5,7 @@ System info River for Elasticsearch
 [![Coverage Status](https://coveralls.io/repos/searchisko/elasticsearch-river-sysinfo/badge.png?branch=master)](https://coveralls.io/r/searchisko/elasticsearch-river-sysinfo)
 
 
-System info river component for [Elasticsearch](http://www.elastic.co)
+System info river component for [Elasticsearch](https://www.elastic.co/products/elasticsearch)
 collects in defined intervals system information from Elasticsearch cluster,
 and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote 
