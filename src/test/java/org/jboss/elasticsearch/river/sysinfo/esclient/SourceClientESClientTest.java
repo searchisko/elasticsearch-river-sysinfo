@@ -62,6 +62,22 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 	}
 
 	@Test
+	public synchronized void readPendingClusterTasksInfo() throws Exception {
+		try {
+			Client client = prepareESClientForUnitTest();
+
+			SourceClientESClient tested = new SourceClientESClient(client);
+
+			String info = tested.readPendingClusterTasksInfo(null);
+			System.out.println(info);
+			Assert.assertEquals("{\"tasks\":[]}", info);
+
+		} finally {
+			finalizeESClientForUnitTest();
+		}
+	}
+
+	@Test
 	public synchronized void readClusterHealthInfo() throws Exception {
 		try {
 			Client client = prepareESClientForUnitTest();

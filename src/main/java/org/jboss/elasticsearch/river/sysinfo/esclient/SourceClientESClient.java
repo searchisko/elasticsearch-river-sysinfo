@@ -21,6 +21,7 @@ import org.elasticsearch.rest.action.admin.cluster.node.info.RestNodesInfoAction
 import org.elasticsearch.rest.action.admin.cluster.node.stats.RestNodesStatsAction;
 import org.elasticsearch.rest.action.admin.cluster.state.RestClusterStateAction;
 import org.elasticsearch.rest.action.admin.cluster.stats.RestClusterStatsAction;
+import org.elasticsearch.rest.action.admin.cluster.tasks.RestPendingClusterTasksAction;
 import org.elasticsearch.rest.action.admin.indices.recovery.RestRecoveryAction;
 import org.elasticsearch.rest.action.admin.indices.segments.RestIndicesSegmentsAction;
 import org.elasticsearch.rest.action.admin.indices.stats.RestIndicesStatsAction;
@@ -51,6 +52,7 @@ public class SourceClientESClient extends SourceClientBase {
 	private RestClusterHealthAction clusterHealthAction;
 	private RestClusterStateAction clusterStateAction;
 	private RestClusterStatsAction clusterStatsAction;
+	private RestPendingClusterTasksAction pendingClusterTasksAction;
 	private RestNodesInfoAction nodesInfoAction;
 	private RestNodesStatsAction nodesStatsAction;
 	private RestIndicesStatusAction indicesStatusAction;
@@ -69,6 +71,7 @@ public class SourceClientESClient extends SourceClientBase {
 		clusterHealthAction = new RestClusterHealthAction(settings, controller, client);
 		clusterStateAction = new RestClusterStateAction(settings, controller, client, settingsFilter);
 		clusterStatsAction = new RestClusterStatsAction(settings, controller, client);
+		pendingClusterTasksAction = new RestPendingClusterTasksAction(settings, controller, client);
 		nodesInfoAction = new RestNodesInfoAction(settings, controller, client, settingsFilter);
 		nodesStatsAction = new RestNodesStatsAction(settings, controller, client);
 		indicesStatusAction = new RestIndicesStatusAction(settings, controller, client, settingsFilter);
@@ -93,6 +96,12 @@ public class SourceClientESClient extends SourceClientBase {
 	protected String readClusterStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
 		logger.debug("readClusterStatsInfo with params {}", params);
 		return performRestRequestLocally(clusterStatsAction, params);
+	}
+
+	@Override
+	protected String readPendingClusterTasksInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readPendingClusterTasksInfo with params {}", params);
+		return performRestRequestLocally(pendingClusterTasksAction, params);
 	}
 
 	@Override

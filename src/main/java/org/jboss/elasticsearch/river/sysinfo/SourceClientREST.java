@@ -177,6 +177,11 @@ public class SourceClientREST extends SourceClientBase {
 	}
 
 	@Override
+	protected String readPendingClusterTasksInfo(Map<String, String> params) throws IOException {
+		return performRESTCall("_cluster/pending_tasks", prepareRequestParams(params, null));
+	}
+
+	@Override
 	protected String readClusterNodesInfoInfo(Map<String, String> params) throws IOException, InterruptedException {
 		String op = "_nodes";
 		if (params != null && !Utils.isEmpty(params.get(PARAM_NODE_ID))) {

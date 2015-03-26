@@ -30,6 +30,10 @@ public enum SysinfoType {
    */
   CLUSTER_STATS("cluster_stats"),
   /**
+   * http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-pending.html
+   */
+  PENDING_CLUSTER_TASKS("pending_cluster_tasks"),
+  /**
    * http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html
    */
   CLUSTER_NODES_INFO("cluster_nodes_info"),

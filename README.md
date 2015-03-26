@@ -207,6 +207,17 @@ Available information types:
 
   <tr>
     <td>
+      <code>pending_cluster_tasks</code>
+    </td>
+    <td>
+      <a href="http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-pending.html">Pending Cluster Tasks</a>
+    </td>
+    <td>&gt;= 1.6.0</td>
+    <td/>
+  </tr>
+
+  <tr>
+    <td>
       <code>cluster_nodes_info</code>
     </td>
     <td>

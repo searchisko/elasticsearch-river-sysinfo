@@ -28,6 +28,8 @@ public class SourceClientBaseTest {
     Tested tested = new Tested();
     Assert.assertEquals("SI", tested.readSysinfoValue(SysinfoType.CLUSTER_STATE, params));
     Assert.assertEquals("HI_noparams", tested.readSysinfoValue(SysinfoType.CLUSTER_HEALTH, null));
+    Assert.assertEquals("CS_noparams", tested.readSysinfoValue(SysinfoType.CLUSTER_STATS, null));
+    Assert.assertEquals("PCT_noparams", tested.readSysinfoValue(SysinfoType.PENDING_CLUSTER_TASKS, null));
     Assert.assertEquals("NI_noparams", tested.readSysinfoValue(SysinfoType.CLUSTER_NODES_INFO, null));
     Assert.assertEquals("NS_noparams", tested.readSysinfoValue(SysinfoType.CLUSTER_NODES_STATS, null));
     Assert.assertEquals("IS", tested.readSysinfoValue(SysinfoType.INDICES_STATUS, params));
@@ -59,6 +61,11 @@ public class SourceClientBaseTest {
     @Override
     protected String readClusterStatsInfo(Map<String, String> params) throws IOException {
       return ret("CS", params);
+    }
+
+    @Override
+    protected String readPendingClusterTasksInfo(Map<String, String> params) throws IOException, InterruptedException {
+      return ret("PCT", params);
     }
 
     private String ret(String name, Map<String, String> params) {

@@ -32,6 +32,12 @@
 		    "nodeId" : "node1,node2"
 		  }
 	    },
+	    "pending_cluster_tasks" : {
+		  "info_type"   : "pending_cluster_tasks",
+		  "index_name"  : "my_sysinfo_index",
+		  "index_type"  : "pending_cluster_tasks",
+		  "period"      : "30s"
+	    },
 	    "cluster_nodes_info" : {
 	        "info_type"   : "cluster_nodes_info",
 	        "index_name"  : "my_sysinfo_index",

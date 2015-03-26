@@ -255,6 +255,24 @@ public class SourceClientRESTTest {
 	}
 
 	@Test
+	public void readPendingClusterTasksInfo() throws IOException, InterruptedException {
+		SourceClientREST tested = prepareTestedInstance();
+		HttpClient hcMock = tested.httpclient;
+
+		{
+			Map<String, String> params = new LinkedHashMap<String, String>();
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+					prepareOKAnswerWithAssertions("http://test.org/_cluster/pending_tasks", false));
+			Assert.assertEquals(null, tested.readPendingClusterTasksInfo(params));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
+		}
+	}
+
+	@Test
 	public void readClusterHealthInfo() throws IOException, InterruptedException {
 		SourceClientREST tested = prepareTestedInstance();
 		HttpClient hcMock = tested.httpclient;

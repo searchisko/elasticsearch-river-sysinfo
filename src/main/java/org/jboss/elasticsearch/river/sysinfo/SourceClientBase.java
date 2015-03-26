@@ -25,6 +25,10 @@ public abstract class SourceClientBase implements SourceClient {
       return readClusterHealthInfo(params);
     case CLUSTER_STATE:
       return readClusterStateInfo(params);
+    case CLUSTER_STATS:
+      return readClusterStatsInfo(params);
+    case PENDING_CLUSTER_TASKS:
+      return readPendingClusterTasksInfo(params);
     case CLUSTER_NODES_INFO:
       return readClusterNodesInfoInfo(params);
     case CLUSTER_NODES_STATS:
@@ -71,6 +75,16 @@ public abstract class SourceClientBase implements SourceClient {
    * @throws InterruptedException
    */
   protected abstract String readClusterStatsInfo(Map<String, String> params) throws IOException, InterruptedException;
+
+  /**
+   * Load information for {@link SysinfoType#PENDING_CLUSTER_TASKS} type.
+   *
+   * @param params
+   * @return
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  protected abstract String readPendingClusterTasksInfo(Map<String, String> params) throws IOException, InterruptedException;
 
   /**
    * Load information for {@link SysinfoType#CLUSTER_NODES_INFO} type.
