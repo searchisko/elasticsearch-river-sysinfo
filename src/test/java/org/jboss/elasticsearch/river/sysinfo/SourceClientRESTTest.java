@@ -266,7 +266,7 @@ public class SourceClientRESTTest {
 					.when(
 							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
 									Mockito.any(HttpContext.class))).thenAnswer(
-							prepareOKAnswerWithAssertions("http://test.org/_cluster/nodes?param=myparam", false));
+							prepareOKAnswerWithAssertions("http://test.org/_nodes?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterNodesInfoInfo(params));
 			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
 					Mockito.any(HttpContext.class));
@@ -281,7 +281,7 @@ public class SourceClientRESTTest {
 					.when(
 							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
 									Mockito.any(HttpContext.class))).thenAnswer(
-							prepareOKAnswerWithAssertions("http://test.org/_cluster/nodes/idx1,idx2?param=myparam", false));
+							prepareOKAnswerWithAssertions("http://test.org/_nodes/idx1,idx2?param=myparam", false));
 			Assert.assertEquals(null, tested.readClusterNodesInfoInfo(params));
 			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
 					Mockito.any(HttpContext.class));
