@@ -56,6 +56,11 @@ public class SourceClientBaseTest {
       return ret("HI", params);
     }
 
+    @Override
+    protected String readClusterStatsInfo(Map<String, String> params) throws IOException {
+      return ret("CS", params);
+    }
+
     private String ret(String name, Map<String, String> params) {
       if (params == null) {
         name = name + "_noparams";

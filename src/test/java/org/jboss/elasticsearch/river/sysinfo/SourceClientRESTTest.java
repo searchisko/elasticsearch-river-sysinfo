@@ -221,6 +221,40 @@ public class SourceClientRESTTest {
 	}
 
 	@Test
+	public void readClusterStatsInfo() throws IOException, InterruptedException {
+		SourceClientREST tested = prepareTestedInstance();
+		HttpClient hcMock = tested.httpclient;
+
+		{
+			Map<String, String> params = new LinkedHashMap<String, String>();
+			params.put("param", "myparam");
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+					prepareOKAnswerWithAssertions("http://test.org/_cluster/stats?param=myparam", false));
+			Assert.assertEquals(null, tested.readClusterStatsInfo(params));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
+		}
+
+		{
+			Mockito.reset(hcMock);
+			Map<String, String> params = new LinkedHashMap<String, String>();
+			params.put("param", "myparam");
+			params.put("nodeId", "node1,node2");
+			Mockito
+					.when(
+							hcMock.execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+									Mockito.any(HttpContext.class))).thenAnswer(
+					prepareOKAnswerWithAssertions("http://test.org/_cluster/stats/nodes/node1,node2?param=myparam", false));
+			Assert.assertEquals(null, tested.readClusterStatsInfo(params));
+			Mockito.verify(hcMock).execute(Mockito.any(HttpHost.class), Mockito.any(HttpUriRequest.class),
+					Mockito.any(HttpContext.class));
+		}
+	}
+
+	@Test
 	public void readClusterHealthInfo() throws IOException, InterruptedException {
 		SourceClientREST tested = prepareTestedInstance();
 		HttpClient hcMock = tested.httpclient;

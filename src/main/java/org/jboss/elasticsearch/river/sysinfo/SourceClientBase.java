@@ -63,6 +63,16 @@ public abstract class SourceClientBase implements SourceClient {
   protected abstract String readClusterHealthInfo(Map<String, String> params) throws IOException, InterruptedException;
 
   /**
+   * Load information for {@link SysinfoType#CLUSTER_STATS} type.
+   *
+   * @param params
+   * @return
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  protected abstract String readClusterStatsInfo(Map<String, String> params) throws IOException, InterruptedException;
+
+  /**
    * Load information for {@link SysinfoType#CLUSTER_NODES_INFO} type.
    * 
    * @param params configured to narrow down information

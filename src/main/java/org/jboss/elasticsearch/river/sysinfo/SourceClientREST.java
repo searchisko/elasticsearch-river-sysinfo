@@ -167,6 +167,16 @@ public class SourceClientREST extends SourceClientBase {
 	}
 
 	@Override
+	protected String readClusterStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
+		String op = "";
+		if (params != null && !Utils.isEmpty(params.get(PARAM_NODE_ID))) {
+			op = "/nodes/" + params.get(PARAM_NODE_ID);
+		}
+		op = "_cluster/stats" + op;
+		return performRESTCall(op, prepareRequestParams(params, PARAM_NODE_ID));
+	}
+
+	@Override
 	protected String readClusterNodesInfoInfo(Map<String, String> params) throws IOException, InterruptedException {
 		String op = "_nodes";
 		if (params != null && !Utils.isEmpty(params.get(PARAM_NODE_ID))) {

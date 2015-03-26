@@ -22,6 +22,15 @@
 	            "metric" : "version,nodes,blocks,master_node"
 	        }
 	    },
+	    "cluster_stats" : {
+		  "info_type"   : "cluster_stats",
+		  "index_name"  : "my_sysinfo_index",
+		  "index_type"  : "cluster_stats",
+		  "period"      : "30s",
+		  "params" : {
+		    "nodeId" : "node1,node2"
+		  }
+	    },
 	    "cluster_nodes_info" : {
 	        "info_type"   : "cluster_nodes_info",
 	        "index_name"  : "my_sysinfo_index",

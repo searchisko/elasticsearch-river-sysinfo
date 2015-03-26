@@ -113,7 +113,7 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
 			Map<String, Object> settings = Utils.loadJSONFromJarPackagedFile("/river_configuration_test_conn_local.json");
 			SysinfoRiver tested = prepareRiverInstanceForTest(null);
 			tested.configure(settings);
-			Assert.assertEquals(8, tested.indexers.size());
+			Assert.assertEquals(9, tested.indexers.size());
 			SysinfoIndexer idxr = tested.indexers.get("cluster_health");
 			Assert.assertEquals("cluster_health", idxr.name);
 			Assert.assertEquals(tested.sourceClient, idxr.sourceClient);
@@ -311,7 +311,7 @@ public class SysinfoRiverTest extends ESRealClientTestBase {
 						.actionGet();
 
 				tested.reconfigure();
-				Assert.assertEquals(8, tested.indexers.size());
+				Assert.assertEquals(9, tested.indexers.size());
 				Assert.assertTrue(tested.sourceClient instanceof SourceClientESClient);
 			} finally {
 				finalizeESClientForUnitTest();

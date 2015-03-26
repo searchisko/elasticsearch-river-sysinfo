@@ -26,6 +26,10 @@ public enum SysinfoType {
    */
   CLUSTER_STATE("cluster_state"),
   /**
+   * http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html
+   */
+  CLUSTER_STATS("cluster_stats"),
+  /**
    * http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html
    */
   CLUSTER_NODES_INFO("cluster_nodes_info"),

@@ -96,7 +96,7 @@ public class SysinfoIndexerTest {
       Assert.assertTrue(tested.closed);
     }
 
-    // case - InteruuptedException finishes indexer correctly
+    // case - InterruptedException finishes indexer correctly
     {
       Mockito.reset(scMock, tcMock);
       Mockito.when(scMock.readSysinfoValue(SysinfoType.CLUSTER_HEALTH, null)).thenThrow(

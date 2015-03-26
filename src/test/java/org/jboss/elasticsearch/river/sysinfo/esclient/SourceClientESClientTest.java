@@ -39,6 +39,29 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 	}
 
 	@Test
+	public synchronized void readClusterStatsInfo() throws Exception {
+		try {
+			Client client = prepareESClientForUnitTest();
+
+			SourceClientESClient tested = new SourceClientESClient(client);
+
+			String info = tested.readClusterStatsInfo(null);
+			System.out.println(info);
+			assertContains(info, "\"cluster_name\":\"elasticsearch\",\"status\":\"green\",\"indices\":{\"count\":0,\"shards\":{},\"docs\":{\"count\":0,\"deleted\":0}");
+			assertContains(info, "\"nodes\":{\"count\":{\"total\":1");
+
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("nodeId", "this_node_does_not_exists");
+			info = tested.readClusterStatsInfo(params);
+			System.out.println(info);
+			assertContains(info, "\"nodes\":{\"count\":{\"total\":0");
+
+		} finally {
+			finalizeESClientForUnitTest();
+		}
+	}
+
+	@Test
 	public synchronized void readClusterHealthInfo() throws Exception {
 		try {
 			Client client = prepareESClientForUnitTest();
@@ -223,6 +246,13 @@ public class SourceClientESClientTest extends ESRealClientTestBase {
 			actual = actual.substring(0, expected.length());
 		}
 		Assert.assertEquals("Expected start with failed: ", expected, actual);
+	}
+
+	protected void assertContains(String value, String substring) {
+		if (substring == null && value == null)
+			return;
+
+		Assert.assertTrue(value.contains(substring));
 	}
 
 }

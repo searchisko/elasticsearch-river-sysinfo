@@ -20,6 +20,7 @@ import org.elasticsearch.rest.action.admin.cluster.health.RestClusterHealthActio
 import org.elasticsearch.rest.action.admin.cluster.node.info.RestNodesInfoAction;
 import org.elasticsearch.rest.action.admin.cluster.node.stats.RestNodesStatsAction;
 import org.elasticsearch.rest.action.admin.cluster.state.RestClusterStateAction;
+import org.elasticsearch.rest.action.admin.cluster.stats.RestClusterStatsAction;
 import org.elasticsearch.rest.action.admin.indices.recovery.RestRecoveryAction;
 import org.elasticsearch.rest.action.admin.indices.segments.RestIndicesSegmentsAction;
 import org.elasticsearch.rest.action.admin.indices.stats.RestIndicesStatsAction;
@@ -39,6 +40,7 @@ import org.jboss.elasticsearch.river.sysinfo.SourceClientBase;
  * </pre>
  * 
  * @author Vlastimil Elias (velias at redhat dot com)
+ * @author Lukas Vlcek
  */
 public class SourceClientESClient extends SourceClientBase {
 
@@ -46,8 +48,9 @@ public class SourceClientESClient extends SourceClientBase {
 
 	protected Client client;
 
-	private RestClusterHealthAction healthAction;
-	private RestClusterStateAction stateAction;
+	private RestClusterHealthAction clusterHealthAction;
+	private RestClusterStateAction clusterStateAction;
+	private RestClusterStatsAction clusterStatsAction;
 	private RestNodesInfoAction nodesInfoAction;
 	private RestNodesStatsAction nodesStatsAction;
 	private RestIndicesStatusAction indicesStatusAction;
@@ -63,8 +66,9 @@ public class SourceClientESClient extends SourceClientBase {
 		Settings settings = ImmutableSettings.Builder.EMPTY_SETTINGS;
 		SettingsFilter settingsFilter = new SettingsFilter(settings);
 		RestController controller = new RestController(settings);
-		healthAction = new RestClusterHealthAction(settings, controller, client);
-		stateAction = new RestClusterStateAction(settings, controller, client, settingsFilter);
+		clusterHealthAction = new RestClusterHealthAction(settings, controller, client);
+		clusterStateAction = new RestClusterStateAction(settings, controller, client, settingsFilter);
+		clusterStatsAction = new RestClusterStatsAction(settings, controller, client);
 		nodesInfoAction = new RestNodesInfoAction(settings, controller, client, settingsFilter);
 		nodesStatsAction = new RestNodesStatsAction(settings, controller, client);
 		indicesStatusAction = new RestIndicesStatusAction(settings, controller, client, settingsFilter);
@@ -76,13 +80,19 @@ public class SourceClientESClient extends SourceClientBase {
 	@Override
 	protected String readClusterStateInfo(Map<String, String> params) throws IOException, InterruptedException {
 		logger.debug("readClusterStateInfo with params {}", params);
-		return performRestRequestLocally(stateAction, params);
+		return performRestRequestLocally(clusterStateAction, params);
 	}
 
 	@Override
 	protected String readClusterHealthInfo(Map<String, String> params) throws IOException, InterruptedException {
 		logger.debug("readClusterHealthInfo with params {}", params);
-		return performRestRequestLocally(healthAction, params);
+		return performRestRequestLocally(clusterHealthAction, params);
+	}
+
+	@Override
+	protected String readClusterStatsInfo(Map<String, String> params) throws IOException, InterruptedException {
+		logger.debug("readClusterStatsInfo with params {}", params);
+		return performRestRequestLocally(clusterStatsAction, params);
 	}
 
 	@Override

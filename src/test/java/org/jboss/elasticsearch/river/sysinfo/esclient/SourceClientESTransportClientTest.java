@@ -32,12 +32,12 @@ public class SourceClientESTransportClientTest {
 
     Map<String, Object> sourceClientSettings = new HashMap<String, Object>();
     assertSettingsExceptionThrown(sourceClientSettings,
-        "SettingsException must be thrown if adresses setting part is not defined");
+        "SettingsException must be thrown if addresses setting part is not defined");
 
     List<Map<String, Object>> adr = new ArrayList<Map<String, Object>>();
     sourceClientSettings.put("addresses", adr);
     assertSettingsExceptionThrown(sourceClientSettings,
-        "SettingsException must be thrown if adresses setting part is empty");
+        "SettingsException must be thrown if addresses setting part is empty");
 
     Map<String, Object> adr1 = new HashMap<String, Object>();
     adr.add(adr1);
