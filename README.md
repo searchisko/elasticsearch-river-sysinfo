@@ -199,7 +199,7 @@ Available information types:
     <td>
       <a href="http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-stats.html">Cluster Stats</a>
     </td>
-    <td>&gt;= 1.6.0</td>
+    <td>&gt;= 1.5.1</td>
     <td>
       <code>nodeId</code> param
     </td>
@@ -212,7 +212,7 @@ Available information types:
     <td>
       <a href="http://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-pending.html">Pending Cluster Tasks</a>
     </td>
-    <td>&gt;= 1.6.0</td>
+    <td>&gt;= 1.5.1</td>
     <td/>
   </tr>
 
@@ -289,7 +289,7 @@ Available information types:
     <td>
       <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html">Indices Recovery</a>
     </td>
-    <td>&gt;= 1.6.0</td>
+    <td>&gt;= 1.5.1</td>
     <td>
       <code>index</code> param
     </td>
