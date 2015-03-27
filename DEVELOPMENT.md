@@ -14,19 +14,20 @@ How to release new version of the project
 
 ### Before release
 jar file for this project is released into jboss.org nexus maven repository running at https://repository.jboss.org/nexus/.
-To be able release this project you have to:
+To be able to release this project you have to:
 
 * have jboss.org user account
 * have permission to release into jboss.org nexus maven repository granted for this account  
 * next section added into your maven `settings.xml` file
-	````
+
+````
 	    <server>
 	      <id>jboss-releases-repository</id>
 	      <username>jboss.org username</username>
 	      <password>jboss.org password</password>
 	    </server>
 	
-	````
+````
  
 ### Release steps
 * check that `version` is updated to the correct version in `pom.xml`

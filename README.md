@@ -11,33 +11,86 @@ and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote 
 cluster REST protocol may be used too to decrease different ES versions impedance.
 
-In order to install the plugin into Elasticsearch 1.3.x, simply run: 
-`bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.4.1/elasticsearch-river-sysinfo-1.4.1.zip -install elasticsearch-river-sysinfo`.
+In order to install the plugin into Elasticsearch 1.3.x, simply run:
 
-In order to install the plugin into Elasticsearch 1.4.x, simply run: 
-`bin/plugin -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.5.0/elasticsearch-river-sysinfo-1.5.0.zip -install elasticsearch-river-sysinfo`.
+    bin/plugin -install elasticsearch-river-sysinfo` \
+    -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.4.1/elasticsearch-river-sysinfo-1.4.1.zip
 
-	----------------------------------------------------------------------------------------------------------------------
-	| Sysinfo River | Elasticsearch    | Release date | Upgrade notes                                                    |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| master        | 1.4.0            |              |                                                                  |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| 1.5.0         | 1.4.0            | 4.12.2014    |                                                                  |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| 1.4.1         | 1.3.0            | 22.9.2014    |                                                                  |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| 1.4.0         | 1.3.0            | 20.8.2014    |                                                                  |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| 1.3.0         | 1.2.0            | 8.7.2014     | changes in `indexers` config section necessary to monitor ES 1.2 |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| 1.2.2         | 0.90.5           | 20.9.2013    |                                                                  |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| 1.2.1         | 0.90.0           | 17.5.2013    | Management REST API url's changed                                |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| 1.1.0         | 0.19.11          | 23.11.2012   | river configuration format changed in `indexers` section         |
-	|--------------------------------------------------------------------------------------------------------------------|
-	| 1.0.0         | 0.19.11          | 20.11.2012   |                                                                  |
-	----------------------------------------------------------------------------------------------------------------------
+In order to install the plugin into Elasticsearch 1.4.x, simply run:
+
+    bin/plugin -install elasticsearch-river-sysinfo \
+    -url https://repository.jboss.org/nexus/content/groups/public-jboss/org/jboss/elasticsearch/elasticsearch-river-sysinfo/1.5.1/elasticsearch-river-sysinfo-1.5.1.zip
+
+<table>
+  <tr>
+    <th>Sysinfo River</th>
+    <th>Elasticsearch</th>
+    <th>Release date</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td><code>master</code></td>
+    <td><code>1.4.x</code></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>1.5.1</code></td>
+    <td><code>1.4.x</code></td>
+    <td>27.3.2015</td>
+    <td>See [Milestone 1.5.1] details.</td>
+  </tr>
+  <tr>
+    <td><code>1.5.0</code></td>
+    <td><code>1.4.x</code></td>
+    <td>4.12.2014</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>1.4.1</code></td>
+    <td><code>1.3.x</code></td>
+    <td>22.9.2014</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>1.4.0</code></td>
+    <td><code>1.3.x</code></td>
+    <td>20.8.2014</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>1.3.0</code></td>
+    <td><code>1.2.x</code></td>
+    <td>8.7.2014</td>
+    <td>changes in <code>indexers</code> config section necessary to monitor ES 1.2</td>
+  </tr>
+  <tr>
+    <td><code>1.2.2</code></td>
+    <td><code>0.90.5</code></td>
+    <td>20.9.2013</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><code>1.2.1</code></td>
+    <td><code>0.90.0</code></td>
+    <td>17.5.2013</td>
+    <td>Management REST API url's changed</td>
+  </tr>
+  <tr>
+    <td><code>1.1.0</code></td>
+    <td><code>0.90.11</code></td>
+    <td>23.11.2012</td>
+    <td>river configuration format changed in <code>indexers</code> section</td>
+  </tr>
+  <tr>
+    <td><code>1.0.0</code></td>
+    <td><code>0.19.11</code></td>
+    <td>20.11.2012</td>
+    <td></td>
+  </tr>
+</table>
+
+  [Milestone 1.5.1]: https://github.com/searchisko/elasticsearch-river-sysinfo/issues?q=milestone%3A1.5.1+is%3Aclosed
 
 For changelog, planned milestones/enhancements and known bugs see [github issue tracker](https://github.com/searchisko/elasticsearch-river-sysinfo/issues) please.
 
@@ -163,7 +216,7 @@ Available information types:
     <th><code>info_type</code></th>
     <th>Relevant ES API doc</th>
     <th>River version</th>
-    <th>Note</th>
+    <th>Notes</th>
   </tr>
 
   <tr>
