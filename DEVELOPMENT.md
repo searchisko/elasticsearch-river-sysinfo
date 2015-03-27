@@ -4,7 +4,7 @@ Development info
 How to build project
 --------------------
 
-[Maven 2.2.x](http://maven.apache.org/) is used as build tool for this project.
+[Maven](http://maven.apache.org/) 2.2.x or 3.x+ is used as build tool for this project.
 
 To build project simply run `mvn clean package` from command line (or equal command from your IDE)
 
@@ -40,4 +40,8 @@ To be able to release this project you have to:
 * run `mvn clean package deploy` command, check it finish successfully
 * create tag named `vx.y.z` (where `x.y.z` is released version) and push it into github git repository
 * set 'release date' and description for Milestone in the issue tracker and close it
+
+### Post release steps
+* upgrade `version` in `pom.xml` and push into github git repository
+* start a party!
  
