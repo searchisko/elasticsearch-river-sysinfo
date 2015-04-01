@@ -11,6 +11,8 @@ and store them into search indexes, so may be used for later analysis.
 System info can be collected from local or remote ES cluster, in case of remote 
 cluster REST protocol may be used too to decrease different ES versions impedance.
 
+**Please note that Rivers are going to be [deprecated from Elasticsearch 1.5](https://www.elastic.co/blog/deprecating_rivers).**
+
 In order to install the plugin into Elasticsearch 1.3.x, simply run:
 
     bin/plugin -install elasticsearch-river-sysinfo` \
