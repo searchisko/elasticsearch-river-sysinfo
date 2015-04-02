@@ -54,13 +54,11 @@ Common prefix is used by the top most level index template to ensure all indices
 - common mapping for `data` index type
 - `transform` script to move top level `_all` field to `_all_copy` (*)
 
-<blockquote>
-  (*) It seems that storing nested object types into top level field called `_all`
-  in Elasticsearch is problematic even if `_all` field is disabled or explicit mapping
-  is configured for it. To workaround this issue we "rename" `_all` field to `_all_copy`
-  using `transform` script. Although the `_source` document is unchanged this modification
-  must be reflected in Query DSL queries.
-</blockquote>
+(*) It seems that storing nested object types into top level field called `_all`
+in Elasticsearch is problematic even if `_all` field is disabled or explicit mapping
+is configured for it. To workaround this issue we "rename" `_all` field to `_all_copy`
+using `transform` script. Although the `_source` document is unchanged this modification
+must be reflected in Query DSL queries.
 
 #### `info_type`
 
@@ -135,10 +133,8 @@ This is the index that is currently being used by sysinfo river.
   </tr>
 </table>
 
-<blockquote>
-  Similarly to `{custom_key}` both aliases for search and indexing must contain
-  cluster name if we pull data from more clusters.
-</blockquote>
+Similarly to `{custom_key}` both aliases for search and indexing must contain
+cluster name if we pull data from more clusters.
 
 ## Index rotation
 
