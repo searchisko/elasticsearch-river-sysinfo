@@ -12,6 +12,19 @@ Particular topics we will discuss in details:
 - Fine tuning of mappings for stored data to make it more aggregation friendly
 - Removing old data (index rotation)
 
+## Content
+
+- [Requirements](#requirements)
+- [Index naming conventions](#index-naming-conventions)
+    - [Synopsis](#synopsis)
+    - [Mappings and Transformations](#mappings-and-transformations)
+- [Index alias naming conventions](#index-alias-naming-conventions)
+    - [Index alias for search](#index-alias-for-search)
+    - [Index alias for indexing](#index-alias-for-indexing)
+- [Index rotation](#index-rotation)
+    - [Adding new indices](#adding-new-indices)
+    - [Remove old indices](#remove-old-indices)
+  
 
 ## Requirements
 
@@ -60,6 +73,8 @@ is configured for it. To workaround this issue we "rename" `_all` field to `_all
 using `transform` script. Although the `_source` document is unchanged this modification
 must be reflected in Query DSL queries.
 
+TODO: Upload template mapping file.
+
 #### `info_type`
 
 Used by more detailed index templates to set individual `info_type`s settings.
@@ -76,16 +91,16 @@ The following `info_type`s are available:
 - `indices_segments`
 - `indices_recovery`
 
-TBD: Tuning of particular info type mappings.
+TODO: Upload template mapping files for `info_type`.
 
 #### `custom_key`
 
-Is important to enable index rotation. For instance `custom_key` can be defined
-as `{create_timestamp}` or it can include also the cluster name
-`{cluster_name}_{create_timestamp}` if we know we will be pulling data from more
+Is important to enable index rotation. For instance `{custom_key}` can be defined
+as `{index_create_timestamp}` or it can include also the cluster name
+`{cluster_name}_{index_create_timestamp}` if we know we will be pulling data from more
 clusters.
 
-### Index name examples
+#### Index name examples
 
     sysinfo_cluster_health_2015-03-01
     sysinfo_cluster_health_cluster01_2015-03-01
@@ -108,7 +123,7 @@ relevant indices.
 There needs to be only a **single** index having this alias per `info_type`.
 This is the index that is currently being used by sysinfo river.
 
-### Index aliases example
+#### Index aliases example
 
 <table>
   <tr>
@@ -146,7 +161,7 @@ The core idea is to periodically create a new index (for every `info_type`) and 
 index aliases in such a way that only the new index is used for indexing but all indices
 are used for search.
 
-This process can be illustrated using the following flow:
+This concept can be illustrated using the following flow:
 
 ````
   # create new index
