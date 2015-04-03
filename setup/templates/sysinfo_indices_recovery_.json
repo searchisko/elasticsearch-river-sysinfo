@@ -1,0 +1,11 @@
+{
+  "template": "sysinfo_indices_recovery_*",
+  "order": 15,
+  "mappings": {
+    "data": {
+      "properties": {
+
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "template": "sysinfo_cluster_stats_*",
+  "order": 14,
+  "mappings": {
+    "data": {
+      "properties": {
+        "nodes": {
+          "properties": {
+            "plugins": {
+              "type": "nested",
+              "include_in_parent": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

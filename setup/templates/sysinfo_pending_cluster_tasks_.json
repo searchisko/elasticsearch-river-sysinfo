@@ -1,0 +1,10 @@
+{
+  "template": "sysinfo_pending_cluster_tasks_*",
+  "order": 17,
+  "mappings": {
+    "data": {
+      "properties": {
+      }
+    }
+  }
+}

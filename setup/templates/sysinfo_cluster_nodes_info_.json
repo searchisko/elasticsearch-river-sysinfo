@@ -1,0 +1,23 @@
+{
+  "template": "sysinfo_cluster_nodes_info_*",
+  "order": 11,
+  "mappings": {
+    "data": {
+      "properties": {
+        "nodes": {
+          "type": "nested",
+          "include_in_root": true,
+          "properties": {
+            "plugins": {
+              "type": "nested",
+              "include_in_parent": true
+            }
+          }
+        }
+      },
+      "transform": [
+        { "lang": "groovy", "script": "if (ctx._source.containsKey('nodes')) { def list=[]; ctx._source['nodes'].each{ key, value -> def nvalue = value.clone(); nvalue.put('node', key); list.add(nvalue) }; ctx._source['nodes']=list }" }
+      ]
+    }
+  }
+}

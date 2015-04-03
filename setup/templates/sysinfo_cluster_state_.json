@@ -1,0 +1,54 @@
+{
+  "template": "sysinfo_cluster_state_*",
+  "order": 13,
+  "mappings": {
+    "data": {
+      "properties": {
+        "nodes": {
+          "type": "nested",
+          "include_in_parent": true
+        },
+        "routing_table": {
+          "properties": {
+            "indices": {
+              "type": "nested",
+              "include_in_parent": true
+            }
+          }
+        },
+        "routing_nodes": {
+          "properties": {
+            "unassigned": {
+              "type": "nested",
+              "include_in_parent": true,
+              "properties": {
+                "node": { "type": "string" },
+                "relocating_node": { "type": "string" }
+              }
+            },
+            "nodes": {
+              "type": "nested",
+              "include_in_parent": true,
+              "properties": {
+                "node": { "type": "string" },
+                "shards": {
+                  "type": "nested",
+                  "include_in_parent": true,
+                  "properties": {
+                    "node": { "type": "string" },
+                    "relocating_node": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "transform": [
+        { "lang": "groovy", "script": "if (ctx._source.containsKey('nodes')) { def list=[]; ctx._source['nodes'].each{ key, value -> def nvalue = value.clone(); nvalue.put('node', key); list.add(nvalue) }; ctx._source['nodes']=list }" },
+        { "lang": "groovy", "script": "if (ctx._source.containsKey('routing_table') && ctx._source['routing_table'].containsKey('indices')) { def list=[]; ctx._source['routing_table']['indices'].each{ key, value -> def nvalue = value.clone(); nvalue.put('index_name', key); list.add(nvalue) }; ctx._source['routing_table']['indices']=list }" },
+        { "lang": "groovy", "script": "if (ctx._source.containsKey('routing_nodes') && ctx._source['routing_nodes'].containsKey('nodes')) { def list=[]; ctx._source['routing_nodes']['nodes'].each{ key, value -> def shards = value.clone(); def node = [:]; node.put('node', key); node.put('shards', shards); list.add(node) }; ctx._source['routing_nodes']['nodes']=list }" }
+      ]
+    }
+  }
+}

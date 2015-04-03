@@ -1,0 +1,17 @@
+{
+  "template": "sysinfo_cluster_health_*",
+  "order": 10,
+  "mappings": {
+    "data": {
+      "properties": {
+        "indices": {
+          "type": "nested",
+          "include_in_root": true
+        }
+      },
+      "transform": [
+        { "lang": "groovy", "script": "if (ctx._source.containsKey('indices')) { def list=[]; ctx._source['indices'].each{ key, value -> def nvalue = value.clone(); nvalue.put('index_name', key); list.add(nvalue) }; ctx._source['indices']=list }" }
+      ]
+    }
+  }
+}

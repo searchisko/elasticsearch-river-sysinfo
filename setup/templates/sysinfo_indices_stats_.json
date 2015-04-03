@@ -1,0 +1,18 @@
+{
+  "template": "sysinfo_indices_stats_*",
+  "order": 16,
+  "mappings": {
+    "data": {
+      "properties": {
+        "indices": {
+          "type": "nested",
+          "include_in_root": true
+        }
+      },
+      "transform": [
+        { "lang": "groovy", "script": "if (ctx._source.containsKey('_all')) { ctx._source['_all_copy'] = ctx._source['_all']; ctx._source.remove('_all') }"},
+        { "lang": "groovy", "script": "if (ctx._source.containsKey('indices')) { def list=[]; ctx._source['indices'].each{ key, value -> def nvalue = value.clone(); nvalue.put('index_name', key); list.add(nvalue) }; ctx._source['indices']=list }" }
+      ]
+    }
+  }
+}

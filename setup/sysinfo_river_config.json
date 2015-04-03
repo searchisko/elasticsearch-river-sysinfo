@@ -1,0 +1,75 @@
+{
+  "type": "sysinfo",
+  "es_connection": {
+    "type": "local"
+  },
+  "indexers": {
+
+    "cluster_health_custom_key": {
+      "info_type": "cluster_health",
+      "index_name": "sysinfo_cluster_health_custom_key_index",
+      "index_type": "data",
+      "period": "30s",
+      "params": {
+        "level": "indices"
+      }
+    },
+
+    "cluster_state_custom_key": {
+      "info_type": "cluster_state",
+      "index_name": "sysinfo_cluster_state_custom_key_index",
+      "index_type": "data",
+      "period": "10s",
+      "params": {
+        "metric": "version,master_node,nodes,routing_table,blocks"
+      }
+    },
+
+    "cluster_stats_custom_key": {
+      "info_type": "cluster_stats",
+      "index_name": "sysinfo_cluster_stats_custom_key_index",
+      "index_type": "data",
+      "period": "30s"
+    },
+
+    "pending_cluster_tasks_custom_key": {
+      "info_type": "pending_cluster_tasks",
+      "index_name": "sysinfo_pending_cluster_tasks_custom_key_index",
+      "index_type": "data",
+      "period": "10s"
+    },
+
+    "cluster_nodes_info_custom_key": {
+      "info_type": "cluster_nodes_info",
+      "index_name": "sysinfo_cluster_nodes_info_custom_key_index",
+      "index_type": "data",
+      "period": "60s"
+    },
+
+    "cluster_nodes_stats_custom_key": {
+      "info_type": "cluster_nodes_stats",
+      "index_name": "sysinfo_cluster_nodes_stats_custom_key_index",
+      "index_type": "data",
+      "period": "10s"
+    },
+
+    "indices_stats_custom_key": {
+      "info_type": "indices_stats",
+      "index_name": "sysinfo_indices_stats_custom_key_index",
+      "index_type": "data",
+      "period": "10s"
+    },
+
+    "indices_recovery_custom_key": {
+      "info_type": "indices_recovery",
+      "index_name": "sysinfo_indices_recovery_custom_key_index",
+      "index_type": "data",
+      "period": "30s",
+      "params": {
+        "detailed": "true",
+        "active_only": "true"
+      }
+    }
+
+  }
+}

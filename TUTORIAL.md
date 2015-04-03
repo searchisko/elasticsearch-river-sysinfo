@@ -16,8 +16,10 @@ Particular topics we will discuss in details:
 
 - [Requirements](#requirements)
 - [Index naming conventions](#index-naming-conventions)
-    - [Synopsis](#synopsis)
-    - [Mappings and Transformations](#mappings-and-transformations)
+- [Mappings and Transformations](#mappings-and-transformations)
+    - [`sysinfo_`](#sysinfo_)
+    - [`{info_type}`](#info_type)
+    - [`{custom_key}`](#custom_key)
 - [Index alias naming conventions](#index-alias-naming-conventions)
     - [Index alias for search](#index-alias-for-search)
     - [Index alias for indexing](#index-alias-for-indexing)
@@ -41,7 +43,7 @@ cluster need the following configuration setup:
 In this tutorial we will be storing each `info_type` content into **separate index**
 and the data will be **always** stored under index type called `data`.
 
-### Synopsis
+Synopsis:
 
 <table>
   <tr>
@@ -55,45 +57,157 @@ and the data will be **always** stored under index type called `data`.
 - All indices share common name prefix `sysinfo_` followed by `{info_type}` code and `{custom_key}` value
 - All indices have `type` index type
 
-### Mappings and Transformations
+## Mappings and Transformations
 
-#### `sysinfo_`
+JSON data returned by Elasticsearch Admin APIs is not always convenient for direct indexing.
+It is not an exception to see data values being used as a JSON object keys. Indexing such
+data brings two downsides: a) frequent mapping updates, which can be costly and b) difficult
+querying and aggregation of the data.
+
+In case important data is used as an object key we try to move/copy it to object value
+under arbitrary key. This usually also means that objects are converted into arrays
+and mapped as nested type.
+
+For example, if index names are used as keys:
+ 
+````
+  {
+    "indices": {
+      "index_01": { "number_of_shards": 5, "number_of_replicas": 3 },
+      "index_02": { "number_of_shards": 4, "number_of_replicas": 2 }
+    }
+  }
+````
+
+we transform it to the following format:
+
+````
+  {
+    "indices": [
+      {
+        "index_name": "index_01",
+        "number_of_shards": 5,
+        "number_of_replicas": 3
+      },
+      {
+        "index_name": "index_02",
+        "number_of_shards": 4,
+        "number_of_replicas": 2
+      }
+    ]
+  }
+````
+
+### `sysinfo_`
 
 Common prefix is used by the top most level index template to ensure all indices have:
 
-- Enabled `_timestamp` field and make it `stored`
-- Enabled `_index` field and make it `stored`
-- Disabled `include_in_all`
-- common mapping for `data` index type
-- `transform` script to move top level `_all` field to `_all_copy` (*)
+  - Common mapping for `data` index type:
+    - Enabled `_timestamp` field and make it `stored`
+    - Enabled `_index` field and make it `stored`
+    - Disabled `include_in_all`
+    - Disabled `_all` field
+  - **Template mapping:** [sysinfo_.json](setup/templates/sysinfo_.json)
 
-(*) It seems that storing nested object types into top level field called `_all`
+### `{info_type}`
+
+Used by more detailed index templates to set individual `info_type`s settings. If the `_source`
+field contains top level field `_all` then `transform` script is used to move it to `_all_copy`
+field.
+
+It seems that storing nested object types into top level field called `_all`
 in Elasticsearch is problematic even if `_all` field is disabled or explicit mapping
 is configured for it. To workaround this issue we "rename" `_all` field to `_all_copy`
-using `transform` script. Although the `_source` document is unchanged this modification
-must be reflected in Query DSL queries.
-
-See: [template_sysinfo.json](setup/templates/template_sysinfo.json)
-
-#### `info_type`
-
-Used by more detailed index templates to set individual `info_type`s settings.
+using `transform` script.
 
 The following `info_type`s are available:
 
-- `cluster_health`
-- `cluster_state`
-- `cluster_stats`
-- `pending_cluster_tasks`
-- `cluster_nodes_info`
-- `cluster_nodes_stats`
-- `indices_stats`
-- `indices_segments`
-- `indices_recovery`
+#### `cluster_health`
 
-TODO: Upload template mapping files for `info_type`.
+  - Object `_source.indices` contains index names as keys. We transform it to nested type.
+  - **Template mapping:** [sysinfo_cluster_health_.json](setup/templates/sysinfo_cluster_health_.json)
 
-#### `custom_key`
+#### `cluster_state`
+
+  - Object `_source.nodes` contains node names as keys. We transform it to nested type.
+  - Object `_source.routing_table.indices` contains index names as keys. We transform it to nested type. (TODO: nested
+    shard info needs to be transformed to nested type as well)
+  - Object `_source.routing_nodes.unassigned` is mapped as nested type
+  - Object `_source.routing_nodes.nodes` contains node names as keys. We transform it to nested type as follows:
+
+Original format:
+
+    {
+      "routing_nodes": {
+        "nodes": {
+          "oXUWLJfJQ3ilAvJ4Unoa9g": [
+            { <shard_01> },
+            { <shard_02> }
+          ]
+        }
+      }
+    }
+    
+is transformed to:
+
+    {
+      "routing_nodes": {
+        "nodes": [                            ## <- nested type
+          {
+            "node": "oXUWLJfJQ3ilAvJ4Unoa9g", ## <- artificial key/value
+            "shards": [                       ## <- nested type
+              { <shard_01> },
+              { <shard_02> }
+            ]
+          }
+        ]
+      }
+    }
+    
+- **Template mapping:** [sysinfo_cluster_state_.json](setup/templates/sysinfo_cluster_state_.json)
+
+#### `cluster_stats`
+
+  - Object inside `_source.nodes.plugins` are mapped as nested type.
+  - **Template mapping:** [sysinfo_cluster_stats_.json](setup/templates/sysinfo_cluster_stats_.json)
+
+#### `pending_cluster_tasks`
+
+  - TODO
+  - **Template mapping:** [sysinfo_pending_cluster_tasks_.json](setup/templates/sysinfo_pending_cluster_tasks_.json)
+
+#### `cluster_nodes_info`
+
+  - Object `_source.nodes` contains node names as keys. We transform it to nested type.
+  - Object inside `_source.nodes.plugins` are mapped as nested type.
+  - **Template mapping:** [sysinfo_cluster_nodes_info_.json](setup/templates/sysinfo_cluster_nodes_info_.json)
+
+#### `cluster_nodes_stats`
+
+  - Object `_source.nodes` contains node names as keys. We transform it to nested type.
+  - TODO: `node.fs.data` ?
+  - **Template mapping:** [sysinfo_cluster_nodes_stats_.json](setup/templates/sysinfo_cluster_nodes_stats_.json)
+  
+#### `indices_status`
+
+Deprecated API, not used.
+
+#### `indices_stats`
+
+  - Object `_source.indices` contains index names as a keys. We convert it into nested type.
+  - **Template mapping:** [sysinfo_indices_stats_.json](setup/templates/sysinfo_indices_stats_.json)
+
+#### `indices_segments`
+
+  - Not configured for now...
+
+#### `indices_recovery`
+
+  - TODO
+  - **Template mapping:** [sysinfo_indices_recovery_.json](setup/templates/sysinfo_indices_recovery_.json)
+  
+
+### `{custom_key}`
 
 Is important to enable index rotation. For instance `{custom_key}` can be defined
 as `{index_create_timestamp}` or it can include also the cluster name
@@ -139,12 +253,12 @@ This is the index that is currently being used by sysinfo river.
   <tr>
     <td><code>sysinfo_cluster_health_2015-03-02</code>
     </td><td><code>sysinfo_cluster_health_search</code></td>
-    </td><td><code></code></td>
+    </td><td></td>
   </tr>
   <tr>
     <td><code>sysinfo_cluster_health_2015-03-01</code>
     </td><td><code>sysinfo_cluster_health_search</code></td>
-    </td><td><code></code></td>
+    </td><td></td>
   </tr>
 </table>
 
