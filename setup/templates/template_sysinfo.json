@@ -1,0 +1,24 @@
+{
+  "template": "sysinfo_*",
+  "order": 1,
+  "mappings": {
+    "_default_": {
+      "_timestamp": {
+        "enabled": true,
+        "store": true
+      },
+      "_index": {
+        "enabled": true,
+        "store": true
+      },
+      "_all": {
+        "enabled": false
+      },
+      "include_in_all": false,
+      "transform": {
+        "lang": "groovy",
+        "script": "if (ctx._source.containsKey('_all')) { ctx._source['_all_copy'] = ctx._source['_all']; ctx._source.remove('_all') }"
+      }
+    }
+  }
+}

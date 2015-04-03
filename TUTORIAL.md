@@ -73,7 +73,7 @@ is configured for it. To workaround this issue we "rename" `_all` field to `_all
 using `transform` script. Although the `_source` document is unchanged this modification
 must be reflected in Query DSL queries.
 
-TODO: Upload template mapping file.
+See: [template_sysinfo.json](setup/templates/template_sysinfo.json)
 
 #### `info_type`
 
