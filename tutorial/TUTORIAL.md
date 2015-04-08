@@ -107,7 +107,7 @@ Common prefix is used by the top most level index template to ensure all indices
     - Enabled `_index` field and make it `stored`
     - Disabled `include_in_all`
     - Disabled `_all` field
-  - **Template mapping:** [sysinfo_.json](setup/templates/sysinfo_.json)
+  - **Template mapping:** [sysinfo_.json](templates/sysinfo_.json)
 
 ### `{info_type}`
 
@@ -125,7 +125,7 @@ The following `info_type`s are available:
 #### `cluster_health`
 
   - Object `_source.indices` contains index names as keys. We transform it to nested type.
-  - **Template mapping:** [sysinfo_cluster_health_.json](setup/templates/sysinfo_cluster_health_.json)
+  - **Template mapping:** [sysinfo_cluster_health_.json](templates/sysinfo_cluster_health_.json)
 
 #### `cluster_state`
 
@@ -164,29 +164,29 @@ is transformed to:
       }
     }
     
-- **Template mapping:** [sysinfo_cluster_state_.json](setup/templates/sysinfo_cluster_state_.json)
+- **Template mapping:** [sysinfo_cluster_state_.json](templates/sysinfo_cluster_state_.json)
 
 #### `cluster_stats`
 
   - Object inside `_source.nodes.plugins` are mapped as nested type.
-  - **Template mapping:** [sysinfo_cluster_stats_.json](setup/templates/sysinfo_cluster_stats_.json)
+  - **Template mapping:** [sysinfo_cluster_stats_.json](templates/sysinfo_cluster_stats_.json)
 
 #### `pending_cluster_tasks`
 
   - TODO
-  - **Template mapping:** [sysinfo_pending_cluster_tasks_.json](setup/templates/sysinfo_pending_cluster_tasks_.json)
+  - **Template mapping:** [sysinfo_pending_cluster_tasks_.json](templates/sysinfo_pending_cluster_tasks_.json)
 
 #### `cluster_nodes_info`
 
   - Object `_source.nodes` contains node names as keys. We transform it to nested type.
   - Object inside `_source.nodes.plugins` are mapped as nested type.
-  - **Template mapping:** [sysinfo_cluster_nodes_info_.json](setup/templates/sysinfo_cluster_nodes_info_.json)
+  - **Template mapping:** [sysinfo_cluster_nodes_info_.json](templates/sysinfo_cluster_nodes_info_.json)
 
 #### `cluster_nodes_stats`
 
   - Object `_source.nodes` contains node names as keys. We transform it to nested type.
   - TODO: `node.fs.data` ?
-  - **Template mapping:** [sysinfo_cluster_nodes_stats_.json](setup/templates/sysinfo_cluster_nodes_stats_.json)
+  - **Template mapping:** [sysinfo_cluster_nodes_stats_.json](templates/sysinfo_cluster_nodes_stats_.json)
   
 #### `indices_status`
 
@@ -195,7 +195,7 @@ Deprecated API, not used.
 #### `indices_stats`
 
   - Object `_source.indices` contains index names as a keys. We convert it into nested type.
-  - **Template mapping:** [sysinfo_indices_stats_.json](setup/templates/sysinfo_indices_stats_.json)
+  - **Template mapping:** [sysinfo_indices_stats_.json](templates/sysinfo_indices_stats_.json)
 
 #### `indices_segments`
 
@@ -204,7 +204,7 @@ Deprecated API, not used.
 #### `indices_recovery`
 
   - TODO
-  - **Template mapping:** [sysinfo_indices_recovery_.json](setup/templates/sysinfo_indices_recovery_.json)
+  - **Template mapping:** [sysinfo_indices_recovery_.json](templates/sysinfo_indices_recovery_.json)
   
 
 ### `{custom_key}`
