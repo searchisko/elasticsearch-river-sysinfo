@@ -26,6 +26,9 @@ Particular topics we will discuss in details:
 - [Index rotation](#index-rotation)
     - [Adding new indices](#adding-new-indices)
     - [Remove old indices](#remove-old-indices)
+- [Prepared shell scripts](#prepared-shell-scripts)
+    - [init.sh](#init.sh)
+    - [rotate.sh](#rotate.sh)
   
 
 ## Requirements
@@ -333,24 +336,36 @@ For example if we collect `indices_stats` data then we can do query like this:
 
 ````
   curl 'localhost:9200/sysinfo_indices_stats*/_search?search_type=count' -d '{
+    "query": {
+      "filtered": {
+        "filter": {
+          "prefix": { "_index": "sysinfo_" } }}
+    },
     "aggs": {
       "indices": {
         "terms": {
           "field": "_index",
-          "order": { "_term": "desc" }
+          "order": { "_term": "desc" },
+          "size": 0
   }}}}'
 ````
 
 In case the index name timestamp format is not convenient for proper ordering we
-can order indies by selecting `max(_timestamp)` value of contained documents:
+can order indices by selecting `max(_timestamp)` value of contained documents:
 
 ````
   curl 'localhost:9200/sysinfo_indices_stats*/_search?search_type=count' -d '{
+    "query": {
+      "filtered": {
+        "filter": {
+          "prefix": { "_index": "sysinfo_" } }}
+    },
     "aggs": {
       "indices": {
         "terms": {
           "field": "_index",
-          "order": { "max_timestamp": "desc" }
+          "order": { "max_timestamp": "desc" },
+          "size": 0
         },
         "aggs": {
           "max_timestamp": {
@@ -363,25 +378,69 @@ can order indies by selecting `max(_timestamp)` value of contained documents:
 Another strategy is to do not bother about number of indices as long as we make sure
 they do not contain "too old" data.
 
-For example we want to list all index names (for `indices_stats`) that contain data
-created in year 2013 or older then we can use query like this:
+For example we want to list all index names (for `indices_stats`) that do not contain
+data created on 2015-04-08 (and up) then we can use query like this:
 
 ````
   curl 'localhost:9200/sysinfo_indices_stats*/_search?search_type=count' -d '{
     "query": {
       "filtered": {
         "filter": {
-          "not": {
-            "range": {
-              "_timestamp": { "gte": "2013" }
-     }}}}
+          "and": [
+            {
+              "prefix": { "_index": "sysinfo_" }
+            },
+            {
+              "not": {
+                "range": {
+                  "_timestamp": { "gte": "2015-04-08" } }}
+            }
+          ] }}
     },
     "aggs": {
       "indices": {
         "terms": {
-          "field": "_index"
+          "field": "_index",
+          "size": 0
   }}}}'
 ````
 However, before deleting the index you should make sure it is not the only index for
 given `info_type`. You probably do not want to delete the only index that the sysinfo
 river can index to.
+
+## Prepared shell scripts
+
+There are two shell scripts that be used perform all the logic:
+
+  - `init.sh`
+  - `rotate.sh`
+
+### init.sh
+
+This script is useful to kick-start collecting the metrics. It is useful in situation where
+you have a fresh clean Elasticsearch cluster that you want to use as a storage for the metrics
+(and for querying later). Check [requirements](#requirements) first.
+
+This script does all the initial setup:
+
+  1. Push index templates
+  2. Create first indices and index aliases
+  3. Push system into river configuration (which will start collecting the metrics immediately)
+  
+It is expected that this script will be executed manually and only once.
+
+### rotate.sh
+
+This script is useful to rotate data indices, update index aliases and delete old indices.
+
+Each execution of this script will do the following:
+
+  1. Stop system info river
+  2. Create new indices and update aliases 
+      - Remove indexing aliases and optimize index
+      - Create new indices
+      - Add indexing and searching aliases 
+  3. Delete indices (if required) 
+  4. Start system info river
+
+It is expected that this script will be executed periodically (for example from cron).

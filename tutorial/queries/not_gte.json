@@ -1,0 +1,22 @@
+{
+  "query": {
+    "filtered": {
+      "filter": {
+        "and": [
+          {
+            "prefix": { "_index": "sysinfo_" }
+          },
+          {
+            "not": {
+              "range": {
+                "_timestamp": { "gte": "_timestamp_" } }}
+          }
+        ]
+      }}
+  },
+  "aggs": {
+    "indices": {
+      "terms": {
+        "field": "_index",
+        "size": 0
+}}}}

@@ -33,11 +33,12 @@ fi
 
 ## ======================================================
 echo "Pushing index templates:"
+echo "------------------------"
 ## ======================================================
 
-for filename in templates/*.json
+for filename in index_templates/*.json
 do
-  template="${filename#templates/}"
+  template="${filename#index_templates/}"
   template="${template%.*}"
   echo "\nCreate template '${template}'"
   #echo ${es_rootURL}/_template/${template}/ -d@${filename}
@@ -47,12 +48,14 @@ done
 ## ======================================================
 echo "\n"
 echo "Creating initial indices and aliases:"
+echo "-------------------------------------"
 ## ======================================================
 
 for INFO_TYPE in "${into_types[@]}"
 do
   index_base=sysinfo_${INFO_TYPE}
   index_name=${index_base}${custom_key}
+  ## TODO: use $custom_key in searching and indexing alias name
   index_alias_search=${index_base}_search
   index_alias_index=${index_base}_index
 
@@ -72,9 +75,10 @@ done
 ## ======================================================
 echo "\n"
 echo "Pushing system info river configuration:"
+echo "----------------------------------------"
 ## ======================================================
 
-river_config=`sed s/_custom_key/${custom_key_index}/g sysinfo_river_config.json`
+river_config=`sed s/_custom_key/${custom_key_index}/g river_config/sysinfo_river_config.json`
 #echo ${es_rootURL}/_river/${river_name}/_meta -d "'${river_config}'"
 curl -XPUT ${es_rootURL}/_river/${river_name}/_meta -d "${river_config}"
 
