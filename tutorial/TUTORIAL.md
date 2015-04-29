@@ -27,8 +27,8 @@ Particular topics we will discuss in details:
     - [Adding new indices](#adding-new-indices)
     - [Remove old indices](#remove-old-indices)
 - [Prepared shell scripts](#prepared-shell-scripts)
-    - [init.sh](#init.sh)
-    - [rotate.sh](#rotate.sh)
+    - [init.sh](#initsh)
+    - [rotate.sh](#rotatesh)
   
 
 ## Requirements
