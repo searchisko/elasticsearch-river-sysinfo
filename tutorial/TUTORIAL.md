@@ -110,7 +110,7 @@ Common prefix is used by the top most level index template to ensure all indices
     - Enabled `_index` field and make it `stored`
     - Disabled `include_in_all`
     - Disabled `_all` field
-  - **Template mapping:** [sysinfo_.json](templates/sysinfo_.json)
+  - **Template mapping:** [sysinfo_.json](index_templates/sysinfo_.json)
 
 ### `{info_type}`
 
@@ -128,7 +128,7 @@ The following `info_type`s are available:
 #### `cluster_health`
 
   - Object `_source.indices` contains index names as keys. We transform it to nested type.
-  - **Template mapping:** [sysinfo_cluster_health_.json](templates/sysinfo_cluster_health_.json)
+  - **Template mapping:** [sysinfo_cluster_health_.json](index_templates/sysinfo_cluster_health_.json)
 
 #### `cluster_state`
 
@@ -167,29 +167,29 @@ is transformed to:
       }
     }
     
-- **Template mapping:** [sysinfo_cluster_state_.json](templates/sysinfo_cluster_state_.json)
+- **Template mapping:** [sysinfo_cluster_state_.json](index_templates/sysinfo_cluster_state_.json)
 
 #### `cluster_stats`
 
   - Object inside `_source.nodes.plugins` are mapped as nested type.
-  - **Template mapping:** [sysinfo_cluster_stats_.json](templates/sysinfo_cluster_stats_.json)
+  - **Template mapping:** [sysinfo_cluster_stats_.json](index_templates/sysinfo_cluster_stats_.json)
 
 #### `pending_cluster_tasks`
 
   - TODO
-  - **Template mapping:** [sysinfo_pending_cluster_tasks_.json](templates/sysinfo_pending_cluster_tasks_.json)
+  - **Template mapping:** [sysinfo_pending_cluster_tasks_.json](index_templates/sysinfo_pending_cluster_tasks_.json)
 
 #### `cluster_nodes_info`
 
   - Object `_source.nodes` contains node names as keys. We transform it to nested type.
   - Object inside `_source.nodes.plugins` are mapped as nested type.
-  - **Template mapping:** [sysinfo_cluster_nodes_info_.json](templates/sysinfo_cluster_nodes_info_.json)
+  - **Template mapping:** [sysinfo_cluster_nodes_info_.json](index_templates/sysinfo_cluster_nodes_info_.json)
 
 #### `cluster_nodes_stats`
 
   - Object `_source.nodes` contains node names as keys. We transform it to nested type.
   - TODO: `node.fs.data` ?
-  - **Template mapping:** [sysinfo_cluster_nodes_stats_.json](templates/sysinfo_cluster_nodes_stats_.json)
+  - **Template mapping:** [sysinfo_cluster_nodes_stats_.json](index_templates/sysinfo_cluster_nodes_stats_.json)
   
 #### `indices_status`
 
@@ -198,7 +198,7 @@ Deprecated API, not used.
 #### `indices_stats`
 
   - Object `_source.indices` contains index names as a keys. We convert it into nested type.
-  - **Template mapping:** [sysinfo_indices_stats_.json](templates/sysinfo_indices_stats_.json)
+  - **Template mapping:** [sysinfo_indices_stats_.json](index_templates/sysinfo_indices_stats_.json)
 
 #### `indices_segments`
 
@@ -207,7 +207,7 @@ Deprecated API, not used.
 #### `indices_recovery`
 
   - TODO
-  - **Template mapping:** [sysinfo_indices_recovery_.json](templates/sysinfo_indices_recovery_.json)
+  - **Template mapping:** [sysinfo_indices_recovery_.json](index_templates/sysinfo_indices_recovery_.json)
   
 
 ### `{custom_key}`
@@ -280,7 +280,7 @@ are used for search.
 
 This concept can be illustrated using the following flow:
 
-````
+````shell
   # create new index
   curl -XPUT 'localhost:9200/index_1/'
   
@@ -334,7 +334,7 @@ member in this list.
 
 For example if we collect `indices_stats` data then we can do query like this:
 
-````
+````shell
   curl 'localhost:9200/sysinfo_indices_stats*/_search?search_type=count' -d '{
     "query": {
       "filtered": {
@@ -353,7 +353,7 @@ For example if we collect `indices_stats` data then we can do query like this:
 In case the index name timestamp format is not convenient for proper ordering we
 can order indices by selecting `max(_timestamp)` value of contained documents:
 
-````
+````shell
   curl 'localhost:9200/sysinfo_indices_stats*/_search?search_type=count' -d '{
     "query": {
       "filtered": {
@@ -381,7 +381,7 @@ they do not contain "too old" data.
 For example we want to list all index names (for `indices_stats`) that do not contain
 data created on 2015-04-08 (and up) then we can use query like this:
 
-````
+````shell
   curl 'localhost:9200/sysinfo_indices_stats*/_search?search_type=count' -d '{
     "query": {
       "filtered": {
